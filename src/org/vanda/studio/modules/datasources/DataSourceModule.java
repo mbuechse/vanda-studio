@@ -106,7 +106,7 @@ public class DataSourceModule implements Module {
 
 		@Override
 		public String getName() {
-			return "Edit Data Sources";
+			return "Edit Data Sources...";
 		}
 
 		@Override

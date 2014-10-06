@@ -250,7 +250,7 @@ public class RootDataSource extends ListRepository<DataSourceFactory> implements
 					writeChange();
 				}
 			});
-			JButton bCancel = new JButton(new AbstractAction("cancel") {
+			JButton bCancel = new JButton(new AbstractAction("revert") {
 				/**
 				 * 
 				 */
