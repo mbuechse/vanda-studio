@@ -9,12 +9,12 @@ import org.vanda.util.Pair;
 import org.vanda.workflows.data.Database;
 import org.vanda.workflows.data.DataflowAnalysis;
 import org.vanda.workflows.data.SemanticAnalysis;
-import org.vanda.workflows.elements.ElementVisitor;
 import org.vanda.workflows.elements.Literal;
 import org.vanda.workflows.elements.Port;
 import org.vanda.workflows.elements.Tool;
 import org.vanda.workflows.hyper.ConnectionKey;
 import org.vanda.workflows.hyper.ElementAdapter;
+import org.vanda.workflows.hyper.ElementVisitor;
 import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.LiteralAdapter;
 import org.vanda.workflows.hyper.Location;
@@ -99,16 +99,18 @@ public class ExecutableWorkflowFactory {
 	 * @param priorityMapInstantiated JobId -> Priority
 	 * @return
 	 */
-	public static MutableWorkflow generateExecutableWorkflow(MutableWorkflow mwf, Database db,
+	public static Pair<MutableWorkflow, Database> generateExecutableWorkflow(MutableWorkflow mwf, Database db,
 			List<Integer> assignmentSelection, SyntaxAnalysis synA, SemanticAnalysis semA,
 			final Map<Pair<Job, Integer>, Integer> priorityMap, final Map<String, Integer> priorityMapInstantiated) {
 		final MutableWorkflow ewf = new MutableWorkflow(mwf.getName());
+		final Database edb = new Database();
+		edb.put(new Integer(0), "");  // special row id that does not influence job id 
 		final double[] dims = workflowDimension(mwf);
 		int counter = 0;
 		for (final int i : assignmentSelection) {
 			// to translate between original Location and new copies
 			final Map<Location, Location> translation = new HashMap<Location, Location>();
-			final HashMap<String, String> dbRow = db.getRow(i);
+			final HashMap<Integer, String> dbRow = db.getRow(i);
 			final DataflowAnalysis dfa = semA.getDFA(synA, i);
 
 			// vertical alignment of instantiated workflows
@@ -120,15 +122,9 @@ public class ExecutableWorkflowFactory {
 					j.visit(new ElementVisitor() {
 						@Override
 						public void visitLiteral(Literal lit) {
-							createJobInstance(
-									ewf,
-									dfa,
-									dx,
-									dy,
-									translation,
-									j,
-									new LiteralAdapter(new Literal(lit.getType(), lit.getName(),
-											dbRow.get(lit.getKey()))));
+							Literal newlit = new Literal(lit.getType(), lit.getName(), null);
+							edb.put(newlit.getKey(), dbRow.get(lit.getKey()));
+							createJobInstance(ewf, dfa, dx, dy, translation, j, new LiteralAdapter(newlit));
 						}
 
 						@Override
@@ -147,7 +143,7 @@ public class ExecutableWorkflowFactory {
 			counter++;
 		}
 
-		return ewf;
+		return new Pair<MutableWorkflow, Database>(ewf, edb);
 
 	}
 }

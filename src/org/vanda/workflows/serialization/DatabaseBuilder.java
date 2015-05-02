@@ -8,11 +8,11 @@ import org.vanda.workflows.data.Database;
 import org.vanda.xml.Factory;
 
 public class DatabaseBuilder {
-	LinkedList<HashMap<String, String>> assignments;
+	LinkedList<HashMap<Integer, String>> assignments;
 	LinkedList<String> names;
 
 	public DatabaseBuilder() {
-		assignments = new LinkedList<HashMap<String, String>>();
+		assignments = new LinkedList<HashMap<Integer, String>>();
 		names = new LinkedList<String>();
 	}
 
@@ -30,8 +30,8 @@ public class DatabaseBuilder {
 	public Database build() {
 		Database result = new Database();
 		for (int i = 0; i < assignments.size(); ++i) {
-			HashMap<String, String> a = assignments.get(i);
-			for (Map.Entry<String, String> e : a.entrySet()) {
+			HashMap<Integer, String> a = assignments.get(i);
+			for (Map.Entry<Integer, String> e : a.entrySet()) {
 				result.put(e.getKey(), e.getValue());
 			}
 			String name = names.get(i);

@@ -8,8 +8,6 @@ import org.vanda.types.Type;
 import org.vanda.util.MultiplexObserver;
 import org.vanda.util.Observable;
 import org.vanda.util.Observer;
-import org.vanda.workflows.elements.ElementReturnVisitor;
-import org.vanda.workflows.elements.ElementVisitor;
 import org.vanda.workflows.elements.Literal;
 import org.vanda.workflows.elements.Port;
 import org.vanda.workflows.elements.RendererAssortment;
@@ -27,6 +25,8 @@ public class Job implements ElementAdapterListener<ElementAdapter> {
 	protected final MultiplexObserver<JobEvent<Job>> observable;
 
 	public Job(ElementAdapter element, String id) {
+		if (id == null)
+			id = Integer.toHexString(hashCode());
 		this.id = id;
 		this.element = element;
 		if (element.getObservable() != null)
@@ -38,13 +38,6 @@ public class Job implements ElementAdapterListener<ElementAdapter> {
 
 	public Job(ElementAdapter element) {
 		this(element, null);
-	}
-
-	public Job(ElementAdapter element, boolean createObservable) {
-		this.id = null;
-		this.element = element;
-		this.observable = new MultiplexObserver<JobEvent<Job>>();
-		rebind();
 	}
 
 	public ElementAdapter getElement() {

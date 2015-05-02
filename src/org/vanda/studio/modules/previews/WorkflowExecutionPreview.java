@@ -29,8 +29,8 @@ public class WorkflowExecutionPreview implements PreviewFactory {
 		Pair<MutableWorkflow, Database> phd;
 		RunConfig rc;
 		try {
-			phd = new Loader(app.getToolMetaRepository().getRepository()).load(filePath+".xwf");
-			rc = new org.vanda.workflows.serialization.run.Loader().load(filePath+".run");
+			phd = new Loader(app.getToolMetaRepository().getRepository()).load(filePath + ".xwf");
+			rc = new org.vanda.workflows.serialization.run.Loader().load(filePath + ".run");
 			WorkflowExecution wfe = new WorkflowExecution(app, phd, prof, rc);
 			return wfe.getComponent();
 		} catch (Exception e) {

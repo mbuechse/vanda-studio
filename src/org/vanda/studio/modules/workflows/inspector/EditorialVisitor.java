@@ -4,14 +4,13 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-
 import org.vanda.view.View;
 import org.vanda.view.Views.*;
 import org.vanda.workflows.data.Database;
-import org.vanda.workflows.elements.ElementVisitor;
 import org.vanda.workflows.elements.Literal;
 import org.vanda.workflows.elements.Tool;
 import org.vanda.workflows.hyper.ConnectionKey;
+import org.vanda.workflows.hyper.ElementVisitor;
 import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.Location;
 import org.vanda.workflows.hyper.MutableWorkflow;

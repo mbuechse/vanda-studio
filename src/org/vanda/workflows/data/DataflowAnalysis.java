@@ -20,22 +20,16 @@ import org.vanda.workflows.hyper.Location;
 // XXX removed: handle ports (see older versions)
 public class DataflowAnalysis implements JobVisitor {
 	public static final String UNDEFINED = "UNDEFINED";
-	public static final String ROW_ID = "rowID";
 
-	protected Map<String, String> assignment_;
+	protected Map<Integer, String> assignment_;
 	protected boolean connected;
-	protected Map<Job, String> jobIds; // distinguish jobs that perform the same
-										// operation, need not persist
-	protected Map<Job, String> jobSpecs; // identify jobs that perform the same
-										// operation, persist
+	protected Map<Job, String> jobIds; // distinguish jobs that perform the same operation, need not persist
+	protected Map<Job, String> jobSpecs; // identify jobs that perform the same operation, persist
 	protected Map<Location, String> values;
 
-	protected int line;
-
-	public void init(Map<String, String> assignment, int line, Job[] sorted) {
+	public void init(Map<Integer, String> assignment, Job[] sorted) {
 		assignment_ = assignment;
 		connected = true;
-		this.line = line;
 		jobIds = new HashMap<Job, String>();
 		jobSpecs = new HashMap<Job, String>();
 		values = new HashMap<Location, String>();
@@ -62,18 +56,17 @@ public class DataflowAnalysis implements JobVisitor {
 	}
 
 	protected String computeJobId(Job j, Tool t) {
-		StringBuilder sb = new StringBuilder();
-		sb.append('(');
-		sb.append(Integer.toHexString(j.hashCode()));
-		sb.append(',');
-		String rid = assignment_.get(ROW_ID);
-		if (rid == null)
-			rid = Integer.toHexString(assignment_.hashCode());
-		sb.append(rid);
-		sb.append(',');
-		sb.append(Integer.toHexString(line));
-		sb.append(')');
-		return md5sum(sb.toString());
+		String rid = assignment_.get(new Integer(0));
+		if ("".equals(rid)) {
+			// only compute MD5 sum if necessary
+			// also, it is paramount that the id be preserved for executable workflows
+			return j.getId();
+		} else {
+			StringBuilder sb = new StringBuilder();
+			sb.append(j.getId());
+			sb.append(rid);
+			return md5sum(sb.toString());
+		}
 	}
 
 	private String computeJobSpec(Job j, Tool t) {
@@ -115,10 +108,6 @@ public class DataflowAnalysis implements JobVisitor {
 		String value = "";
 		if (assignment_ != null)
 			value = assignment_.get(l.getKey());
-		if (value == null) {
-			value = l.getKey();
-		}
-
 		values.put(j.bindings.get(j.getOutputPorts().get(0)), value);
 	}
 

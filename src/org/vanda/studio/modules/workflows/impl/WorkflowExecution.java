@@ -26,7 +26,7 @@ import org.vanda.util.Observer;
 import org.vanda.util.Pair;
 import org.vanda.view.View;
 import org.vanda.workflows.data.Database;
-import org.vanda.workflows.data.SemanticAnalysisEx;
+import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
@@ -130,8 +130,8 @@ public class WorkflowExecution extends DefaultWorkflowEditorImpl implements Obse
 		super(app, phd);
 		this.prof = prof;
 
-		synA = new SyntaxAnalysis(phd.fst, rc.generateComperator());
-		semA = new SemanticAnalysisEx(synA);
+		synA = new SyntaxAnalysis(phd.fst, rc.generateComparator());
+		semA = new SemanticAnalysis(synA, database);
 
 		pm = new PresentationModel(view);
 		cancel = new CancelAction();
@@ -162,6 +162,10 @@ public class WorkflowExecution extends DefaultWorkflowEditorImpl implements Obse
 
 		// addComponent
 		app.getWindowSystem().addContentWindow(null, component, null);
+
+		// send some initial event ("updated" will be sent)
+		view.getWorkflow().beginUpdate();
+		view.getWorkflow().endUpdate();
 				
 		// focus window
 		app.getWindowSystem().focusContentWindow(component);

@@ -14,10 +14,10 @@ import org.vanda.types.Type;
 import org.vanda.types.Types;
 import org.vanda.workflows.data.DataflowAnalysis;
 import org.vanda.workflows.data.SemanticAnalysis;
-import org.vanda.workflows.elements.ElementVisitor;
 import org.vanda.workflows.elements.Literal;
 import org.vanda.workflows.elements.Port;
 import org.vanda.workflows.elements.Tool;
+import org.vanda.workflows.hyper.ElementVisitor;
 import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
 
@@ -56,10 +56,7 @@ public class ShellCompiler implements FragmentCompiler {
 					// ^^ and it is propagated via the dependency
 					assert (frag != null);
 					sb.append("  run ");
-					if (ji.getId() != null) 
-						sb.append(ji.getId());
-					else 
-						sb.append(semA.getDFA().getJobSpec(ji));
+					sb.append(semA.getDFA().getJobId(ji));
 					sb.append(' ');
 					sb.append(frag.getInputPorts().size());
 					sb.append(' ');
@@ -67,7 +64,8 @@ public class ShellCompiler implements FragmentCompiler {
 					sb.append(' ');
 //					sb.append(dfa.getRootDir(t));
 //					sb.append(ji.getToolPrefix());
-					sb.append(semA.getDFA().getJobSpec(ji));
+//					sb.append(semA.getDFA().getJobSpec(ji));
+					sb.append(semA.getDFA().getJobId(ji));
 					for (Port ip : frag.getInputPorts()) {
 						sb.append(" \"");
 //						sb.append(fio.findFile(dfa.getValue(ji.bindings.get(ip))));

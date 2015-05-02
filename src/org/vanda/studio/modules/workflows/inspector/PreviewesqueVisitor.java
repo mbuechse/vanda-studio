@@ -67,13 +67,13 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 			
 			@Override
 			public JComponent createPreview(Application app) {
-				String log = app.findFile(semA.getDFA().getJobSpec(j) + "/log");
+				String log = app.findFile(semA.getDFA().getJobId(j) + "/log");
 				return app.getPreviewFactory(new CompositeType("log")).createPreview(log);
 			}
 			
 			@Override
 			public JComponent createButtons(final Application app) {
-				final String log = app.findFile(semA.getDFA().getJobSpec(j) + "/log");
+				final String log = app.findFile(semA.getDFA().getJobId(j) + "/log");
 				JPanel pan = new JPanel(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
 				JButton bOpen = new JButton(new AbstractAction("raw log") {

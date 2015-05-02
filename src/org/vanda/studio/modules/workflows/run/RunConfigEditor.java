@@ -145,7 +145,7 @@ public class RunConfigEditor {
 			assignment.setSelected(assignmentSelection.contains(a_i));
 			assignmentCheckboxes.add(assignment);
 			boolean selectable = inputsComplete
-					&& DatabaseValueChecker.checkDatabseRow(mwf, rds, db.getRow(i), connectedLiterals);
+					&& DatabaseValueChecker.checkDatabaseRow(mwf, rds, db.getRow(i), connectedLiterals);
 			JSpinner priority = new JSpinner(new SpinnerNumberModel(i, 0, 1000, 1));
 
 			if (!selectable) {
@@ -280,8 +280,8 @@ public class RunConfigEditor {
 			}
 		}
 
-		public static boolean checkDatabseRow(MutableWorkflow mwf, RootDataSource rds,
-				final HashMap<String, String> row, List<Literal> literals) {
+		public static boolean checkDatabaseRow(MutableWorkflow mwf, RootDataSource rds,
+				final HashMap<Integer, String> row, List<Literal> literals) {
 			if (literals == null)
 				return false;
 			for (Literal l : literals) {

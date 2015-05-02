@@ -22,6 +22,7 @@ import org.vanda.util.Action;
 import org.vanda.util.ExceptionMessage;
 import org.vanda.util.Pair;
 import org.vanda.view.View;
+import org.vanda.workflows.data.Database;
 import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.MutableWorkflow;
@@ -77,12 +78,15 @@ public class RunTool implements SemanticsToolFactory {
 				// if (id != null) {
 				// serialize Workflow + Database
 				Map<String, Integer> prioMapInst = new HashMap<String, Integer>();
-				MutableWorkflow ewf = ExecutableWorkflowFactory.generateExecutableWorkflow(wfe.getView().getWorkflow(),
+				Pair<MutableWorkflow, Database> phd = ExecutableWorkflowFactory.generateExecutableWorkflow(
+						wfe.getView().getWorkflow(),
 						wfe.getDatabase(), assingmentSelection, synA, semA, prioMap, prioMapInst);
+				MutableWorkflow ewf = phd.fst;
+				Database edb = phd.snd;
 				filePath += "/" + ewf.getName() + new Date().toString();
 				RunConfig rc = new RunConfig(filePath, prioMapInst);
 				try {
-					new Storer().store(ewf, wfe.getDatabase(), filePath + ".xwf");
+					new Storer().store(ewf, edb, filePath + ".xwf");
 					new org.vanda.workflows.serialization.run.Storer().store(rc, filePath + ".run");
 					// create WorkflowExecutionPreview from file
 					new WorkflowExecutionPreview(app, prof).createPreview(filePath);

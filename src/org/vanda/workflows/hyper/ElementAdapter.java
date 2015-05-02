@@ -5,8 +5,6 @@ import java.util.List;
 import org.vanda.types.Type;
 import org.vanda.util.Observable;
 import org.vanda.util.RepositoryItem;
-import org.vanda.workflows.elements.ElementReturnVisitor;
-import org.vanda.workflows.elements.ElementVisitor;
 import org.vanda.workflows.elements.Port;
 import org.vanda.workflows.elements.RendererAssortment;
 import org.vanda.workflows.hyper.ElementAdapters.*;

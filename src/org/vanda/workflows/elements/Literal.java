@@ -7,31 +7,22 @@ import org.vanda.workflows.elements.Elements.*;
 
 public final class Literal {
 
-	private String key;
+	private Integer key;
 	private String name;
 	private Type type;
 	private final MultiplexObserver<ElementEvent<Literal>> observable;
 
-	private Literal(Type type, String name) {
+	public Literal(Type type, String name, Integer key) {
 		this.type = type;
 		this.name = name;
 		observable = new MultiplexObserver<ElementEvent<Literal>>();
-	}
-
-	public Literal(Type type, String name, String key) {
-		this(type, name);
 		if (key == null)
-			this.key = Integer.toHexString(hashCode());
+			this.key = hashCode();
 		else
 			this.key = key;
 	}
 
-	public Literal(Type type, String name, int key) {
-		this(type, name);
-		this.key = Integer.toHexString(key);
-	}
-
-	public String getKey() {
+	public Integer getKey() {
 		return key;
 	}
 

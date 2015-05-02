@@ -24,10 +24,10 @@ public class SemanticAnalysis {
 
 	public void updateDFA(SyntaxAnalysis synA) {
 		dfa = new DataflowAnalysis();
-		HashMap<String, String> assignment = null;
+		HashMap<Integer, String> assignment = null;
 		if (db.getSize() > 0)
 			assignment = db.getRow(db.getCursor());
-		dfa.init(assignment, db.getCursor(), synA.getSorted());
+		dfa.init(assignment, synA.getSorted());
 		observable.notify(this);
 
 	}
@@ -49,12 +49,12 @@ public class SemanticAnalysis {
 	 * @return DataflowAnalysis of i-th assignment
 	 */
 	public DataflowAnalysis getDFA(SyntaxAnalysis synA, int i) {
-		HashMap<String, String> assignment = null;
+		HashMap<Integer, String> assignment = null;
 		if (i < db.getSize()) {
 			assignment = db.getRow(i);
 		}
 		DataflowAnalysis dfa = new DataflowAnalysis();
-		dfa.init(assignment, i, synA.getSorted());
+		dfa.init(assignment, synA.getSorted());
 		return dfa;
 	}
 

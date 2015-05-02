@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.vanda.workflows.data.Database;
-import org.vanda.workflows.elements.ElementVisitor;
 import org.vanda.workflows.elements.Literal;
 import org.vanda.workflows.elements.Port;
 import org.vanda.workflows.elements.Tool;
+import org.vanda.workflows.hyper.ElementVisitor;
 import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.Location;
 import org.vanda.workflows.hyper.MutableWorkflow;
@@ -33,7 +33,7 @@ public class Storer {
 					ppw.addAttribute("type", l.getType().toString());
 					// ppw.addAttribute("value", l.getName());
 					ppw.addAttribute("name", l.getName());
-					ppw.addAttribute("key", l.getKey()); // Integer.toHexString(l.getKey()));
+					ppw.addAttribute("key", Integer.toHexString(l.getKey()));
 					ppw.endNode(); // literal
 				}
 
@@ -62,13 +62,13 @@ public class Storer {
 		}
 		ppw.startNode("database");
 		for (int i = 0; i < d.getSize(); i++) {
-			HashMap<String, String> row = d.getRow(i);
+			HashMap<Integer, String> row = d.getRow(i);
 			ppw.startNode("row");
 			if (d.getName(i) != null)
 				ppw.addAttribute("name", d.getName(i));
-			for (Map.Entry<String, String> e : row.entrySet()) {
+			for (Map.Entry<Integer, String> e : row.entrySet()) {
 				ppw.startNode("assignment");
-				ppw.addAttribute("key", e.getKey()); // Integer.toHexString(e.getKey().intValue()));
+				ppw.addAttribute("key", Integer.toHexString(e.getKey().intValue()));
 				ppw.addAttribute("value", e.getValue());
 				ppw.endNode(); // assignment
 			}

@@ -9,11 +9,11 @@ import org.vanda.xml.SingleFieldProcessor;
 
 public class RowBuilder {
 	
-	HashMap<String, String> assignment;
+	HashMap<Integer, String> assignment;
 	String name;
 
 	public RowBuilder() {
-		assignment = new HashMap<String, String>();
+		assignment = new HashMap<Integer, String>();
 	}
 
 	public static Factory<RowBuilder> createFactory() {

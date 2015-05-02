@@ -35,24 +35,27 @@ public class RunConfig {
 	}
 	
 	/**
-	 * @return a Comperator that is used by the TopSorter to implement Job priorities
+	 * @return a Comparator that is used by the TopSorter to implement Job priorities
 	 */
-	public Comparator<Job> generateComperator() {
+	public Comparator<Job> generateComparator() {
 		return new Comparator<Job>() {
 
 			@Override
 			public int compare(Job arg0, Job arg1) {
-				if (arg0.getId() == null && arg1.getId() == null) {
+				Integer prio0 = jobPriorities.get(arg0.getId());
+				Integer prio1 = jobPriorities.get(arg1.getId());
+				if (prio0 == null && prio1 == null) {
 					return arg0.hashCode() - arg1.hashCode();
-				} else if (arg0.getId() == null) {
+				} else if (prio0 == null) {
 					return -1;
-				} else if (arg1.getId() == null) {
+				} else if (prio1 == null) {
 					return 1;
 				} else {
-					int diff = jobPriorities.get(arg0.getId()) - jobPriorities.get(arg1.getId());
+					int diff = prio0 - prio1;
 					if (diff != 0)
 						return diff;
-					else return arg0.hashCode() - arg1.hashCode();
+					else
+						return arg0.hashCode() - arg1.hashCode();
 				}
 			}
 		};

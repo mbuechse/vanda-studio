@@ -13,7 +13,6 @@ SinkTool () {
 # run <id> <n> <tool> <root> <i1> ... <in> <o1> ... <om>
 # <id>    job id
 # <n>     number of input arguments
-# <m>     number of output arguments
 # <tool>  tool to run
 # <root>  directory to root temp and meta files
 # <i?>    input argument

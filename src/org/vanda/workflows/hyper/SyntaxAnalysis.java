@@ -29,6 +29,7 @@ public class SyntaxAnalysis {
 			checkWorkflow();
 		} catch (Exception e) {
 			// do nothing
+			e.printStackTrace();
 		}
 	}
 	
@@ -42,7 +43,6 @@ public class SyntaxAnalysis {
 		tc.check();
 		types = tc.getTypes();
 		fragmentType = tc.getFragmentType();
-
 	}
 
 	public void checkWorkflow() throws TypeCheckingException, TopSortException {

@@ -35,16 +35,18 @@ public class LogPreviewFactory implements PreviewFactory {
 			BufferedReader input = new BufferedReader(new InputStreamReader(fis));
 			try {
 				String line = null;
-				LogEntry entry = new LogEntry();
-				entries.add(entry);
+				LogEntry entry = null;
 				while ((line = input.readLine()) != null) {
 					if (line.startsWith("Checking: ")) {
-						if (!"".equals(entry.text)) {
-							entry = new LogEntry();
+						entry = new LogEntry(true);
+						entries.add(entry);
+					} else {
+						if (entry == null) {
+							entry = new LogEntry(false);
 							entries.add(entry);
 						}
-					} else
 						entry.appendLine(line);
+					}
 				}
 			} finally {
 				input.close();
