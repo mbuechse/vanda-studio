@@ -28,7 +28,6 @@ import javax.swing.SpinnerNumberModel;
 
 import org.vanda.datasources.Element;
 import org.vanda.datasources.RootDataSource;
-import org.vanda.util.Pair;
 import org.vanda.workflows.data.Database;
 import org.vanda.workflows.elements.Literal;
 import org.vanda.workflows.elements.Port;
@@ -39,16 +38,18 @@ import org.vanda.workflows.hyper.JobVisitor;
 import org.vanda.workflows.hyper.Location;
 import org.vanda.workflows.hyper.MutableWorkflow;
 
+// MB: TODO this stuff interweaves GUI code with logic and data
+// We need a model for that stuff!
+
 /**
- * Dialogue to select Run-Directory, Assignments, Run-System
+ * Dialogue to select run directory, assignments, run system
  * 
  * @author kgebhardt
  * 
  */
 public class RunConfigEditor {
 	public interface Runner {
-		public void evokeExecution(List<Integer> assignmentSelection, String filePath,
-				Map<Pair<Job, Integer>, Integer> prioMap);
+		public void evokeExecution(List<Integer> assignmentSelection, String filePath);
 	}
 
 	private JPanel pan;
@@ -221,14 +222,8 @@ public class RunConfigEditor {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				Map<Pair<Job, Integer>, Integer> priorities = new HashMap<Pair<Job, Integer>, Integer>();
-				for (Integer i : priorityMap.keySet()) {
-					for (Job j : mwf.getChildren()) {
-						priorities.put(new Pair<Job, Integer>(j, i), (Integer) priorityMap.get(i).getValue());
-					}
-				}
-				Collections.sort(assignmentSelection);
-				r.evokeExecution(assignmentSelection, dir.getAbsolutePath(), priorities);
+				Collections.sort(assignmentSelection);  // TODO sort by prio
+				r.evokeExecution(assignmentSelection, dir.getAbsolutePath());
 			}
 		});
 

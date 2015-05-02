@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
-import org.vanda.execution.model.RunStates.RunEvent;
 import org.vanda.execution.model.RunStates.*;
 import org.vanda.fragment.model.Generator;
 import org.vanda.presentationmodel.execution.PresentationModel;
@@ -26,6 +25,7 @@ import org.vanda.util.Observer;
 import org.vanda.util.Pair;
 import org.vanda.view.View;
 import org.vanda.workflows.data.Database;
+import org.vanda.workflows.data.Databases;
 import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.MutableWorkflow;
@@ -130,8 +130,12 @@ public class WorkflowExecution extends DefaultWorkflowEditorImpl implements Obse
 		super(app, phd);
 		this.prof = prof;
 
-		synA = new SyntaxAnalysis(phd.fst, rc.generateComparator());
-		semA = new SemanticAnalysis(synA, database);
+		synA = new SyntaxAnalysis();
+		semA = new SemanticAnalysis();
+		synA.getSyntaxChangedObservable().addObserver(semA);
+		database.getObservable().addObserver(semA);
+		synA.checkWorkflow(phd.fst);
+		semA.notify(new Databases.CursorChange<Database>(database));
 
 		pm = new PresentationModel(view);
 		cancel = new CancelAction();
@@ -163,10 +167,6 @@ public class WorkflowExecution extends DefaultWorkflowEditorImpl implements Obse
 		// addComponent
 		app.getWindowSystem().addContentWindow(null, component, null);
 
-		// send some initial event ("updated" will be sent)
-		view.getWorkflow().beginUpdate();
-		view.getWorkflow().endUpdate();
-				
 		// focus window
 		app.getWindowSystem().focusContentWindow(component);
 		component.requestFocusInWindow();

@@ -29,10 +29,10 @@ import org.vanda.util.Observer;
 import org.vanda.util.Pair;
 import org.vanda.util.Util;
 import org.vanda.workflows.data.Database;
+import org.vanda.workflows.data.Databases;
 import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
-import org.vanda.workflows.hyper.TypeCheckingException;
 import org.vanda.workflows.hyper.Workflows.WorkflowEvent;
 
 import com.mxgraph.swing.util.mxGraphTransferable;
@@ -54,13 +54,7 @@ public class WorkflowEditorImpl extends DefaultWorkflowEditorImpl {
 
 		@Override
 		public void invoke() {
-			try {
-				wfe.getSyntaxAnalysis().checkWorkflow();
-			} catch (TypeCheckingException e) {
-
-			} catch (Exception e) {
-				// do nothing e.printStackTrace();
-			}
+			wfe.getSyntaxAnalysis().checkWorkflow(wfe.getView().getWorkflow());
 		}
 	}
 
@@ -118,7 +112,7 @@ public class WorkflowEditorImpl extends DefaultWorkflowEditorImpl {
 
 	protected JComponent palette;
 
-	protected final SyntaxUpdater synUp;
+	protected final ErrorHighlighter synUp;
 
 	private final Observer<WorkflowEvent<MutableWorkflow>> mwfObserver;
 
@@ -137,11 +131,16 @@ public class WorkflowEditorImpl extends DefaultWorkflowEditorImpl {
 		};
 		view.getWorkflow().getObservable().addObserver(mwfObserver);
 
-		synA = new SyntaxAnalysis(phd.fst);
-		synUp = new SyntaxUpdater(app, synA, view);
-		view.getWorkflow().getObservable().addObserver(synUp);
+		synA = new SyntaxAnalysis();
+		view.getWorkflow().getObservable().addObserver(synA);
+		synUp = new ErrorHighlighter(app, synA, view);
 
-		semA = new SemanticAnalysis(synA, database);
+		semA = new SemanticAnalysis();
+		synA.getSyntaxChangedObservable().addObserver(semA);
+		database.getObservable().addObserver(semA);
+		
+		synA.checkWorkflow(phd.fst);
+		semA.notify(new Databases.CursorChange<Database>(database));
 
 		component = new MyMxGraphComponent(presentationModel.getVisualization()
 				.getGraph());

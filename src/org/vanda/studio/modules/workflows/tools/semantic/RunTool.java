@@ -4,7 +4,6 @@ import java.awt.event.KeyEvent;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JDialog;
 import javax.swing.KeyStroke;
@@ -13,19 +12,15 @@ import org.vanda.fragment.model.Generator;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.previews.WorkflowExecutionPreview;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
-import org.vanda.studio.modules.workflows.run.ExecutableWorkflowFactory;
 import org.vanda.studio.modules.workflows.run.RunConfig;
 import org.vanda.studio.modules.workflows.run.RunConfigEditor;
 import org.vanda.studio.modules.workflows.run.RunConfigEditor.Runner;
 import org.vanda.types.Types;
 import org.vanda.util.Action;
 import org.vanda.util.ExceptionMessage;
-import org.vanda.util.Pair;
 import org.vanda.view.View;
-import org.vanda.workflows.data.Database;
+import org.vanda.workflows.data.ExecutableWorkflowBuilder;
 import org.vanda.workflows.data.SemanticAnalysis;
-import org.vanda.workflows.hyper.Job;
-import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
 import org.vanda.workflows.serialization.Storer;
 
@@ -47,13 +42,7 @@ public class RunTool implements SemanticsToolFactory {
 
 			@Override
 			public void invoke() {
-				boolean validWorkflow = true;
-				try {
-					synA.checkWorkflow();
-				} catch (Exception e1) {
-					validWorkflow = false;
-					// app.sendMessage(new ExceptionMessage(e1));
-				}
+				boolean validWorkflow = synA.getCyclicConnections() == null && synA.getTypeErrors() == null;
 				validWorkflow &= semA.getDFA().isConnected()
 						&& Types.canUnify(synA.getFragmentType(), prof.getRootType());
 				f = new JDialog(wfe.getApplication().getWindowSystem().getMainWindow(), "Execute Workflow");
@@ -69,24 +58,20 @@ public class RunTool implements SemanticsToolFactory {
 
 			}
 
-			public void evokeExecution(List<Integer> assingmentSelection, String filePath,
-					Map<Pair<Job, Integer>, Integer> prioMap) {
+			public void evokeExecution(List<Integer> assignmentSelection, String filePath) {
 				f.dispose();
 				
 				// TODO: probably obsolete, remove after testing
 				// String id = generate();
 				// if (id != null) {
 				// serialize Workflow + Database
-				Map<String, Integer> prioMapInst = new HashMap<String, Integer>();
-				Pair<MutableWorkflow, Database> phd = ExecutableWorkflowFactory.generateExecutableWorkflow(
-						wfe.getView().getWorkflow(),
-						wfe.getDatabase(), assingmentSelection, synA, semA, prioMap, prioMapInst);
-				MutableWorkflow ewf = phd.fst;
-				Database edb = phd.snd;
-				filePath += "/" + ewf.getName() + new Date().toString();
-				RunConfig rc = new RunConfig(filePath, prioMapInst);
+				ExecutableWorkflowBuilder ewf = new ExecutableWorkflowBuilder(wfe.getView().getWorkflow(), synA);
+				for (Integer i : assignmentSelection)
+					ewf.addAssigment(wfe.getDatabase().getRow(i));
+				filePath += "/" + ewf.getWorkflow().getName() + new Date().toString();
+				RunConfig rc = new RunConfig(filePath, new HashMap<String, Integer>());
 				try {
-					new Storer().store(ewf, edb, filePath + ".xwf");
+					new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");
 					new org.vanda.workflows.serialization.run.Storer().store(rc, filePath + ".run");
 					// create WorkflowExecutionPreview from file
 					new WorkflowExecutionPreview(app, prof).createPreview(filePath);
