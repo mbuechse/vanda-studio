@@ -9,21 +9,15 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
-import org.vanda.execution.model.RunStates.RunEventId;
-import org.vanda.execution.model.RunStates.RunEventListener;
-import org.vanda.execution.model.RunStates.RunStateCancelled;
-import org.vanda.execution.model.RunStates.RunStateDone;
-import org.vanda.execution.model.RunStates.RunStateProgress;
-import org.vanda.execution.model.RunStates.RunStateRunning;
-import org.vanda.execution.model.RunStates.RunTransitions;
+import org.vanda.run.RunStates.*;
 import org.vanda.studio.app.Application;
-import org.vanda.studio.modules.workflows.run.Runs.RunState;
+import org.vanda.studio.modules.workflows.run.RunStatesImpl.RunTransitions;
 import org.vanda.util.ExceptionMessage;
 import org.vanda.util.Observer;
 import org.vanda.util.RCChecker;
 import org.vanda.util.Util;
 
-public class StateRunning extends RunState {
+public class StateRunning implements RunState {
 
 	private final Observer<RunEventId> obs;
 	private final String id;
@@ -52,7 +46,7 @@ public class StateRunning extends RunState {
 	}
 	
 	@Override
-	public void visit(RunEventListener rsv) {
+	public void doNotify(RunEventListener rsv) {
 		rsv.running();
 	}
 	
@@ -187,6 +181,16 @@ public class StateRunning extends RunState {
 				mo.notify(new RunEventId(new RunStateRunning(), newstring));
 			}
 		}
+	}
+
+	@Override
+	public void finish() {
+		// no can do
+	}
+
+	@Override
+	public void run() {
+		// already running
 	}
 
 }

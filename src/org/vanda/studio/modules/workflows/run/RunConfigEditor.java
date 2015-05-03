@@ -40,6 +40,7 @@ import org.vanda.workflows.hyper.MutableWorkflow;
 
 // MB: TODO this stuff interweaves GUI code with logic and data
 // We need a model for that stuff!
+// main question: who owns the RunConfig?
 
 /**
  * Dialogue to select run directory, assignments, run system

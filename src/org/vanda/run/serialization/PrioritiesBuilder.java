@@ -1,4 +1,4 @@
-package org.vanda.workflows.serialization.run;
+package org.vanda.run.serialization;
 
 import java.util.HashMap;
 

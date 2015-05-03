@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.vanda.execution.model.RunStates.*;
 import org.vanda.render.jgraph.Cell;
 import org.vanda.render.jgraph.Cells.CellEvent;
 import org.vanda.render.jgraph.Cells.CellListener;
@@ -18,6 +17,7 @@ import org.vanda.render.jgraph.NaiveLayoutManager;
 import org.vanda.render.jgraph.InPortCell;
 import org.vanda.render.jgraph.OutPortCell;
 import org.vanda.render.jgraph.WorkflowCell;
+import org.vanda.run.RunStates.*;
 import org.vanda.util.Observer;
 import org.vanda.view.AbstractView;
 import org.vanda.view.JobView;
@@ -114,7 +114,7 @@ public class JobAdapter {
 		
 	}
 	
-	private class RsListener implements RunEventListener {
+	private class RunEventListenerImpl implements RunEventListener {
 
 		@Override
 		public void cancelled() {
@@ -150,8 +150,8 @@ public class JobAdapter {
 	private Observer<CellEvent<Cell>> jobCellObserver;
 	private JobViewListener jobViewListener;
 	private Observer<ViewEvent<AbstractView<?>>> jobViewObserver;
-	private Observer<RunEvent> rsObserver;
-	private RunEventListener rsListener;
+	private Observer<RunEvent> runEventObserver;
+	private RunEventListener runEventListener;
 	
 	protected Map<Location, LocationAdapter> locations;
 	protected Map<Port, OutPortCell> outports;
@@ -182,17 +182,17 @@ public class JobAdapter {
 			}
 		};
 
-		rsListener = new RsListener();
-		rsObserver = new Observer<RunEvent>() {
+		runEventListener = new RunEventListenerImpl();
+		runEventObserver = new Observer<RunEvent>() {
 			@Override
 			public void notify(RunEvent event) {
-				event.doNotify(rsListener);
+				event.doNotify(runEventListener);
 			}			
 		};
 		
 		JobView jv = view.getJobView(job);
 		jv.getObservable().addObserver(jobViewObserver);
-		jv.getRsObservable().addObserver(rsObserver);
+		jv.getRunEventObservable().addObserver(runEventObserver);
 	}
 
 	public void destroy(Graph graph) {

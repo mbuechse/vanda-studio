@@ -2,13 +2,12 @@ package org.vanda.studio.modules.workflows.run;
 
 import java.util.Date;
 
-import org.vanda.execution.model.RunStates.*;
+import org.vanda.run.RunStates.*;
 import org.vanda.studio.app.Application;
-import org.vanda.studio.modules.workflows.run.Runs.*;
+import org.vanda.studio.modules.workflows.run.RunStatesImpl.*;
 import org.vanda.util.MultiplexObserver;
-import org.vanda.util.Observer;
 
-public class Run implements RunEventListener, RunTransitions {
+public class Run implements RunState {
 	private final Date date;
 	private final String id;
 	private final MultiplexObserver<RunEvent> observable1 = new MultiplexObserver<RunEvent>();
@@ -16,32 +15,17 @@ public class Run implements RunEventListener, RunTransitions {
 	private RunState state;
 	private Application app;
 
-	public Run(Application app, Observer<RunEventId> obs, String id) {
+	public Run(Application app, String id) {
 		date = new Date();
 		this.id = id;
 		observable = new MultiplexObserver<RunEventId>();
-		observable.addObserver(obs);
 		this.app = app;
-		state = new StateInit(this);
+		state = new StateInit(rt);
 		state.process();
 	}
 	
 	public String toString() {
 		return state.getString(date);
-	}
-
-	@Override
-	public void doCancel() {
-		state = new StateCancelled();
-		state.process();
-		observable1.notify(new RunStateCancelled());
-	}
-
-	@Override
-	public void doFinish() {
-		state = new StateDone();
-		state.process();
-		observable1.notify(new RunStateDone());
 	}
 	
 	public String getId() {
@@ -56,39 +40,55 @@ public class Run implements RunEventListener, RunTransitions {
 		return observable;
 	}
 
-	@Override
-	public void doRun() {
-		state = new StateRunning(observable, id, app, this);
-		state.process();
-		observable1.notify(new RunStateRunning());
-	}
-	
-	@Override
-	public void done() {
-		// do nothing
-	}
-
-	public void visit(RunEventListener rsv) {
-		state.visit(rsv);
+	public void doNotify(RunEventListener rsv) {
+		state.doNotify(rsv);
 	}
 
 	@Override
-	public void progress(int progress) {
-		// do nothing
-	}
-
-	@Override
-	public void cancelled() {
+	public void cancel() {
 		state.cancel();
 	}
 
 	@Override
-	public void ready() {
-		// ignore
+	public void finish() {
+		state.finish();
 	}
 
 	@Override
-	public void running() {
+	public void process() {
+		// none of the end user's business
+	}
+
+	@Override
+	public void run() {
 		state.run();
 	}
+
+	@Override
+	public String getString(Date date) {
+		return state.getString(date);
+	}
+	
+	private RunTransitions rt = new RunTransitions() {
+		@Override
+		public void doCancel() {
+			state = new StateCancelled();
+			state.process();
+			observable1.notify(state);
+		}
+	
+		@Override
+		public void doFinish() {
+			state = new StateDone();
+			state.process();
+			observable1.notify(state);
+		}
+	
+		@Override
+		public void doRun() {
+			state = new StateRunning(observable, id, app, this);
+			state.process();
+			observable1.notify(state);
+		}
+	};
 }

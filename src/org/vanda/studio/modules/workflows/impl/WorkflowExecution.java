@@ -9,13 +9,13 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
-import org.vanda.execution.model.RunStates.*;
 import org.vanda.fragment.model.Generator;
 import org.vanda.presentationmodel.execution.PresentationModel;
+import org.vanda.run.RunConfig;
+import org.vanda.run.RunStates.*;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.inspector.ElementEditorFactories;
 import org.vanda.studio.modules.workflows.run.Run;
-import org.vanda.studio.modules.workflows.run.RunConfig;
 import org.vanda.studio.modules.workflows.tools.semantic.InspectorTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsToolFactory;
@@ -81,7 +81,7 @@ public class WorkflowExecution extends DefaultWorkflowEditorImpl implements Obse
 
 		@Override
 		public void invoke() {
-			run.cancelled();
+			run.cancel();
 		}
 
 		public void disable() {
@@ -107,9 +107,10 @@ public class WorkflowExecution extends DefaultWorkflowEditorImpl implements Obse
 			// run after successful compilation
 			if (id != null) {
 				reo = new RunEventObserver(pm.getView());
-				run = new Run(app, reo, id);
+				run = new Run(app, id);
+				run.getObservableId().addObserver(reo);
 				run.getObservable().addObserver(WorkflowExecution.this);
-				run.running();
+				run.run();
 				cancel.enable();
 				app.getWindowSystem().disableAction(component, this);
 			} 

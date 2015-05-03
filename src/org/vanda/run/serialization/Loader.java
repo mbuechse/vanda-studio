@@ -1,8 +1,8 @@
-package org.vanda.workflows.serialization.run;
+package org.vanda.run.serialization;
 
 import java.io.File;
 
-import org.vanda.studio.modules.workflows.run.RunConfig;
+import org.vanda.run.RunConfig;
 import org.vanda.util.Observer;
 import org.vanda.xml.ComplexFieldProcessor;
 import org.vanda.xml.CompositeElementHandlerFactory;

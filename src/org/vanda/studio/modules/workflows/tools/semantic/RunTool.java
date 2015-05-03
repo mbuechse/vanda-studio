@@ -9,10 +9,10 @@ import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 
 import org.vanda.fragment.model.Generator;
+import org.vanda.run.RunConfig;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.previews.WorkflowExecutionPreview;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
-import org.vanda.studio.modules.workflows.run.RunConfig;
 import org.vanda.studio.modules.workflows.run.RunConfigEditor;
 import org.vanda.studio.modules.workflows.run.RunConfigEditor.Runner;
 import org.vanda.types.Types;
@@ -72,7 +72,7 @@ public class RunTool implements SemanticsToolFactory {
 				RunConfig rc = new RunConfig(filePath, new HashMap<String, Integer>());
 				try {
 					new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");
-					new org.vanda.workflows.serialization.run.Storer().store(rc, filePath + ".run");
+					new org.vanda.run.serialization.Storer().store(rc, filePath + ".run");
 					// create WorkflowExecutionPreview from file
 					new WorkflowExecutionPreview(app, prof).createPreview(filePath);
 				} catch (Exception e) {

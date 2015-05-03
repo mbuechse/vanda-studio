@@ -1,13 +1,8 @@
-package org.vanda.execution.model;
+package org.vanda.run;
+
+import java.util.Date;
 
 public class RunStates {
-	public static interface RunTransitions {
-		void doCancel();
-
-		void doFinish();
-
-		void doRun();
-	}
 	
 	public interface RunEventListener {
 		void cancelled();
@@ -24,7 +19,41 @@ public class RunStates {
 	public static interface RunEvent {
 		public void doNotify(RunEventListener rsv);
 	}
-	
+
+	// the run state mainly offers methods for transitioning to another state
+	public interface RunState extends RunEvent {
+		public void cancel();
+		
+		public void finish();
+		
+		// perform background process for the state
+		public void process();
+
+		public void run();
+		
+		public String getString(Date date);
+	}
+
+	public static class RunEventId {
+		private final RunEvent event;
+		
+		private final String id;
+		
+		public RunEventId(RunEvent event, String id) {
+			this.event = event;
+			this.id = id;
+		}
+		
+		public RunEvent getEvent() {
+			return event;
+		}
+		
+		public String getId() {
+			return id;
+		}
+	}
+
+	// the following implementations are mainly used in combination with RunEventId
 	public static class RunStateCancelled implements RunEvent {
 		@Override
 		public void doNotify(RunEventListener rsv) {
@@ -63,25 +92,6 @@ public class RunStates {
 		@Override
 		public void doNotify(RunEventListener rsv) {
 			rsv.running();
-		}
-	}
-
-	public static class RunEventId {
-		private final RunEvent event;
-		
-		private final String id;
-		
-		public RunEventId(RunEvent event, String id) {
-			this.event = event;
-			this.id = id;
-		}
-		
-		public RunEvent getEvent() {
-			return event;
-		}
-		
-		public String getId() {
-			return id;
 		}
 	}
 }

@@ -1,11 +1,11 @@
-package org.vanda.workflows.serialization.run;
+package org.vanda.run.serialization;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.vanda.studio.modules.workflows.run.RunConfig;
+import org.vanda.run.RunConfig;
 
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 

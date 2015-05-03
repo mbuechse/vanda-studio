@@ -4,10 +4,10 @@ package org.vanda.studio.modules.previews;
 import javax.swing.JComponent;
 
 import org.vanda.fragment.model.Generator;
+import org.vanda.run.RunConfig;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.PreviewFactory;
 import org.vanda.studio.modules.workflows.impl.WorkflowExecution;
-import org.vanda.studio.modules.workflows.run.RunConfig;
 import org.vanda.util.ExceptionMessage;
 import org.vanda.util.Pair;
 import org.vanda.workflows.data.Database;
@@ -30,7 +30,7 @@ public class WorkflowExecutionPreview implements PreviewFactory {
 		RunConfig rc;
 		try {
 			phd = new Loader(app.getToolMetaRepository().getRepository()).load(filePath + ".xwf");
-			rc = new org.vanda.workflows.serialization.run.Loader().load(filePath + ".run");
+			rc = new org.vanda.run.serialization.Loader().load(filePath + ".run");
 			WorkflowExecution wfe = new WorkflowExecution(app, phd, prof, rc);
 			return wfe.getComponent();
 		} catch (Exception e) {

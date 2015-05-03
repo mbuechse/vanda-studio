@@ -1,4 +1,4 @@
-package org.vanda.workflows.serialization.run;
+package org.vanda.run.serialization;
 
 import org.vanda.xml.CompositeFieldProcessor;
 import org.vanda.xml.Factory;
