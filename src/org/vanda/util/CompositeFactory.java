@@ -3,8 +3,6 @@ package org.vanda.util;
 import java.util.HashMap;
 import java.util.Map;
 
-// this class is a quick hack
-// TODO improve
 public final class CompositeFactory<D, E> implements Factory<D, E> {
 	
 	private Map<Class<? extends D>, Factory<D, E>> registry = new HashMap<Class<? extends D>, Factory<D, E>>();
@@ -20,7 +18,5 @@ public final class CompositeFactory<D, E> implements Factory<D, E> {
 			throw new RuntimeException();
 		return factory.instantiate(d);
 	}
-	
-	
 	
 }

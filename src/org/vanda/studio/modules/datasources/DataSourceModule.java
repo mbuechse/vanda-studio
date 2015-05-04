@@ -14,6 +14,7 @@ import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
 import org.vanda.util.Action;
 import org.vanda.util.CompositeFactory;
+import org.vanda.util.Factory;
 import org.vanda.util.ListRepository;
 import org.vanda.util.Observer;
 
@@ -53,14 +54,14 @@ public class DataSourceModule implements Module {
 	private final class DataSourceEditorAction implements Action {
 
 		private final DataSourceRepository dataSourceRepository;
-		private final CompositeFactory<DataSource, DataSourceEditor> fr;
+		private final Factory<DataSource, DataSourceEditor> fr;
 		private final Collection<DataSourceFactory> dsf;
 		private final Application app;
 		private Observer<Application> shutdownObserver; // keep reference
 		private DataSourceRepositoryEditor ed;
 
 		public DataSourceEditorAction(Application app, DataSourceRepository dataSourceRepository,
-				CompositeFactory<DataSource, DataSourceEditor> fr, Collection<DataSourceFactory> dsf) {
+				Factory<DataSource, DataSourceEditor> fr, Collection<DataSourceFactory> dsf) {
 			this.app = app;
 			this.dataSourceRepository = dataSourceRepository;
 			this.fr = fr;
