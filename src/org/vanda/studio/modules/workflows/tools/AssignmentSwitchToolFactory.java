@@ -105,11 +105,11 @@ public class AssignmentSwitchToolFactory implements ToolFactory {
 			}
 
 			@Override
-			public void dataChange(Database d, Object key) {
-				if (active == false && d.getSize() > 0) {
+			public void dataChange(Database d, Integer key) {
+				if (!active && d.getSize() > 0) {
 					active = true;
 					cursorChange(d);
-				} else if (active == true && d.getSize() == 0) {
+				} else if (active && d.getSize() == 0) {
 					active = false;
 					cursorChange(d);
 				}

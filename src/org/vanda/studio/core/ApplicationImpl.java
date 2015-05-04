@@ -17,8 +17,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
-import org.vanda.datasources.DataSource;
-import org.vanda.datasources.Element;
+import org.vanda.datasources.DataSourceMount;
 import org.vanda.datasources.RootDataSource;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.PreviewFactory;
@@ -43,20 +42,18 @@ public final class ApplicationImpl implements Application {
 
 	protected UIMode mode;
 	protected final ArrayList<UIMode> modes;
-	// outdated protected final CompositeRepository<Tool>
-	// converterToolRepository;
 	// to keep a reference to the ModuleManager 
 	protected ModuleManager moduleManager;
 	protected final MultiplexObserver<Message> messageObservable;
 	protected final MultiplexObserver<Application> modeObservable;
 	// protected final CompositeRepository<Profile> profileRepository;
 	protected final HashMap<Type, PreviewFactory> previewFactories;
-	protected final CompositeRepository<Tool> toolRepository;
+	protected final CompositeRepository<String, DataSourceMount> dataSourceRepository;
+	protected final CompositeRepository<String, Tool> toolRepository;
 	protected final RootDataSource rootDataSource;
 	protected final MultiplexObserver<Application> shutdownObservable;
 	protected final WindowSystemImpl windowSystem;
 	protected final HashSet<Type> types;
-	// protected final Observer<ToolInterface> tiObserver;
 	protected final Observer<Tool> typeObserver;
 	protected final Properties properties;
 
@@ -75,8 +72,9 @@ public final class ApplicationImpl implements Application {
 		modeObservable = new MultiplexObserver<Application>();
 		// profileRepository = new CompositeRepository<Profile>();
 		previewFactories = new HashMap<Type, PreviewFactory>();
-		toolRepository = new CompositeRepository<Tool>();
-		rootDataSource = new RootDataSource(new HashMap<String, DataSource>());
+		dataSourceRepository = new CompositeRepository<String, DataSourceMount>();
+		toolRepository = new CompositeRepository<String, Tool>();
+		rootDataSource = new RootDataSource(dataSourceRepository);
 		shutdownObservable = new MultiplexObserver<Application>();
 		if (gui)
 			windowSystem = new WindowSystemImpl(this);
@@ -94,30 +92,19 @@ public final class ApplicationImpl implements Application {
 			@Override
 			public void notify(Tool event) {
 				for (Port p : event.getInputPorts()) {
-					Type t = p.getType();
-					t.getSubTypes(types);
+					p.getType().insertInto(types);
 				}
 				for (Port p : event.getOutputPorts()) {
-					Type t = p.getType();
-					t.getSubTypes(types);
+					p.getType().insertInto(types);
 				}
 			}
 
 		};
 
-		/*
-		 * tiObserver = new Observer<ToolInterface>() {
-		 * 
-		 * @Override public void notify(ToolInterface ti) { for (Tool t :
-		 * ti.getTools().getItems()) typeObserver.notify(t); }
-		 * 
-		 * };
-		 */
-
 		// converterToolRepository.getAddObservable().addObserver(typeObserver);
 		toolRepository.getAddObservable().addObserver(typeObserver);
 		
-		// Register a Monospace font that can display all unicode-Characters
+		// Register a Monospace font that can display all Unicode characters
 		if (gui) {
 			try {
 				URL url = ClassLoader.getSystemClassLoader().getResource(
@@ -149,8 +136,7 @@ public final class ApplicationImpl implements Application {
 		if (value.startsWith("/"))
 			return value;
 		if (value.contains(":")) {
-			Element el = Element.fromString(value);
-			return rootDataSource.getValue(el);
+			return rootDataSource.getValue(value);
 		}
 		if (new File(getProperty("inputPath") + value).exists())
 			return getProperty("inputPath") + value;
@@ -243,13 +229,8 @@ public final class ApplicationImpl implements Application {
 		});
 	}
 
-	/*
-	 * @Override public MetaRepository<Tool> getConverterToolMetaRepository() {
-	 * return converterToolRepository; }
-	 */
-
 	@Override
-	public MetaRepository<Tool> getToolMetaRepository() {
+	public MetaRepository<String, Tool> getToolMetaRepository() {
 		return toolRepository;
 	}
 
@@ -313,15 +294,9 @@ public final class ApplicationImpl implements Application {
 	public void registerPreviewFactory(Type type, PreviewFactory pf) {
 		previewFactories.put(type, pf);
 	}
-	/*
-	 * @Override public <T extends VObject> void addAction(Class<? extends T> c,
-	 * Action<T> a) { if (c == null || a == null) throw
-	 * IllegalArgumentException("Class or action cannot be null");
-	 * 
-	 * Set<Action<? extends VObject>> as = actions.get(c);
-	 * 
-	 * if (as == null) { as = new HashSet<Action<? extends VObject>>();
-	 * as.add(a); actions.put(c, as); } else { if (!as.add(a)) throw new
-	 * UnsupportedOperationException("cannot add action twice"); }
-	 */
+
+	@Override
+	public MetaRepository<String, DataSourceMount> getDataSourceMetaRepository() {
+		return dataSourceRepository;
+	}
 }

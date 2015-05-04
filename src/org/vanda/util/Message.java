@@ -3,7 +3,7 @@ package org.vanda.util;
 import java.util.Date;
 
 
-public interface Message extends HasActions, Selectable {
+public interface Message extends HasActions {
 
 	String getHeadline();
 	

@@ -13,28 +13,28 @@ import org.vanda.util.MetaRepository;
 
 public final class ProfileImpl implements Profile {
 
-	private final MetaRepository<FragmentCompiler> fragmentCompilers;
-	private final MetaRepository<FragmentLinker> fragmentLinkers;
-	private final MetaRepository<Fragment> fragmentTools;
+	private final MetaRepository<String, FragmentCompiler> fragmentCompilers;
+	private final MetaRepository<String, FragmentLinker> fragmentLinkers;
+	private final MetaRepository<String, Fragment> fragmentTools;
 
 	public ProfileImpl() {
-		fragmentCompilers = new CompositeRepository<FragmentCompiler>();
-		fragmentLinkers = new CompositeRepository<FragmentLinker>();
-		fragmentTools = new CompositeRepository<Fragment>();
+		fragmentCompilers = new CompositeRepository<String, FragmentCompiler>();
+		fragmentLinkers = new CompositeRepository<String, FragmentLinker>();
+		fragmentTools = new CompositeRepository<String, Fragment>();
 	}
 
 	@Override
-	public MetaRepository<FragmentCompiler> getFragmentCompilerMetaRepository() {
+	public MetaRepository<String, FragmentCompiler> getFragmentCompilerMetaRepository() {
 		return fragmentCompilers;
 	}
 
 	@Override
-	public MetaRepository<FragmentLinker> getFragmentLinkerMetaRepository() {
+	public MetaRepository<String, FragmentLinker> getFragmentLinkerMetaRepository() {
 		return fragmentLinkers;
 	}
 
 	@Override
-	public MetaRepository<Fragment> getFragmentToolMetaRepository() {
+	public MetaRepository<String, Fragment> getFragmentToolMetaRepository() {
 		return fragmentTools;
 	}
 

@@ -6,36 +6,37 @@ package org.vanda.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author buechse
  * 
  */
-public final class CompositeRepository<T> implements Repository<T>, MetaRepository<T> {
+public final class CompositeRepository<S, T> implements Repository<S, T>, MetaRepository<S, T> {
 
-	protected HashSet<Repository<? extends T>> repositories;
+	protected HashSet<Repository<S, ? extends T>> repositories;
 
-	protected MultiplexObserver<Repository<? extends T>> addRepositoryObservable;
-	private Observer<Repository<? extends T>> addRepositoryMultiplexObserver;
-	protected MultiplexObserver<Repository<? extends T>> removeRepositoryObservable;
-	private Observer<Repository<? extends T>> removeRepositoryMultiplexObserver;
+	protected MultiplexObserver<Repository<S, ? extends T>> addRepositoryObservable;
+	private Observer<Repository<S, ? extends T>> addRepositoryMultiplexObserver;
+	protected MultiplexObserver<Repository<S, ? extends T>> removeRepositoryObservable;
+	private Observer<Repository<S, ? extends T>> removeRepositoryMultiplexObserver;
 
 	protected MultiplexObserver<T> addObservable;
 	protected MultiplexObserver<T> modifyObservable;
 	protected MultiplexObserver<T> removeObservable;
 
 	public CompositeRepository() {
-		repositories = new HashSet<Repository<? extends T>>();
-		addRepositoryObservable = new MultiplexObserver<Repository<? extends T>>();
-		removeRepositoryObservable = new MultiplexObserver<Repository<? extends T>>();
+		repositories = new HashSet<Repository<S, ? extends T>>();
+		addRepositoryObservable = new MultiplexObserver<Repository<S, ? extends T>>();
+		removeRepositoryObservable = new MultiplexObserver<Repository<S, ? extends T>>();
 		addObservable = new MultiplexObserver<T>();
 		modifyObservable = new MultiplexObserver<T>();
 		removeObservable = new MultiplexObserver<T>();
 
-		addRepositoryMultiplexObserver = new Observer<Repository<? extends T>>() {
+		addRepositoryMultiplexObserver = new Observer<Repository<S, ? extends T>>() {
 
 			@Override
-			public void notify(Repository<? extends T> r) {
+			public void notify(Repository<S, ? extends T> r) {
 
 				// "forward" child events
 				r.getAddObservable().addObserver(addObservable);
@@ -50,10 +51,10 @@ public final class CompositeRepository<T> implements Repository<T>, MetaReposito
 		};
 		addRepositoryObservable.addObserver(addRepositoryMultiplexObserver);
 
-		removeRepositoryMultiplexObserver = new Observer<Repository<? extends T>>() {
+		removeRepositoryMultiplexObserver = new Observer<Repository<S, ? extends T>>() {
 
 			@Override
-			public void notify(Repository<? extends T> r) {
+			public void notify(Repository<S, ? extends T> r) {
 
 				// stop forwarding
 				r.getAddObservable().removeObserver(addObservable);
@@ -70,17 +71,17 @@ public final class CompositeRepository<T> implements Repository<T>, MetaReposito
 	}
 
 	@Override
-	public Observable<Repository<? extends T>> getRepositoryAddObservable() {
+	public Observable<Repository<S, ? extends T>> getRepositoryAddObservable() {
 		return addRepositoryObservable;
 	}
 
 	@Override
-	public Observable<Repository<? extends T>> getRepositoryRemoveObservable() {
+	public Observable<Repository<S, ? extends T>> getRepositoryRemoveObservable() {
 		return removeRepositoryObservable;
 	}
 
 	@Override
-	public <T1 extends T> void addRepository(Repository<T1> r) {
+	public <T1 extends T> void addRepository(Repository<S, T1> r) {
 		// fail-fast behavior
 		if (r == null)
 			throw new IllegalArgumentException("repository must not be null");
@@ -90,8 +91,9 @@ public final class CompositeRepository<T> implements Repository<T>, MetaReposito
 		addRepositoryObservable.notify(r);
 	}
 
-	public T getItem(String id) {
-		for (Repository<? extends T> r : repositories) {
+	@Override
+	public T getItem(S id) {
+		for (Repository<S, ? extends T> r : repositories) {
 			T item = r.getItem(id);
 			if (item != null)
 				return item;
@@ -99,28 +101,36 @@ public final class CompositeRepository<T> implements Repository<T>, MetaReposito
 		return null;
 	}
 
-	public boolean containsItem(String id) {
-		for (Repository<? extends T> r : repositories) {
+	@Override
+	public boolean containsItem(S id) {
+		for (Repository<S, ? extends T> r : repositories) {
 			if (r.containsItem(id))
 				return true;
 		}
 		return false;
 	}
 
+	public Collection<S> getKeys() {
+		Set<S> result = new HashSet<S>();
+		for (Repository<S, ? extends T> r : repositories)
+			result.addAll(r.getKeys());
+		return result;
+	}
+
 	public Collection<T> getItems() {
 		ArrayList<T> result = new ArrayList<T>();
-		for (Repository<? extends T> r : repositories)
+		for (Repository<S, ? extends T> r : repositories)
 			result.addAll(r.getItems());
 		return result;
 	}
 
 	public void refresh() {
-		for (Repository<? extends T> r : repositories)
+		for (Repository<S, ? extends T> r : repositories)
 			r.refresh();
 	}
 
 	@Override
-	public <T1 extends T> void removeRepository(Repository<T1> r) {
+	public <T1 extends T> void removeRepository(Repository<S, T1> r) {
 		// fail-fast behavior
 		if (r == null)
 			throw new IllegalArgumentException("repository must not be null");
@@ -144,7 +154,7 @@ public final class CompositeRepository<T> implements Repository<T>, MetaReposito
 	}
 
 	@Override
-	public Repository<T> getRepository() {
+	public Repository<S, T> getRepository() {
 		return this;
 	}
 

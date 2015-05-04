@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.vanda.fragment.bash.parser.ParserImpl;
-import org.vanda.util.Loader;
+import org.vanda.util.ExternalRepository;
 import org.vanda.util.Observer;
 
-public class ToolLoader implements Loader<ShellTool> {
+public class ToolLoader implements ExternalRepository.Loader<ShellTool> {
 
 	protected final String path;
 

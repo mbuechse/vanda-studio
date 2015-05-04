@@ -2,7 +2,7 @@ package org.vanda.workflows.toolinterfaces;
 
 import java.io.File;
 
-import org.vanda.util.Loader;
+import org.vanda.util.ExternalRepository;
 import org.vanda.util.Observer;
 import org.vanda.workflows.elements.Tool;
 import org.vanda.xml.ComplexFieldProcessor;
@@ -15,7 +15,7 @@ import org.vanda.xml.SingleElementHandlerFactory;
 import org.vanda.xml.StringBuilderFactory;
 import org.vanda.xml.TextFieldProcessor;
 
-public class ToolLoader implements Loader<Tool> {
+public class ToolLoader implements ExternalRepository.Loader<Tool> {
 
 	private final String path;
 

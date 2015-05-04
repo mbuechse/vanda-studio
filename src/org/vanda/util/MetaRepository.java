@@ -1,22 +1,22 @@
 package org.vanda.util;
 
 
-public interface MetaRepository<T> {
+public interface MetaRepository<S, T> {
 
-	<T1 extends T> void addRepository(Repository<T1> r);
+	<T1 extends T> void addRepository(Repository<S, T1> r);
 	
 	Observable<T> getAddObservable();
 	
 	Observable<T> getModifyObservable();
 	
-	Repository<T> getRepository();
+	Repository<S, T> getRepository();
 
 	Observable<T> getRemoveObservable();
 
-	Observable<Repository<? extends T>> getRepositoryAddObservable();
+	Observable<Repository<S, ? extends T>> getRepositoryAddObservable();
 
-	Observable<Repository<? extends T>> getRepositoryRemoveObservable();
+	Observable<Repository<S, ? extends T>> getRepositoryRemoveObservable();
 
-	<T1 extends T> void removeRepository(Repository<T1> r);
+	<T1 extends T> void removeRepository(Repository<S, T1> r);
 
 }

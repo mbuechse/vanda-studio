@@ -1,5 +1,7 @@
-package org.vanda.datasources;
+package org.vanda.studio.modules.datasources;
 
+import org.vanda.datasources.DataSource;
+import org.vanda.datasources.DirectoryDataSource;
 import org.vanda.types.Type;
 
 public class DirectoryDataSourceFactory implements DataSourceFactory {
@@ -14,7 +16,7 @@ public class DirectoryDataSourceFactory implements DataSourceFactory {
 	}
 	
 	@Override
-	public DataSource getDataSource() {
+	public DataSource createDataSource() {
 		return new DirectoryDataSource(type, path, filter);
 	}
 

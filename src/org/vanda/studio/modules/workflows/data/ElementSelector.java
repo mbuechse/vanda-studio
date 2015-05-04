@@ -1,4 +1,4 @@
-package org.vanda.datasources;
+package org.vanda.studio.modules.workflows.data;
 
 import javax.swing.JComponent;
 

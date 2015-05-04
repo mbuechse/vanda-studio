@@ -21,9 +21,9 @@ import org.vanda.xml.SimpleRootHandler;
 import org.vanda.xml.SingleElementHandlerFactory;
 
 public class Loader {
-	private final Repository<Tool> tr;
+	private final Repository<String, Tool> tr;
 
-	public Loader(Repository<Tool> tr) {
+	public Loader(Repository<String, Tool> tr) {
 		this.tr = tr;
 	}
 

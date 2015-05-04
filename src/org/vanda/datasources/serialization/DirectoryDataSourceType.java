@@ -23,7 +23,7 @@ public class DirectoryDataSourceType implements DataSourceType<DirectoryDataSour
 	@Override
 	public void store(PrettyPrintWriter ppw, DirectoryDataSource ds) {
 		ppw.startNode("directory");
-		ppw.addAttribute("path", ds.dir.getPath());
+		ppw.addAttribute("path", ds.path);
 		ppw.addAttribute("filter", ds.filter);
 		ppw.addAttribute("type", ds.type.toString());
 		ppw.endNode();

@@ -10,10 +10,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.vanda.datasources.ElementSelector;
 import org.vanda.datasources.RootDataSource;
-import org.vanda.datasources.Element;
 import org.vanda.studio.app.Application;
+import org.vanda.studio.modules.workflows.data.Element;
+import org.vanda.studio.modules.workflows.data.ElementSelector;
+import org.vanda.studio.modules.workflows.data.RootElementSelector;
+import org.vanda.util.FactoryRegistry;
 import org.vanda.util.Observer;
 import org.vanda.workflows.data.Database;
 import org.vanda.workflows.data.Databases.DatabaseEvent;
@@ -25,13 +27,15 @@ import org.vanda.workflows.hyper.MutableWorkflow;
 
 public class LiteralEditor implements ElementEditorFactory<Literal> {
 
-	private RootDataSource rds;
+	private final RootDataSource rds;
+	private final FactoryRegistry fr;
 
-	public LiteralEditor(Application app) {
+	public LiteralEditor(Application app, FactoryRegistry fr) {
 		rds = app.getRootDataSource();
+		this.fr = fr;
 	}
 
-	public class ElementObserver implements Observer<org.vanda.datasources.Elements.ElementEvent<Element>> {
+	public class ElementObserver implements Observer<org.vanda.studio.modules.workflows.data.Element> {
 		final Database d;
 		final Literal l;
 
@@ -41,12 +45,11 @@ public class LiteralEditor implements ElementEditorFactory<Literal> {
 		}
 
 		@Override
-		public void notify(org.vanda.datasources.Elements.ElementEvent<Element> event) {
+		public void notify(org.vanda.studio.modules.workflows.data.Element e) {
 			// event.doNotify(this);
-			Element e = event.getElement();
-			String s = e.toString();
+			String s = e.getValue();
 			if (!s.equals(d.get(l.getKey()))) {
-				l.setType(rds.getType(e));
+				l.setType(rds.getType(e.getValue()));
 				d.put(l.getKey(), s);
 			}
 		}
@@ -95,11 +98,9 @@ public class LiteralEditor implements ElementEditorFactory<Literal> {
 		public void cursorChange(Database d) {
 			String s = d.get(l.getKey());
 			if (s != null && !("").equals(s)) {
-				Element el = Element.fromString(d.get(l.getKey()));
 				e.beginUpdate();
 				try {
-					e.setPrefix(el.getPrefix());
-					e.setValue(el.getValue());
+					e.setValue(d.get(l.getKey()));
 				} finally {
 					e.endUpdate();
 				}
@@ -107,13 +108,11 @@ public class LiteralEditor implements ElementEditorFactory<Literal> {
 		}
 
 		@Override
-		public void dataChange(Database d, Object key) {
+		public void dataChange(Database d, Integer key) {
 			if (key.equals(l.getKey())) {
-				Element el = Element.fromString(d.get(l.getKey()));
 				e.beginUpdate();
 				try {
-					e.setPrefix(el.getPrefix());
-					e.setValue(el.getValue());
+					e.setValue(d.get(key));
 				} finally {
 					e.endUpdate();
 				}
@@ -137,14 +136,14 @@ public class LiteralEditor implements ElementEditorFactory<Literal> {
 			}
 		});
 
-		final Element e = Element.fromString(d.get(l.getKey()));
+		final Element e = new Element(d.get(l.getKey()));
 		ElementObserver elemObs = new ElementObserver(d, l);
 		e.getObservable().addObserver(elemObs);
 		LiteralObserver litObs = new LiteralObserver(value);
 		l.getObservable().addObserver(litObs);
 		DatabaseObserver dbObs = new DatabaseObserver(l, e);
 		d.getObservable().addObserver(dbObs);
-		ElementSelector selector = rds.createSelector();
+		ElementSelector selector = new RootElementSelector(rds, fr);
 		selector.setElement(e);
 
 		JPanel editor = new JPanel();

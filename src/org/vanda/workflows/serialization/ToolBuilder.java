@@ -11,7 +11,7 @@ public class ToolBuilder {
 	
 	public String id;
 	
-	public Tool build(Repository<Tool> tr) {
+	public Tool build(Repository<String, Tool> tr) {
 		return tr.getItem(id);
 	}
 	

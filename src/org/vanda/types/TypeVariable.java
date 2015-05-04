@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.vanda.util.Pair;
 
-public final class TypeVariable extends Type {
+public final class TypeVariable implements Type {
 	
 	public final Object variable;
 	
@@ -77,8 +77,7 @@ public final class TypeVariable extends Type {
 	}
 
 	@Override
-	public Set<Type> getSubTypes(Set<Type> types) {
-		return types;
+	public void insertInto(Set<Type> types) {
 	}
 
 }

@@ -8,11 +8,11 @@ public interface Profile extends RepositoryItem {
 	
 	FragmentCompiler getCompiler(Type t);
 	
-	MetaRepository<FragmentCompiler> getFragmentCompilerMetaRepository();
+	MetaRepository<String, FragmentCompiler> getFragmentCompilerMetaRepository();
 	
-	MetaRepository<FragmentLinker> getFragmentLinkerMetaRepository();
+	MetaRepository<String, FragmentLinker> getFragmentLinkerMetaRepository();
 	
-	MetaRepository<Fragment> getFragmentToolMetaRepository();
+	MetaRepository<String, Fragment> getFragmentToolMetaRepository();
 	
 	FragmentLinker getLinker(String id);
 	

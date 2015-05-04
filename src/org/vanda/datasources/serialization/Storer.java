@@ -3,11 +3,11 @@ package org.vanda.datasources.serialization;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.vanda.datasources.DataSource;
-import org.vanda.datasources.RootDataSource;
+import org.vanda.datasources.DataSourceMount;
 
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 
@@ -20,14 +20,14 @@ public class Storer {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void store(RootDataSource w, String filename) throws Exception {
+	public void store(Collection<DataSourceMount> w, String filename) throws Exception {
 		Writer writer = new FileWriter(new File(filename));
 		final PrettyPrintWriter ppw = new PrettyPrintWriter(writer);
 		ppw.startNode("root");
-		for (Map.Entry<String, DataSource> j : w.mtab()) {
+		for (DataSourceMount j : w) {
 			ppw.startNode("mount");
-			ppw.addAttribute("path", j.getKey());
-			DataSource ds = j.getValue();
+			ppw.addAttribute("path", j.id);
+			DataSource ds = j.ds;
 			for (DataSourceType<? extends DataSource> dst : types) {
 				// XXX use hash map
 				if (ds.getClass().equals(dst.getDataSourceClass())) {

@@ -86,8 +86,6 @@ public final class SaveTool implements ToolFactory {
 				if (!filePath.endsWith(".xwf"))
 					filePath = filePath + ".xwf";
 				try {
-//					Serialization ser = new Serialization(wfe.getApplication()
-//							.getToolMetaRepository().getRepository());
 					new Storer().store(wfe.getView().getWorkflow(), wfe.getDatabase(), filePath);
 				} catch (Exception e) {
 					wfe.getApplication().sendMessage(new ExceptionMessage(e));

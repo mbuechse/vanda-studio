@@ -9,5 +9,4 @@ public interface DataSourceType<DS extends DataSource> {
 	Class<DS> getDataSourceClass();
 	SingleElementHandlerFactory<MountBuilder> load();
 	void store(PrettyPrintWriter ppw, DS ds);
-
 }

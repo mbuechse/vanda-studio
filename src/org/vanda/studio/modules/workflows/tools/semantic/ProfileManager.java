@@ -27,7 +27,7 @@ public final class ProfileManager {
 	private JPanel contentPane;
 	private final ProfileOpener profOpener;
 
-	public ProfileManager(Application app, Repository<Profile> repository, ProfileOpener profOpener) {
+	public ProfileManager(Application app, Repository<String, Profile> repository, ProfileOpener profOpener) {
 		this.app = app;
 		this.profOpener = profOpener;
 		// this.repository = repository;
@@ -73,11 +73,11 @@ public final class ProfileManager {
 	private static final class RepositoryListModel<T extends RepositoryItem>
 			implements ListModel, Observer<T> {
 
-		private final Repository<T> repository;
+		private final Repository<String, T> repository;
 		private List<T> items;
 		private final Set<ListDataListener> listeners;
 
-		public RepositoryListModel(Repository<T> repository) {
+		public RepositoryListModel(Repository<String, T> repository) {
 			this.repository = repository;
 			listeners = new HashSet<ListDataListener>();
 			items = new ArrayList<T>(repository.getItems());

@@ -42,7 +42,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 
-import org.vanda.datasources.Element;
 import org.vanda.datasources.RootDataSource;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.inspector.ElementEditorFactories;
@@ -361,7 +360,7 @@ public class AssignmentTableToolFactory implements ToolFactory {
 			String val = db.getRow(arg0).get(lit.getKey());
 			if (val == null)
 				return true;
-			return !rds.getType(Element.fromString(val)).equals(lit.getType());
+			return !rds.getType(val).equals(lit.getType());
 		}
 		
 		public boolean hasAValue(int arg0, int arg1) {
@@ -755,7 +754,7 @@ public class AssignmentTableToolFactory implements ToolFactory {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					db.addRow();
+					db.addRow(true);
 					db.setCursor(db.getSize() - 1);
 				}
 
@@ -859,7 +858,7 @@ public class AssignmentTableToolFactory implements ToolFactory {
 		}
 
 		@Override
-		public void dataChange(Database d, Object key) {
+		public void dataChange(Database d, Integer key) {
 			updateAll();
 		}
 
@@ -917,7 +916,7 @@ public class AssignmentTableToolFactory implements ToolFactory {
 			}
 
 			@Override
-			public void dataChange(Database d, Object key) {
+			public void dataChange(Database d, Integer key) {
 				if (active && d.getSize() == 0) {
 					wfe.disableAction(a);
 					active = false;

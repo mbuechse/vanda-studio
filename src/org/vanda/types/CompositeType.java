@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.vanda.util.Pair;
 
-public final class CompositeType extends Type {
+public final class CompositeType implements Type {
 
 	public final String constructor;
 
@@ -119,11 +119,10 @@ public final class CompositeType extends Type {
 	}
 
 	@Override
-	public Set<Type> getSubTypes(Set<Type> types) {
+	public void insertInto(Set<Type> types) {
 		types.add(this);
 		for (Type t : children)
-			t.getSubTypes(types);
-		return types;
+			t.insertInto(types);
 	}
 
 }

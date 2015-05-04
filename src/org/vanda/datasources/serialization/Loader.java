@@ -1,9 +1,10 @@
 package org.vanda.datasources.serialization;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
-import org.vanda.datasources.RootDataSource;
+import org.vanda.datasources.DataSourceMount;
 import org.vanda.util.Observer;
 import org.vanda.xml.ComplexFieldProcessor;
 import org.vanda.xml.CompositeElementHandlerFactory;
@@ -16,11 +17,9 @@ import org.vanda.xml.SingleElementHandlerFactory;
 
 public class Loader {
 
-	private final RootDataSource rds;
 	private final List<DataSourceType<?>> types;
 
-	public Loader(RootDataSource rds, List<DataSourceType<?>> types) {
-		this.rds = rds;
+	public Loader(List<DataSourceType<?>> types) {
 		this.types = types;
 	}
 
@@ -32,43 +31,62 @@ public class Loader {
 		return cehf;
 	}
 
-	private ElementHandlerFactory<RootDataSource> mountHandler(ElementHandlerFactory<MountBuilder> sourceHandler) {
-		ComplexFieldProcessor<RootDataSource, MountBuilder> xxx = new ComplexFieldProcessor<RootDataSource, MountBuilder>() {
+	private ElementHandlerFactory<List<DataSourceMount>> mountHandler(ElementHandlerFactory<MountBuilder> sourceHandler) {
+		ComplexFieldProcessor<List<DataSourceMount>, MountBuilder> xxx = new ComplexFieldProcessor<List<DataSourceMount>, MountBuilder>() {
 			@Override
-			public void process(RootDataSource rds1, MountBuilder mb) {
-				rds1.mount(mb.prefix, mb.ds);
+			public void process(List<DataSourceMount> rds1, MountBuilder mb) {
+				if (mb.ds != null)  // formerly, Double and Integer got stored, but that was a mistake!
+					rds1.add(new DataSourceMount(mb.prefix, mb.ds));
 			}
 		};
-		return new SimpleElementHandlerFactory<RootDataSource, MountBuilder>("mount", sourceHandler,
+		return new SimpleElementHandlerFactory<List<DataSourceMount>, MountBuilder>("mount", sourceHandler,
 				MountBuilder.createFactory(), xxx, MountBuilder.createProcessor(), null);
 	}
 
-	private SingleElementHandlerFactory<Observer<RootDataSource>> rootHandler(
-			ElementHandlerFactory<RootDataSource> mountHandler) {
-		Factory<RootDataSource> xxx = new Factory<RootDataSource>() {
+	private SingleElementHandlerFactory<Observer<List<DataSourceMount>>> rootHandler(
+			ElementHandlerFactory<List<DataSourceMount>> mountHandler) {
+		Factory<List<DataSourceMount>> xxx = new Factory<List<DataSourceMount>>() {
 			@Override
-			public RootDataSource create() {
-				return rds;
+			public List<DataSourceMount> create() {
+				return new LinkedList<DataSourceMount>();
 			}
 		};
-		return new SimpleElementHandlerFactory<Observer<RootDataSource>, RootDataSource>("root", mountHandler, xxx,
-				null, null, null);
+		return new SimpleElementHandlerFactory<Observer<List<DataSourceMount>>, List<DataSourceMount>>("root",
+				mountHandler, xxx, new ComplexFieldProcessor<Observer<List<DataSourceMount>>, List<DataSourceMount>>() {
+					@Override
+					public void process(Observer<List<DataSourceMount>> b1, List<DataSourceMount> b2) {
+						b1.notify(b2);
+					}
+				}, null, null);
 	}
 
-	private ParserImpl<RootDataSource> createParser() {
-		ParserImpl<RootDataSource> p = new ParserImpl<RootDataSource>(null);
-		p.setRootState(new SimpleRootHandler<RootDataSource>(p, rootHandler(mountHandler(sourceHandler()))));
+	private ParserImpl<List<DataSourceMount>> createParser(Observer<List<DataSourceMount>> o) {
+		ParserImpl<List<DataSourceMount>> p = new ParserImpl<List<DataSourceMount>>(o);
+		p.setRootState(new SimpleRootHandler<List<DataSourceMount>>(p, rootHandler(mountHandler(sourceHandler()))));
 		return p;
 	}
 
-	public void load(String filename) throws Exception {
-		ParserImpl<RootDataSource> p = createParser();
+	public List<DataSourceMount> load(String filename) throws Exception {
+		MyObserver o = new MyObserver();
+		ParserImpl<List<DataSourceMount>> p = createParser(o);
 		try {
 			p.init(new File(filename));
 			p.process();
 		} finally {
 			p.done();
 		}
+		return o.value;
+	}
+
+	private static class MyObserver implements Observer<List<DataSourceMount>> {
+
+		List<DataSourceMount> value;
+
+		@Override
+		public void notify(List<DataSourceMount> event) {
+			value = event;
+		}
+
 	}
 
 }

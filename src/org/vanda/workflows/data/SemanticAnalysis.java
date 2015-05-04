@@ -62,7 +62,7 @@ public class SemanticAnalysis implements Observer<Object>, DatabaseListener<Data
 	}
 
 	@Override
-	public void dataChange(Database d, Object key) {
+	public void dataChange(Database d, Integer key) {
 		assignment = d.getRow(d.getCursor());  // probably unnecessary
 		updateDFA();
 	}

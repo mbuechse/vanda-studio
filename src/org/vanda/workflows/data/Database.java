@@ -3,6 +3,7 @@ package org.vanda.workflows.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.vanda.util.MultiplexObserver;
@@ -27,6 +28,7 @@ public final class Database {
 		cursor = 0;
 		observable = new MultiplexObserver<DatabaseEvent<Database>>();
 		events = new LinkedList<DatabaseEvent<Database>>();
+		addRow(false);
 	}
 
 	public void beginUpdate() {
@@ -93,34 +95,39 @@ public final class Database {
 		return assignments.get(location);
 	}
 
-	public void addRow() {
+	public Map<Integer, String> addRow(boolean copyContent) {
+		HashMap<Integer, String> row = new HashMap<Integer, String>();
 		beginUpdate();
 		try {
-			HashMap<Integer, String> row = new HashMap<Integer, String>();
 			row.put(new Integer(0), Integer.toHexString(new Object().hashCode()));
-			for (Entry<Integer, String> e : assignments.get(cursor).entrySet()) {
-				if (e.getKey() != 0) {
-					row.put(e.getKey(), e.getValue());
-					events.add(new DataChange<Database>(this, e.getKey()));
+			if (copyContent) {
+				for (Entry<Integer, String> e : assignments.get(cursor).entrySet()) {
+					if (e.getKey() != 0) {
+						row.put(e.getKey(), e.getValue());
+						events.add(new DataChange<Database>(this, e.getKey()));
+					}
 				}
+				// copies current name and adds "(i)" as suffix
+				// where i is the smallest integer > 1 that is not used
+				String nameProto = assignmentNames.get(cursor);
+				if (nameProto.matches(".*[(]\\d+[)]")) {
+					int i = nameProto.lastIndexOf('(');
+					nameProto = nameProto.subSequence(0, i).toString();
+				}
+				int i;
+				for (i = 2; ; ++i) {
+					if (!assignmentNames.contains(nameProto + "(" + i + ")"))
+						break;				
+				}
+				assignmentNames.add(nameProto + "(" + i + ")");
+			} else {
+				assignmentNames.add("new assignment");
 			}
 			assignments.add(row);
-			// copies current name and adds "(i)" as suffix
-			// where i is the smallest integer > 1 that is not used
-			String nameProto = assignmentNames.get(cursor);
-			if (nameProto.matches(".*[(]\\d+[)]")) {
-				int i = nameProto.lastIndexOf('(');
-				nameProto = nameProto.subSequence(0, i).toString();
-			}
-			int i;
-			for (i = 2; ; ++i) {
-				if (!assignmentNames.contains(nameProto + "(" + i + ")"))
-					break;				
-			}
-			assignmentNames.add(nameProto + "(" + i + ")");
 		} finally {
 			endUpdate();
 		}
+		return row;
 	}
 
 	public void delRow() {
@@ -151,7 +158,7 @@ public final class Database {
 	}
 
 	public boolean hasNext() {
-		return cursor < assignments.size() - 1;
+		return cursor < assignments.size();
 	}
 
 	public boolean hasPrev() {
@@ -187,7 +194,7 @@ public final class Database {
 	}
 
 	public void put(Integer key, String value) {
-		HashMap<Integer, String> m;
+		Map<Integer, String> row;
 		beginUpdate();
 		try {
 			String oldvalue = null;
@@ -196,13 +203,14 @@ public final class Database {
 					oldvalue = assignments.get(cursor).remove(key);
 			} else {
 				if (cursor == assignments.size()) {
-					m = new HashMap<Integer, String>();
+					row = addRow(false);
+					/*m = new HashMap<Integer, String>();
 					m.put(new Integer(0), Integer.toHexString(new Object().hashCode()));
 					assignments.add(m);
-					assignmentNames.add("");
+					assignmentNames.add("");*/
 				} else
-					m = assignments.get(cursor);
-				oldvalue = m.put(key, value);
+					row = assignments.get(cursor);
+				oldvalue = row.put(key, value);
 			}
 			if (value != oldvalue)
 				events.add(new DataChange<Database>(this, key));

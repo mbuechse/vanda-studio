@@ -26,7 +26,6 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SpinnerNumberModel;
 
-import org.vanda.datasources.Element;
 import org.vanda.datasources.RootDataSource;
 import org.vanda.workflows.data.Database;
 import org.vanda.workflows.elements.Literal;
@@ -284,7 +283,7 @@ public class RunConfigEditor {
 				String val = row.get(l.getKey());
 				if (val == null)
 					return false;
-				if (!rds.getType(Element.fromString(val)).equals(l.getType()))
+				if (!rds.getType(val).equals(l.getType()))
 					return false;
 				int i = val.indexOf(':');
 				if (i == -1 || i == val.length() - 1)

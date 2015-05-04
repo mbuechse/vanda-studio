@@ -8,6 +8,10 @@ import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.vanda.datasources.DataSource;
+import org.vanda.datasources.DirectoryDataSource;
+import org.vanda.datasources.DoubleDataSource;
+import org.vanda.datasources.IntegerDataSource;
 import org.vanda.fragment.bash.RootLinker;
 import org.vanda.fragment.bash.ShellCompiler;
 import org.vanda.fragment.bash.ShellTool;
@@ -19,6 +23,10 @@ import org.vanda.fragment.model.FragmentLinker;
 import org.vanda.fragment.model.Profile;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
+import org.vanda.studio.modules.workflows.data.DirectorySelector;
+import org.vanda.studio.modules.workflows.data.DoubleSelector;
+import org.vanda.studio.modules.workflows.data.ElementSelector;
+import org.vanda.studio.modules.workflows.data.IntegerSelector;
 import org.vanda.studio.modules.workflows.impl.WorkflowEditorImpl;
 import org.vanda.studio.modules.workflows.inspector.ElementEditorFactories;
 import org.vanda.studio.modules.workflows.inspector.LiteralEditor;
@@ -36,11 +44,16 @@ import org.vanda.studio.modules.workflows.tools.semantic.ProfileManager.ProfileO
 import org.vanda.util.Action;
 import org.vanda.util.ExceptionMessage;
 import org.vanda.util.ExternalRepository;
+import org.vanda.util.FactoryRegistry;
 import org.vanda.util.ListRepository;
 import org.vanda.util.Pair;
 import org.vanda.workflows.data.Database;
 import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.serialization.Loader;
+
+// TODO this module needs a "application object model" of its own
+// essentially, it needs to have submodules
+// dependency injection something something
 
 public class WorkflowModule implements Module {
 
@@ -90,11 +103,16 @@ public class WorkflowModule implements Module {
 			er = new ExternalRepository<ShellTool>(new ToolLoader(path));
 			profile.getFragmentToolMetaRepository().addRepository(er);
 			er.refresh();
+			
+			FactoryRegistry<DataSource, ElementSelector> fr = new FactoryRegistry<DataSource, ElementSelector>();
+			fr.registry.put(DoubleDataSource.class, new DoubleSelector.Factory());
+			fr.registry.put(IntegerDataSource.class, new IntegerSelector.Factory());
+			fr.registry.put(DirectoryDataSource.class, new DirectorySelector.Factory());
 
 			eefs = new ElementEditorFactories();
 			eefs.workflowFactories
 					.add(new org.vanda.studio.modules.workflows.inspector.WorkflowEditor());
-			eefs.literalFactories.add(new LiteralEditor(app));
+			eefs.literalFactories.add(new LiteralEditor(app, fr));
 
 			LinkedList<SemanticsToolFactory> srep = new LinkedList<SemanticsToolFactory>();
 //			srep.add(new RunTool(new GeneratorImpl(app, profile)));

@@ -6,6 +6,7 @@ package org.vanda.studio.app;
 import java.util.Collection;
 import java.util.Set;
 
+import org.vanda.datasources.DataSourceMount;
 import org.vanda.datasources.RootDataSource;
 import org.vanda.types.Type;
 import org.vanda.util.Message;
@@ -20,24 +21,7 @@ import org.vanda.workflows.elements.Tool;
  */
 public interface Application {
 
-	/**
-	 */
 	String createUniqueId();
-
-	/* outdated
-	 * Returns the repository of converter tool repositories. Converter tools
-	 * may be used by some linkers to convert port types. A converter tool
-	 * must have exactly one input port and exactly one output port.
-	 * Modules should add or remove their own repositories here.
-	 * 
-	MetaRepository<Tool> getConverterToolMetaRepository();
-	 */
-
-	/**
-	 * Returns the repository of profile repositories. Modules should add or
-	 * remove their own repositories here.
-	 */
-	// MetaRepository<Profile> getProfileMetaRepository();
 	
 	PreviewFactory getPreviewFactory(Type type);
 
@@ -47,7 +31,13 @@ public interface Application {
 	 * Returns the repository of tool interface repositories. Modules should
 	 * add or remove their own repositories here.
 	 */
-	MetaRepository<Tool> getToolMetaRepository();
+	MetaRepository<String, Tool> getToolMetaRepository();
+	
+	/**
+	 * Returns the repository of DataSource repositories. Modules should
+	 * add or remove their own repositories here.
+	 */
+	MetaRepository<String, DataSourceMount> getDataSourceMetaRepository();
 	
 	RootDataSource getRootDataSource();
 	

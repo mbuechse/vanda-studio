@@ -7,7 +7,10 @@ import java.util.Map;
 import org.vanda.workflows.hyper.Job;
 
 /**
- * Stores all information that is relevant for the execution system. 
+ * Stores all information that is relevant for the execution system.
+ * TODO this class is /specific/ to the execution system
+ * it should be named ShellCompilerRunConfig
+ * TODO store path information for the data sources 
  * @author kgebhardt
  *
  */

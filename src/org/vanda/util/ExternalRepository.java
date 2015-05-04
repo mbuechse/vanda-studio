@@ -6,6 +6,7 @@ package org.vanda.util;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 
 /**
@@ -13,66 +14,18 @@ import java.util.LinkedList;
  *
  */
 public class ExternalRepository<T extends RepositoryItem>
-		implements Repository<T> {
-	MultiplexObserver<T> addObservable;
-	MultiplexObserver<T> removeObservable;
-	MultiplexObserver<T> modifyObservable;
-	HashMap<String, T> items;
-	Loader<T> loader;
+		extends AbstractRepository<String, T> {
 
-	/**
-	 * @param l
-	 *            A <code>Loader</code>, may be <code>null</code>
-	 */
-	public ExternalRepository(Loader<T> l) {
-		addObservable = new MultiplexObserver<T>();
-		modifyObservable = new MultiplexObserver<T>();
-		removeObservable = new MultiplexObserver<T>();
-		items = new HashMap<String, T>();
-		loader = l;
+	public interface Loader<T> {
+		/** scans for items and notifies caller per item */
+		void load(Observer<T> o);
 	}
 
-	public void addItem(T newitem) {
-		T item = items.remove(newitem.getId());
-		if (item != newitem)
-			removeObservable.notify(item);
-		items.put(newitem.getId(), newitem);
-		if (item != newitem)
-			addObservable.notify(newitem);
-	}
+	private final Loader<T> loader;
 
-	@Override
-	public boolean containsItem(String id) {
-		return items.containsKey(id);
-	}
-
-	@Override
-	public Observable<T> getAddObservable() {
-		return addObservable;
-	}
-
-	@Override
-	public Observable<T> getRemoveObservable() {
-		return removeObservable;
-	}
-
-	@Override
-	public Observable<T> getModifyObservable() {
-		return modifyObservable;
-	}
-
-	@Override
-	public T getItem(String id) {
-		return items.get(id);
-	}
-
-	@Override
-	public Collection<T> getItems() {
-		return items.values();
-	}
-
-	public Observer<T> getModifyObserver() {
-		return modifyObservable;
+	public ExternalRepository(Loader<T> loader) {
+		super();
+		this.loader = loader;
 	}
 
 	@Override
@@ -85,19 +38,15 @@ public class ExternalRepository<T extends RepositoryItem>
 			Util.notifyAll(removeObservable, r.getRemoves());
 		}
 	}
-	
-	public void setLoader(Loader<T> l) {
-		loader = l;
-	}
 
 	protected static class RefreshHelper<T extends RepositoryItem>
 			implements Observer<T> {
 		protected LinkedList<T> adds;
 		protected LinkedList<T> removes;
-		protected HashMap<String, T> items;
-		protected HashMap<String, T> newitems;
+		protected Map<String, T> items;
+		protected Map<String, T> newitems;
 
-		public RefreshHelper(HashMap<String, T> items) {
+		public RefreshHelper(Map<String, T> items) {
 			adds = new LinkedList<T>();
 			removes = new LinkedList<T>();
 			this.items = items;
@@ -123,7 +72,7 @@ public class ExternalRepository<T extends RepositoryItem>
 			return adds;
 		}
 
-		public HashMap<String, T> getNewItems() {
+		public Map<String, T> getNewItems() {
 			return newitems;
 		}
 
