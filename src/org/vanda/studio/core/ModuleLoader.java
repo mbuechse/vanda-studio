@@ -5,7 +5,9 @@ package org.vanda.studio.core;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -57,20 +59,27 @@ public class ModuleLoader {
 				}
 			}
 			URLClassLoader clazzLoader = new URLClassLoader(urls.toArray(new URL[0]));
-	
-			for (File f : files) {
-				List<String> classNames = getClassNames(f.getAbsolutePath());
-				for (String cn : classNames) {
-					try {
-						Class<?> clazz = clazzLoader.loadClass(cn);
-						if (clazz != null && Module.class.isAssignableFrom(clazz)) {
-							modules.add((Module)clazz.newInstance());
+			try {
+				for (File f : files) {
+					List<String> classNames = getClassNames(f.getAbsolutePath());
+					for (String cn : classNames) {
+						try {
+							Class<?> clazz = clazzLoader.loadClass(cn);
+							if (clazz != null && Module.class.isAssignableFrom(clazz)) {
+								modules.add((Module)clazz.newInstance());
+							}
+						}
+						catch (Exception e) {
+							//log.error("Error on instantiating module connector '"
+							//		+ clazz.getName() + "'; skipping module...", e);
 						}
 					}
-					catch (Exception e) {
-						//log.error("Error on instantiating module connector '"
-						//		+ clazz.getName() + "'; skipping module...", e);
-					}
+				}
+			} finally {
+				try {
+					clazzLoader.close();
+				} catch (IOException e) {
+					// ignore
 				}
 			}
 		}
@@ -80,23 +89,36 @@ public class ModuleLoader {
 		ArrayList<String> classes = new ArrayList<String>();
 		
 		try {
-			JarInputStream jarFile = new JarInputStream(new FileInputStream(
-					jarName));
-			JarEntry jarEntry = jarFile.getNextJarEntry();
-			while (jarEntry != null) {
-				if (jarEntry.getName().endsWith(".class")) {
-					String cn = jarEntry.getName().replaceAll("/", "\\.");
-					// remove ".class"
-					classes.add(cn.substring(0, cn.length() - 6));
+			FileInputStream fis = new FileInputStream(jarName);
+			try {
+				JarInputStream jarFile = new JarInputStream(fis);
+				try {
+					JarEntry jarEntry = jarFile.getNextJarEntry();
+					while (jarEntry != null) {
+						if (jarEntry.getName().endsWith(".class")) {
+							String cn = jarEntry.getName().replaceAll("/", "\\.");
+							// remove ".class"
+							classes.add(cn.substring(0, cn.length() - 6));
+						}
+						jarEntry = jarFile.getNextJarEntry();
+					}
+				} catch (Exception e) {
+					//log.error("error during processing of jar '" + jarName
+					//		+ "'; skipping...", e);
+				} finally {
+					jarFile.close();
 				}
-				jarEntry = jarFile.getNextJarEntry();
+			} catch (IOException e) {
+				// ignore
+				e.printStackTrace();
+			} finally {
+				fis.close();
 			}
+		} catch (FileNotFoundException e) {
+			// ignore
+		} catch (IOException e) {
+			// ignore
 		}
-		catch (Exception e) {
-			//log.error("error during processing of jar '" + jarName
-			//		+ "'; skipping...", e);
-		}
-
 		return classes;
 	}
 }

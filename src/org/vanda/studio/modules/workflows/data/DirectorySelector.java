@@ -20,12 +20,12 @@ public class DirectorySelector implements ElementSelector, Observer<Element> {
 
 	private final DirectoryDataSource directoryDataSource;
 	private Element element;
-	private JList selector;
+	private JList<String> selector;
 	private JScrollPane scroll;
 
 	public DirectorySelector(DirectoryDataSource directoryDataSource) {
 		this.directoryDataSource = directoryDataSource;
-		selector = new JList();
+		selector = new JList<String>();
 		String[] l = new File(this.directoryDataSource.path).list(new FilenameFilter() {
 			@Override
 			public boolean accept(File _, String name) {

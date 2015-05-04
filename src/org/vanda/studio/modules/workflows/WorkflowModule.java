@@ -77,16 +77,14 @@ public class WorkflowModule implements Module {
 		private final LinkedList<ToolFactory> toolFactories;
 
 		public static String TOOL_PATH_KEY = "profileToolPath";
-		public static String TOOL_PATH_DEFAULT = System
-				.getProperty("user.home") + "/.vanda/functions/";
+		public static String TOOL_PATH_DEFAULT = System.getProperty("user.home") + "/.vanda/functions/";
 
 		public WorkflowModuleInstance(Application a) {
 			app = a;
 			profile = new ProfileImpl();
 			ListRepository<FragmentCompiler> compilers = new ListRepository<FragmentCompiler>();
 			compilers.addItem(new ShellCompiler());
-			profile.getFragmentCompilerMetaRepository()
-					.addRepository(compilers);
+			profile.getFragmentCompilerMetaRepository().addRepository(compilers);
 			ListRepository<FragmentLinker> linkers = new ListRepository<FragmentLinker>();
 			linkers.addItem(new RootLinker());
 			profile.getFragmentLinkerMetaRepository().addRepository(linkers);
@@ -103,21 +101,20 @@ public class WorkflowModule implements Module {
 			er = new ExternalRepository<ShellTool>(new ToolLoader(path));
 			profile.getFragmentToolMetaRepository().addRepository(er);
 			er.refresh();
-			
+
 			FactoryRegistry<DataSource, ElementSelector> fr = new FactoryRegistry<DataSource, ElementSelector>();
 			fr.registry.put(DoubleDataSource.class, new DoubleSelector.Factory());
 			fr.registry.put(IntegerDataSource.class, new IntegerSelector.Factory());
 			fr.registry.put(DirectoryDataSource.class, new DirectorySelector.Factory());
 
 			eefs = new ElementEditorFactories();
-			eefs.workflowFactories
-					.add(new org.vanda.studio.modules.workflows.inspector.WorkflowEditor());
+			eefs.workflowFactories.add(new org.vanda.studio.modules.workflows.inspector.WorkflowEditor());
 			eefs.literalFactories.add(new LiteralEditor(app, fr));
 
 			LinkedList<SemanticsToolFactory> srep = new LinkedList<SemanticsToolFactory>();
-//			srep.add(new RunTool(new GeneratorImpl(app, profile)));
+			// srep.add(new RunTool(new GeneratorImpl(app, profile)));
 			srep.add(new InspectorTool(eefs));
-			srep.add(new org.vanda.studio.modules.workflows.tools.semantic.RunTool(new GeneratorImpl(app,profile)));
+			srep.add(new org.vanda.studio.modules.workflows.tools.semantic.RunTool(new GeneratorImpl(app, profile)));
 
 			toolFactories = new LinkedList<ToolFactory>();
 			toolFactories.add(new PaletteTool());
@@ -127,14 +124,11 @@ public class WorkflowModule implements Module {
 			toolFactories.add(new AssignmentTableToolFactory(eefs));
 			toolFactories.add(new AssignmentSwitchToolFactory());
 
-			app.getWindowSystem()
-					.addAction(null, new OpenManagerAction(), null);
-			app.getWindowSystem().addAction(null, new OpenWorkflowAction(),
-					"document-open",
-					KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK),1);
-			app.getWindowSystem().addAction(null, new NewWorkflowAction(),
-					"document-new",
-					KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK),0);
+			app.getWindowSystem().addAction(null, new OpenManagerAction(), null, 100);
+			app.getWindowSystem().addAction(null, new OpenWorkflowAction(), "document-open",
+					KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK), 0);
+			app.getWindowSystem().addAction(null, new NewWorkflowAction(), "document-new",
+					KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK), 1);
 		}
 
 		protected class NewWorkflowAction implements Action {
@@ -147,8 +141,7 @@ public class WorkflowModule implements Module {
 			public void invoke() {
 				MutableWorkflow mwf = new MutableWorkflow("Workflow");
 				Database d = new Database();
-				new WorkflowEditorImpl(app, toolFactories,
-						new Pair<MutableWorkflow, Database>(mwf, d));
+				new WorkflowEditorImpl(app, toolFactories, new Pair<MutableWorkflow, Database>(mwf, d));
 				// something will hold a reference to it since it will be in the
 				// GUI
 			}
@@ -166,25 +159,22 @@ public class WorkflowModule implements Module {
 				JFileChooser chooser = new JFileChooser("");
 				chooser.setDialogType(JFileChooser.OPEN_DIALOG);
 				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				chooser.setFileFilter(new FileNameExtensionFilter(
-						"Workflow XML (*.xwf)", "xwf"));
+				chooser.setFileFilter(new FileNameExtensionFilter("Workflow XML (*.xwf)", "xwf"));
 				String lastDir = app.getProperty("lastDir");
 				if (lastDir != null)
 					chooser.setCurrentDirectory(new File(lastDir));
-				
+
 				// center dialog over main window
 				int result = chooser.showOpenDialog(app.getWindowSystem().getMainWindow());
 
 				// once file choice is approved, load the chosen file
 				if (result == JFileChooser.APPROVE_OPTION) {
 					File chosenFile = chooser.getSelectedFile();
-					app.setProperty("lastDir", chosenFile.getParentFile()
-							.getAbsolutePath());
+					app.setProperty("lastDir", chosenFile.getParentFile().getAbsolutePath());
 					String filePath = chosenFile.getPath();
 					Pair<MutableWorkflow, Database> phd;
 					try {
-						phd = new Loader(app.getToolMetaRepository()
-								.getRepository()).load(filePath);
+						phd = new Loader(app.getToolMetaRepository().getRepository()).load(filePath);
 						new WorkflowEditorImpl(app, toolFactories, phd);
 					} catch (Exception e) {
 						app.sendMessage(new ExceptionMessage(e));
@@ -193,7 +183,7 @@ public class WorkflowModule implements Module {
 			}
 		}
 
-		public final class OpenManagerAction implements Action , ProfileOpener {			
+		public final class OpenManagerAction implements Action, ProfileOpener {
 			@Override
 			public String getName() {
 				return "Manage Fragment Profiles...";
