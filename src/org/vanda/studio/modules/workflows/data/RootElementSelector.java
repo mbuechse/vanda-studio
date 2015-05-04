@@ -1,6 +1,7 @@
 package org.vanda.studio.modules.workflows.data;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -8,22 +9,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
 
 import org.vanda.datasources.DataSource;
 import org.vanda.datasources.DataSourceMount;
 import org.vanda.datasources.RootDataSource;
-import org.vanda.util.FactoryRegistry;
+import org.vanda.util.Factory;
 import org.vanda.util.Observer;
 
 public final class RootElementSelector implements ElementSelector, Observer<Element> {
 
 	private final RootDataSource rds;
-	private final FactoryRegistry<DataSource, ElementSelector> fr;
+	private final Factory<DataSource, ElementSelector> fr;
 
 	private DataSourceMount current;
 	private Element innerElement;
@@ -31,36 +36,40 @@ public final class RootElementSelector implements ElementSelector, Observer<Elem
 	private Element element;
 	private ElementSelector elementSelector;
 
-	private List<String> dsList;
+	private List<DataSourceMount> dsList;
 
-	private JComboBox jDSList;
+	private JComboBox<DataSourceMount> jDSList;
 	private JComponent component;
 	private JPanel selector;
 
-	public RootElementSelector(RootDataSource rds, FactoryRegistry<DataSource, ElementSelector> fr) {
+	public RootElementSelector(RootDataSource rds, Factory<DataSource, ElementSelector> fr) {
 		this.rds = rds;
 		this.fr = fr;
 
 		current = null;
 		innerElement = null;
 
-		dsList = new ArrayList<String>(rds.getMountTable().getKeys());
-		dsList.add(""); // XXX why?
-		Collections.sort(dsList);
+		dsList = new ArrayList<DataSourceMount>(rds.getMountTable().getItems());
+		Collections.sort(dsList, new Comparator<DataSourceMount>() {
+			@Override
+			public int compare(DataSourceMount o1, DataSourceMount o2) {
+				return o1.id.compareTo(o2.id);
+			}
+		});
 
 		selector = new JPanel(new GridBagLayout());
 
-		jDSList = new JComboBox(dsList.toArray());
+		jDSList = new JComboBox<DataSourceMount>(dsList.toArray(new DataSourceMount[dsList.size()]));
+		jDSList.setRenderer(new DataSourceMountRenderer());
 		jDSList.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (element != null) {
 					String value = element.getValue();
-					String prefix = jDSList.getSelectedItem().toString();
+					DataSourceMount selected = (DataSourceMount) jDSList.getSelectedItem();
 					int i = value.indexOf(':');
-					if (i < 0 || !prefix.equals(value.substring(0, i)))
-						element.setValue(prefix + ":"
-								+ RootElementSelector.this.rds.getMountTable().getItem(prefix).ds.createElement());
+					if (i < 0 || !selected.id.equals(value.substring(0, i)))
+						element.setValue(selected.id + ":" + selected.ds.createElement());
 				}
 			}
 		});
@@ -113,18 +122,32 @@ public final class RootElementSelector implements ElementSelector, Observer<Elem
 			if (elementSelector != null)
 				elementSelector.setElement(null);
 			current = rds.getMountTable().getItem(prefix);
-			jDSList.setSelectedItem(prefix);
+			jDSList.setSelectedItem(current);
 			innerElement = new Element(value);
-			FactoryRegistry.Factory<DataSource, ElementSelector> factory = fr.registry.get(current.ds.getClass());
-			if (factory != null) {
-				elementSelector = factory.instantiate(current.ds);
-				elementSelector.setElement(innerElement);
-				component.add(elementSelector.getComponent(), BorderLayout.CENTER);
-			} else {
-				elementSelector = null;
-				innerElement = null;
-			}
+			elementSelector = fr.instantiate(current.ds);
+			elementSelector.setElement(innerElement);
+			component.add(elementSelector.getComponent(), BorderLayout.CENTER);
 		}
 		selector.validate();
+	}
+
+	// XXX this is almost a verbatim copy from DataSourceRepositoryEditor...
+	private static class DataSourceMountRenderer implements ListCellRenderer<DataSourceMount> {
+
+		DefaultListCellRenderer r;
+
+		public DataSourceMountRenderer() {
+			r = new DefaultListCellRenderer();
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList<? extends DataSourceMount> list, DataSourceMount value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			String s = "";
+			if (value != null)
+				s = value.id;
+			return r.getListCellRendererComponent(list, s, index, isSelected, cellHasFocus);
+		}
+
 	}
 }

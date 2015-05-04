@@ -13,7 +13,7 @@ import org.vanda.datasources.serialization.DirectoryDataSourceType;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
 import org.vanda.util.Action;
-import org.vanda.util.FactoryRegistry;
+import org.vanda.util.CompositeFactory;
 import org.vanda.util.ListRepository;
 import org.vanda.util.Observer;
 
@@ -34,10 +34,10 @@ public class DataSourceModule implements Module {
 		app.getDataSourceMetaRepository().addRepository(dsr);
 		app.getDataSourceMetaRepository().addRepository(dsr2);
 
-		FactoryRegistry<DataSource, DataSourceEditor> fr = new FactoryRegistry<DataSource, DataSourceEditor>();
-		fr.registry.put(IntegerDataSource.class, new IntegerDataSourceEditor.Factory());
-		fr.registry.put(DirectoryDataSource.class, new DirectoryDataSourceEditor.Factory(app));
-		fr.registry.put(DoubleDataSource.class, new DoubleDataSourceEditor.Factory());
+		CompositeFactory<DataSource, DataSourceEditor> fr = new CompositeFactory<DataSource, DataSourceEditor>();
+		fr.put(IntegerDataSource.class, new IntegerDataSourceEditor.Fäctory());
+		fr.put(DirectoryDataSource.class, new DirectoryDataSourceEditor.Fäctory(app));
+		fr.put(DoubleDataSource.class, new DoubleDataSourceEditor.Fäctory());
 
 		dsr.refresh();
 		dsr2.addItem(new DataSourceMount("Integer", new IntegerDataSource()));
@@ -53,14 +53,14 @@ public class DataSourceModule implements Module {
 	private final class DataSourceEditorAction implements Action {
 
 		private final DataSourceRepository dataSourceRepository;
-		private final FactoryRegistry<DataSource, DataSourceEditor> fr;
+		private final CompositeFactory<DataSource, DataSourceEditor> fr;
 		private final Collection<DataSourceFactory> dsf;
 		private final Application app;
 		private Observer<Application> shutdownObserver; // keep reference
 		private DataSourceRepositoryEditor ed;
 
 		public DataSourceEditorAction(Application app, DataSourceRepository dataSourceRepository,
-				FactoryRegistry<DataSource, DataSourceEditor> fr, Collection<DataSourceFactory> dsf) {
+				CompositeFactory<DataSource, DataSourceEditor> fr, Collection<DataSourceFactory> dsf) {
 			this.app = app;
 			this.dataSourceRepository = dataSourceRepository;
 			this.fr = fr;

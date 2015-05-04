@@ -17,7 +17,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 
 import org.vanda.datasources.DataSource;
-import org.vanda.util.FactoryRegistry;
+import org.vanda.util.Factory;
 import org.vanda.util.Observer;
 
 public class DoubleSelector implements ElementSelector, Observer<Element> {
@@ -99,7 +99,7 @@ public class DoubleSelector implements ElementSelector, Observer<Element> {
 		jNumber.setText(event.getValue());
 	}
 	
-	public static class Factory implements FactoryRegistry.Factory<DataSource, ElementSelector> {
+	public static class Fäctory implements Factory<DataSource, ElementSelector> {
 		@Override
 		public ElementSelector instantiate(DataSource d) {
 			return new DoubleSelector();

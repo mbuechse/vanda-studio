@@ -44,7 +44,7 @@ import org.vanda.studio.modules.workflows.tools.semantic.ProfileManager.ProfileO
 import org.vanda.util.Action;
 import org.vanda.util.ExceptionMessage;
 import org.vanda.util.ExternalRepository;
-import org.vanda.util.FactoryRegistry;
+import org.vanda.util.CompositeFactory;
 import org.vanda.util.ListRepository;
 import org.vanda.util.Pair;
 import org.vanda.workflows.data.Database;
@@ -102,10 +102,10 @@ public class WorkflowModule implements Module {
 			profile.getFragmentToolMetaRepository().addRepository(er);
 			er.refresh();
 
-			FactoryRegistry<DataSource, ElementSelector> fr = new FactoryRegistry<DataSource, ElementSelector>();
-			fr.registry.put(DoubleDataSource.class, new DoubleSelector.Factory());
-			fr.registry.put(IntegerDataSource.class, new IntegerSelector.Factory());
-			fr.registry.put(DirectoryDataSource.class, new DirectorySelector.Factory());
+			CompositeFactory<DataSource, ElementSelector> fr = new CompositeFactory<DataSource, ElementSelector>();
+			fr.put(DoubleDataSource.class, new DoubleSelector.Fäctory());
+			fr.put(IntegerDataSource.class, new IntegerSelector.Fäctory());
+			fr.put(DirectoryDataSource.class, new DirectorySelector.Fäctory());
 
 			eefs = new ElementEditorFactories();
 			eefs.workflowFactories.add(new org.vanda.studio.modules.workflows.inspector.WorkflowEditor());

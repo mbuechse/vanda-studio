@@ -17,10 +17,9 @@ import javax.swing.JTextField;
 
 import org.vanda.datasources.DataSource;
 import org.vanda.datasources.DirectoryDataSource;
-import org.vanda.datasources.DoubleDataSource;
 import org.vanda.studio.app.Application;
 import org.vanda.types.Type;
-import org.vanda.util.FactoryRegistry;
+import org.vanda.util.Factory;
 
 public class DirectoryDataSourceEditor implements DataSourceEditor {
 
@@ -109,11 +108,11 @@ public class DirectoryDataSourceEditor implements DataSourceEditor {
 		this.directoryDataSource.type = (Type) cType.getSelectedItem();
 	}
 	
-	public static class Factory implements FactoryRegistry.Factory<DataSource, DataSourceEditor> {
+	public static class Fäctory implements Factory<DataSource, DataSourceEditor> {
 		
 		private final Application app;
 		
-		public Factory(Application app) {
+		public Fäctory(Application app) {
 			this.app = app;
 		}
 		

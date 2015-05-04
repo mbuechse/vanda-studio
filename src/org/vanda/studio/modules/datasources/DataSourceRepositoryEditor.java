@@ -32,13 +32,13 @@ import javax.swing.event.ListSelectionListener;
 import org.vanda.datasources.DataSource;
 import org.vanda.datasources.DataSourceMount;
 import org.vanda.studio.app.Application;
-import org.vanda.util.FactoryRegistry;
+import org.vanda.util.Factory;
 import org.vanda.util.Observer;
 
 public class DataSourceRepositoryEditor implements Observer<DataSourceMount> {
 
 	private final DataSourceRepository dataSourceRepository;
-	private final FactoryRegistry<DataSource, DataSourceEditor> fr;
+	private final Factory<DataSource, DataSourceEditor> fr;
 	private final Collection<DataSourceFactory> dsfs;
 	private JPanel editor;
 	private DataSourceEditor innerEditor;
@@ -48,7 +48,7 @@ public class DataSourceRepositoryEditor implements Observer<DataSourceMount> {
 	private JFrame f = null;
 
 	public DataSourceRepositoryEditor(DataSourceRepository dataSourceRepository,
-			FactoryRegistry<DataSource, DataSourceEditor> fr, Collection<DataSourceFactory> dsfs, Application app) {
+			Factory<DataSource, DataSourceEditor> fr, Collection<DataSourceFactory> dsfs, Application app) {
 		this.dataSourceRepository = dataSourceRepository;
 		this.fr = fr;
 		this.dsfs = dsfs;
@@ -93,7 +93,7 @@ public class DataSourceRepositoryEditor implements Observer<DataSourceMount> {
 				DataSourceMount selected = lDataSources.getSelectedValue();
 				if (selected != null) {
 					DataSource ds = selected.ds;
-					innerEditor = DataSourceRepositoryEditor.this.fr.registry.get(ds.getClass()).instantiate(ds);
+					innerEditor = DataSourceRepositoryEditor.this.fr.instantiate(ds);
 					innerEditorPanel.add(innerEditor.getComponent());
 					aId.setText(selected.id);
 

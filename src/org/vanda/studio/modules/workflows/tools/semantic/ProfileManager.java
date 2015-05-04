@@ -31,7 +31,7 @@ public final class ProfileManager {
 		this.app = app;
 		this.profOpener = profOpener;
 		// this.repository = repository;
-		JList list = new JList(new RepositoryListModel<Profile>(repository));
+		JList<String> list = new JList<String>(new RepositoryListModel<Profile>(repository));
 		JScrollPane listScroll = new JScrollPane(list);
 		contentPane = new JPanel(new BorderLayout());
 		contentPane.add(listScroll, BorderLayout.WEST);
@@ -71,7 +71,7 @@ public final class ProfileManager {
 	}
 
 	private static final class RepositoryListModel<T extends RepositoryItem>
-			implements ListModel, Observer<T> {
+			implements ListModel<String>, Observer<T> {
 
 		private final Repository<String, T> repository;
 		private List<T> items;
@@ -92,7 +92,7 @@ public final class ProfileManager {
 		}
 
 		@Override
-		public Object getElementAt(int index) {
+		public String getElementAt(int index) {
 			return items.get(index).getName();
 		}
 

@@ -5,7 +5,7 @@ import javax.swing.JLabel;
 
 import org.vanda.datasources.DataSource;
 import org.vanda.datasources.IntegerDataSource;
-import org.vanda.util.FactoryRegistry;
+import org.vanda.util.Factory;
 
 public class IntegerDataSourceEditor implements DataSourceEditor {
 
@@ -30,7 +30,7 @@ public class IntegerDataSourceEditor implements DataSourceEditor {
 		// Do nothing.
 	}
 	
-	public static class Factory implements FactoryRegistry.Factory<DataSource, DataSourceEditor> {
+	public static class Fäctory implements Factory<DataSource, DataSourceEditor> {
 		@Override
 		public DataSourceEditor instantiate(DataSource d) {
 			return new IntegerDataSourceEditor((IntegerDataSource) d);

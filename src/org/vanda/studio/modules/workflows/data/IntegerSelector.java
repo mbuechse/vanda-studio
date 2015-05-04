@@ -16,7 +16,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.vanda.datasources.DataSource;
-import org.vanda.util.FactoryRegistry;
+import org.vanda.util.Factory;
 import org.vanda.util.Observer;
 
 public class IntegerSelector implements ElementSelector, Observer<Element> {
@@ -94,7 +94,7 @@ public class IntegerSelector implements ElementSelector, Observer<Element> {
 		}
 	}
 	
-	public static class Factory implements FactoryRegistry.Factory<DataSource, ElementSelector> {
+	public static class Fäctory implements Factory<DataSource, ElementSelector> {
 		@Override
 		public ElementSelector instantiate(DataSource d) {
 			return new IntegerSelector();

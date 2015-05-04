@@ -13,7 +13,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.vanda.datasources.DataSource;
 import org.vanda.datasources.DirectoryDataSource;
-import org.vanda.util.FactoryRegistry;
+import org.vanda.util.Factory;
 import org.vanda.util.Observer;
 
 public class DirectorySelector implements ElementSelector, Observer<Element> {
@@ -78,7 +78,7 @@ public class DirectorySelector implements ElementSelector, Observer<Element> {
 		selector.setSelectedValue(event.getValue(), true);
 	}
 	
-	public static class Factory implements FactoryRegistry.Factory<DataSource, ElementSelector> {
+	public static class Fäctory implements Factory<DataSource, ElementSelector> {
 		@Override
 		public ElementSelector instantiate(DataSource d) {
 			return new DirectorySelector((DirectoryDataSource) d);

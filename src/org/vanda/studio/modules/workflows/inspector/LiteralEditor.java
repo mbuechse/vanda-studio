@@ -10,12 +10,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.vanda.datasources.DataSource;
 import org.vanda.datasources.RootDataSource;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.data.Element;
 import org.vanda.studio.modules.workflows.data.ElementSelector;
 import org.vanda.studio.modules.workflows.data.RootElementSelector;
-import org.vanda.util.FactoryRegistry;
+import org.vanda.util.Factory;
 import org.vanda.util.Observer;
 import org.vanda.workflows.data.Database;
 import org.vanda.workflows.data.Databases.DatabaseEvent;
@@ -28,9 +29,9 @@ import org.vanda.workflows.hyper.MutableWorkflow;
 public class LiteralEditor implements ElementEditorFactory<Literal> {
 
 	private final RootDataSource rds;
-	private final FactoryRegistry fr;
+	private final Factory<DataSource, ElementSelector> fr;
 
-	public LiteralEditor(Application app, FactoryRegistry fr) {
+	public LiteralEditor(Application app, Factory<DataSource, ElementSelector> fr) {
 		rds = app.getRootDataSource();
 		this.fr = fr;
 	}
