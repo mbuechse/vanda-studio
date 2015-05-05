@@ -5,14 +5,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -20,108 +14,28 @@ import org.vanda.presentationmodel.PresentationModel;
 import org.vanda.render.jgraph.Cell;
 import org.vanda.render.jgraph.mxDropTargetListener;
 import org.vanda.studio.app.Application;
-import org.vanda.studio.app.WindowSystem;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
-import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.util.Action;
 import org.vanda.util.HasActions;
 import org.vanda.util.Observer;
 import org.vanda.util.Pair;
 import org.vanda.util.Util;
 import org.vanda.workflows.data.Database;
-import org.vanda.workflows.data.Databases;
-import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.MutableWorkflow;
-import org.vanda.workflows.hyper.SyntaxAnalysis;
 import org.vanda.workflows.hyper.Workflows.WorkflowEvent;
 
 import com.mxgraph.swing.util.mxGraphTransferable;
 
-import java.io.File;
 
 public class WorkflowEditorImpl extends DefaultWorkflowEditorImpl {
-	public static class CheckWorkflowAction implements Action {
-		private WorkflowEditor wfe;
-
-		public CheckWorkflowAction(WorkflowEditor wfe) {
-			this.wfe = wfe;
-		}
-
-		@Override
-		public String getName() {
-			return "Check Workflow";
-		}
-
-		@Override
-		public void invoke() {
-			wfe.getSyntaxAnalysis().checkWorkflow(wfe.getView().getWorkflow());
-		}
-	}
-
-	public static class ClearWorkflowDirectoryAction implements Action {
-		private WorkflowEditor wfe;
-
-		public ClearWorkflowDirectoryAction(WorkflowEditor wfe) {
-			this.wfe = wfe;
-		}
-
-		@Override
-		public String getName() {
-			return "Clear Workflow directory";
-		}
-
-		@Override
-		public void invoke() {
-			File d = new File(wfe.getApplication().getProperty("outputPath"));
-			if (JOptionPane.OK_OPTION == JOptionPane.showOptionDialog(wfe
-					.getApplication().getWindowSystem().getMainWindow(), 
-			        "Do you want to empty " + d.getAbsolutePath() + "?", 
-			        "Empty working directory", 
-			        JOptionPane.OK_CANCEL_OPTION, 
-			        JOptionPane.INFORMATION_MESSAGE, 
-			        null, 
-			        new String[]{"Empty directory!", "No, leave it."},
-			        "default")) {
-				if (!emptyDirectory(d))
-					JOptionPane.showMessageDialog(wfe.getApplication()
-							.getWindowSystem().getMainWindow(),
-							"Deletion failed.");
-			}
-		}
-
-		static public boolean emptyDirectory(File dir) {
-			boolean success = true;
-			if (dir == null)
-				return false;
-			if (dir.exists()) {
-				for (File f : dir.listFiles()) {
-					if (f.isDirectory()) {
-						success = success & emptyDirectory(f);
-						success = success & f.delete();
-					} else {
-						success = success & f.delete();
-					}
-				}
-			}
-			return success;
-		}
-
-	}
 
 	protected final PresentationModel presentationModel;
-
-	protected JComponent palette;
-
 	protected final ErrorHighlighter synUp;
-
 	private final Observer<WorkflowEvent<MutableWorkflow>> mwfObserver;
 
-	private final Collection<Object> tools;
-
-	public WorkflowEditorImpl(Application app, List<ToolFactory> toolFactories,
-			Pair<MutableWorkflow, Database> phd) {
+	public WorkflowEditorImpl(Application app, List<ToolFactory> toolFactories, Pair<MutableWorkflow, Database> phd) {
 		super(app, phd);
-		presentationModel = new PresentationModel(view, this);
+		presentationModel = new PresentationModel(view, app.getToolMetaRepository().getRepository());
 
 		mwfObserver = new Observer<WorkflowEvent<MutableWorkflow>>() {
 			@Override
@@ -131,19 +45,9 @@ public class WorkflowEditorImpl extends DefaultWorkflowEditorImpl {
 		};
 		view.getWorkflow().getObservable().addObserver(mwfObserver);
 
-		synA = new SyntaxAnalysis();
-		view.getWorkflow().getObservable().addObserver(synA);
-		synUp = new ErrorHighlighter(app, synA, view);
+		synUp = new ErrorHighlighter(app, syntaxAnalysis, view);
 
-		semA = new SemanticAnalysis();
-		synA.getSyntaxChangedObservable().addObserver(semA);
-		database.getObservable().addObserver(semA);
-		
-		synA.checkWorkflow(phd.fst);
-		semA.notify(new Databases.CursorChange<Database>(database));
-
-		component = new MyMxGraphComponent(presentationModel.getVisualization()
-				.getGraph());
+		component = new MyMxGraphComponent(presentationModel.getVisualization().getGraph());
 		new mxDropTargetListener(presentationModel, component);
 		configureComponent();
 		component.getGraphControl().addMouseListener(new EditMouseAdapter());
@@ -151,39 +55,21 @@ public class WorkflowEditorImpl extends DefaultWorkflowEditorImpl {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				component.getVerticalScrollBar()
-						.setValue(
-								(int) (component.getVerticalScrollBar()
-										.getMaximum() * 0.35));
+				component.getVerticalScrollBar().setValue((int) (component.getVerticalScrollBar().getMaximum() * 0.35));
 			}
 		});
-		// component.setPanning(true); // too complic: must press SHIFT+CONTROL
-		// (component.getGraph().getDefaultParent());
-		// mainpane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component,
-		// outline);
-		// mainpane.setOneTouchExpandable(true);
-		// mainpane.setResizeWeight(0.9);
-		// mainpane.setDividerSize(6);
-		// mainpane.setBorder(null);
-		// mainpane.setDividerLocation(0.7);
 		component.setName(view.getWorkflow().getName());
 		app.getWindowSystem().addContentWindow(null, component, null);
 
-		tools = new ArrayList<Object>();
-		for (ToolFactory tf : toolFactories)
-			tools.add(tf.instantiate(this));
-
-		addAction(new CheckWorkflowAction(this), "document-preview",
-				KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), 2);
-		addAction(new ClearWorkflowDirectoryAction(this), "run-build-clean",
-				KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), 3);
-		addAction(new ResetZoomAction(),
-				KeyStroke.getKeyStroke(KeyEvent.VK_0, KeyEvent.CTRL_MASK), 8);
-		addAction(new CloseWorkflowAction(),
-				KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_MASK), 1);
+		addAction(new ResetZoomAction(), KeyStroke.getKeyStroke(KeyEvent.VK_0, KeyEvent.CTRL_MASK), 8);
+		addAction(new CloseWorkflowAction(), KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_MASK), 1);
 
 		setupOutline();
 
+		for (ToolFactory tf : toolFactories)
+			tools.add(tf.instantiate(this));
+
+		syntaxAnalysis.checkWorkflow(view.getWorkflow());
 		// send some initial event ("updated" will be sent)
 		view.getWorkflow().beginUpdate();
 		view.getWorkflow().endUpdate();
@@ -197,9 +83,8 @@ public class WorkflowEditorImpl extends DefaultWorkflowEditorImpl {
 
 	static {
 		try {
-			mxGraphTransferable.dataFlavor = new DataFlavor(
-					DataFlavor.javaJVMLocalObjectMimeType
-							+ "; class=com.mxgraph.swing.util.mxGraphTransferable");
+			mxGraphTransferable.dataFlavor = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType
+					+ "; class=com.mxgraph.swing.util.mxGraphTransferable");
 		} catch (ClassNotFoundException cnfe) {
 			// do nothing
 			System.out.println("Problem!");
@@ -228,9 +113,6 @@ public class WorkflowEditorImpl extends DefaultWorkflowEditorImpl {
 	}
 
 	private void removeSelectedCell() {
-		// WorkflowSelection ws = model.getSelection();
-		// if (ws instanceof SingleObjectSelection)
-		// ((SingleObjectSelection) ws).remove();
 		view.removeSelectedCell();
 	}
 
@@ -257,59 +139,11 @@ public class WorkflowEditorImpl extends DefaultWorkflowEditorImpl {
 			} else if (e.getButton() == 3) {
 				// show context menu when right clicking a node or an edge
 				Object cell = component.getCellAt(e.getX(), e.getY());
-				final Object value = component.getGraph().getModel()
-						.getValue(cell);
+				final Object value = component.getGraph().getModel().getValue(cell);
 
 				if (value != null)
 					((Cell) value).rightMouseClick(e);
-
-				// if (menu != null) {
-				// if (value instanceof HasActions) {
-				// HasActions ha = (HasActions) value;
-				// LinkedList<Action> as = new LinkedList<Action>();
-				// ha.appendActions(as);
-				// for (final Action a : as) {
-				// @SuppressWarnings("serial")
-				// JMenuItem item = new JMenuItem(a.getName()) {
-				// @Override
-				// public void fireActionPerformed(ActionEvent _) {
-				// a.invoke();
-				// }
-				// };
-				// menu.add(item);
-				// }
-				// }
-				// menu.show(e.getComponent(), e.getX(), e.getY());
-				// }
-
 			}
-		}
-	}
-
-	/**
-	 * a context popup menu that displays a components title
-	 * 
-	 * @author afischer
-	 * 
-	 */
-	@SuppressWarnings("serial")
-	public static class PopupMenu extends JPopupMenu {
-
-		public PopupMenu(String title) {
-			add(new JLabel("<html><b>" + title + "</b></html>"));
-			addSeparator();
-		}
-	}
-
-	@Override
-	public void setPalette(JComponent c) {
-		if (palette != c) {
-			if (palette != null)
-				removeToolWindow(palette);
-			palette = c;
-			if (palette != null)
-				addToolWindow(palette, WindowSystem.SOUTHWEST);
-			// mainpane.setRightComponent(c);
 		}
 	}
 

@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -24,7 +25,6 @@ import org.vanda.util.Observer;
 import org.vanda.util.Pair;
 import org.vanda.view.View;
 import org.vanda.workflows.data.Database;
-import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.ConnectionKey;
 import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.MutableWorkflow;
@@ -51,15 +51,19 @@ public class DefaultWorkflowEditorImpl implements WorkflowEditor, WorkflowListen
 	protected mxGraphComponent component;
 	protected final Database database;
 	protected mxGraphOutline outline;
-	protected SemanticAnalysis semA;
-	protected SyntaxAnalysis synA;
 	protected final View view;
+	protected final SyntaxAnalysis syntaxAnalysis;
+	protected final Collection<Object> tools;
+
 	private Observer<Application> appObserver;
 
 	public DefaultWorkflowEditorImpl(Application app, Pair<MutableWorkflow, Database> phd) {
 		this.app = app;
 		view = new View(phd.fst);
 		database = phd.snd;
+		syntaxAnalysis = new SyntaxAnalysis();
+		view.getWorkflow().getObservable().addObserver(syntaxAnalysis);
+		tools = new ArrayList<Object>();
 	}
 	
 	@Override
@@ -123,16 +127,6 @@ public class DefaultWorkflowEditorImpl implements WorkflowEditor, WorkflowListen
 	}
 
 	@Override
-	public SemanticAnalysis getSemanticAnalysis() {
-		return semA;
-	}
-
-	@Override
-	public SyntaxAnalysis getSyntaxAnalysis() {
-		return synA;
-	}
-
-	@Override
 	public View getView() {
 		return view;
 	}
@@ -148,10 +142,6 @@ public class DefaultWorkflowEditorImpl implements WorkflowEditor, WorkflowListen
 	@Override
 	public void removeToolWindow(JComponent c) {
 		app.getWindowSystem().removeToolWindow(component, c);
-	}
-
-	@Override
-	public void setPalette(JComponent c) {
 	}
 
 	@Override
@@ -471,6 +461,11 @@ public class DefaultWorkflowEditorImpl implements WorkflowEditor, WorkflowListen
 	@Override
 	public void addAction(Action a, String imageName, KeyStroke keyStroke, int pos) {
 		app.getWindowSystem().addAction(component, a, imageName, keyStroke, pos);
+	}
+
+	@Override
+	public SyntaxAnalysis getSyntaxAnalysis() {
+		return syntaxAnalysis;
 	}
 
 }

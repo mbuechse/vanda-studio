@@ -8,6 +8,8 @@ import java.util.List;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.view.View;
+import org.vanda.workflows.data.Database;
+import org.vanda.workflows.data.Databases;
 import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
 
@@ -15,6 +17,7 @@ public class SemanticsTool implements ToolFactory {
 
 	private final static class Tool {
 
+		private final Database database;
 		private final SemanticAnalysis semA;
 		private final SyntaxAnalysis synA;
 		private final View view;
@@ -23,12 +26,15 @@ public class SemanticsTool implements ToolFactory {
 		public Tool(WorkflowEditor wfe, Collection<SemanticsToolFactory> stfs) {
 
 			view = wfe.getView();
-			// model = new Model(view, wfe.getDatabase());
+			database = wfe.getDatabase();
 			synA = wfe.getSyntaxAnalysis();
-			semA = wfe.getSemanticAnalysis();
+			semA = new SemanticAnalysis();
+			synA.getSyntaxChangedObservable().addObserver(semA);
+			database.getObservable().addObserver(semA);
+			
+			semA.notify(new Databases.CursorChange<Database>(database));
 			tools = new ArrayList<Object>();
 			for (SemanticsToolFactory stf : stfs)
-				// stf.instantiate(wfe, model, view);
 				tools.add(stf.instantiate(wfe, synA, semA, view));
 
 		}

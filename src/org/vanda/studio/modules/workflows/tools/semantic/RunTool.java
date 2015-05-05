@@ -11,10 +11,11 @@ import javax.swing.KeyStroke;
 import org.vanda.fragment.model.Generator;
 import org.vanda.run.RunConfig;
 import org.vanda.studio.app.Application;
-import org.vanda.studio.modules.previews.WorkflowExecutionPreview;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.studio.modules.workflows.run.RunConfigEditor;
 import org.vanda.studio.modules.workflows.run.RunConfigEditor.Runner;
+import org.vanda.types.CompositeType;
+import org.vanda.types.Type;
 import org.vanda.types.Types;
 import org.vanda.util.Action;
 import org.vanda.util.ExceptionMessage;
@@ -25,6 +26,8 @@ import org.vanda.workflows.hyper.SyntaxAnalysis;
 import org.vanda.workflows.serialization.Storer;
 
 public class RunTool implements SemanticsToolFactory {
+	public static final Type EXECUTION = new CompositeType("Execution");
+	
 	private class Tool {
 		/**
 		 * Opens a dialog in which the setting for a RunConifg can be assigned. 
@@ -73,8 +76,8 @@ public class RunTool implements SemanticsToolFactory {
 				try {
 					new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");
 					new org.vanda.run.serialization.Storer().store(rc, filePath + ".run");
-					// create WorkflowExecutionPreview from file
-					new WorkflowExecutionPreview(app, prof).createPreview(filePath);
+					// XXX ServiceLocator antipattern
+					app.getPreviewFactory(EXECUTION).createPreview(filePath);
 				} catch (Exception e) {
 					wfe.getApplication().sendMessage(new ExceptionMessage(e));
 				}

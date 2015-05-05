@@ -21,6 +21,7 @@ import javax.swing.JTextField;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
 import org.vanda.presentationmodel.palette.PresentationModel;
+import org.vanda.studio.app.WindowSystem;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.types.Types;
@@ -102,7 +103,7 @@ public class PaletteTool implements ToolFactory {
 			palette.add(searchPane, BorderLayout.NORTH);
 			palette.add(scrollPane, BorderLayout.CENTER);
 			update();
-			wfe.setPalette(palette);
+			wfe.addToolWindow(palette, WindowSystem.SOUTHWEST);
 		}
 
 		public void update() {

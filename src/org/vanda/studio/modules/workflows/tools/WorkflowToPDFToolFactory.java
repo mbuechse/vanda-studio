@@ -47,24 +47,19 @@ public final class WorkflowToPDFToolFactory implements ToolFactory {
 
 			if (result == JFileChooser.APPROVE_OPTION) {
 				File chosenFile;
-				if (chooser.getSelectedFile().getName().toLowerCase()
-						.endsWith(".pdf"))
+				if (chooser.getSelectedFile().getName().toLowerCase().endsWith(".pdf"))
 					chosenFile = chooser.getSelectedFile();
 				else
-					chosenFile = new File(chooser.getSelectedFile().getPath()
-							+ ".pdf");
+					chosenFile = new File(chooser.getSelectedFile().getPath() + ".pdf");
 				try {
-					PresentationModel pm = new PresentationModel(wfe.getView(), wfe);
+					PresentationModel pm = new PresentationModel(wfe.getView(), wfe.getApplication()
+							.getToolMetaRepository().getRepository());
 					mxGraph graph = pm.getVisualization().getGraph();
-					Document svg = mxCellRenderer.createSvgDocument(graph,
-							null, 1, null, null);
-					String code = mxUtils
-							.getPrettyXml(svg.getDocumentElement());
-					TranscoderInput input = new TranscoderInput(
-							new StringReader(code));
+					Document svg = mxCellRenderer.createSvgDocument(graph, null, 1, null, null);
+					String code = mxUtils.getPrettyXml(svg.getDocumentElement());
+					TranscoderInput input = new TranscoderInput(new StringReader(code));
 					PDFTranscoder t = new PDFTranscoder();
-					TranscoderOutput output = new TranscoderOutput(
-							new FileOutputStream(chosenFile));
+					TranscoderOutput output = new TranscoderOutput(new FileOutputStream(chosenFile));
 					t.transcode(input, output);
 					output.getOutputStream().flush();
 					output.getOutputStream().close();
@@ -85,8 +80,7 @@ public final class WorkflowToPDFToolFactory implements ToolFactory {
 	@Override
 	public Object instantiate(WorkflowEditor wfe) {
 		Action a = new ExportWorkflowToPDFAction(wfe);
-		wfe.addAction(a, "application-pdf",
-				KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK),7);
+		wfe.addAction(a, "application-pdf", KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK), 7);
 		return a;
 	}
 }

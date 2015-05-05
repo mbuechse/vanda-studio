@@ -24,7 +24,8 @@ import org.vanda.render.jgraph.NaiveLayoutManager;
 import org.vanda.render.jgraph.InPortCell;
 import org.vanda.render.jgraph.OutPortCell;
 import org.vanda.render.jgraph.WorkflowCell;
-import org.vanda.studio.modules.workflows.impl.WorkflowEditorImpl.PopupMenu;
+import org.vanda.run.RunStates.RunEvent;
+import org.vanda.run.RunStates.RunEventListener;
 import org.vanda.util.Action;
 import org.vanda.util.HasActions;
 import org.vanda.util.Observer;
@@ -158,16 +159,47 @@ public class JobAdapter {
 			jobCell.getObservable().notify(new SelectionChangedEvent<Cell>(jobCell, v.isSelected()));
 		}
 	}
+	
+	private class RunEventListenerImpl implements RunEventListener {
+
+		@Override
+		public void cancelled() {
+			jobCell.setCancelled();
+		}
+
+		@Override
+		public void done() {
+			jobCell.setDone();					
+		}
+
+		@Override
+		public void progress(int progress) {
+			jobCell.setProgress(progress);			
+		}
+
+		@Override
+		public void ready() {
+			jobCell.setReady();
+		}
+
+		@Override
+		public void running() {
+			jobCell.setRunning();					
+		}
+		
+	}
 
 	private Map<Port, InPortCell> inports;
-	private Job job;
+	private final Job job;
 	private JobCell jobCell;
-	private JobCellListener jobCellListener;
-	private Observer<CellEvent<Cell>> jobCellObserver;
-	private JobListener jobListener;
-	private Observer<Jobs.JobEvent<Job>> jobObserver;
-	private JobViewListener jobViewListener;
-	private Observer<ViewEvent<AbstractView<?>>> jobViewObserver;
+	private final JobCellListener jobCellListener;
+	private final Observer<CellEvent<Cell>> jobCellObserver;
+	private final JobListener jobListener;
+	private final Observer<Jobs.JobEvent<Job>> jobObserver;
+	private final JobViewListener jobViewListener;
+	private final Observer<ViewEvent<AbstractView<?>>> jobViewObserver;
+	private Observer<RunEvent> runEventObserver;
+	private RunEventListener runEventListener;
 
 	private Map<Location, LocationAdapter> locations;
 
@@ -177,7 +209,8 @@ public class JobAdapter {
 
 	public JobAdapter(Job job, Graph graph, View view, WorkflowCell wfc) {
 		this.view = view;
-		setUpCells(graph, job, wfc);
+		this.job = job;
+		setUpCells(graph, wfc);
 		this.jobListener = new JobListener();
 		this.jobCellListener = new JobCellListener();
 
@@ -192,7 +225,8 @@ public class JobAdapter {
 
 			};
 			job.getObservable().addObserver(jobObserver);
-		}
+		} else
+			jobObserver = null;
 		// register at jobCell
 		jobCellObserver = new Observer<CellEvent<Cell>>() {
 
@@ -204,6 +238,14 @@ public class JobAdapter {
 		};
 		jobCell.getObservable().addObserver(jobCellObserver);
 
+		runEventListener = new RunEventListenerImpl();
+		runEventObserver = new Observer<RunEvent>() {
+			@Override
+			public void notify(RunEvent event) {
+				event.doNotify(runEventListener);
+			}			
+		};
+
 		// register at jobView
 		jobViewListener = new JobViewListener();
 		jobViewObserver = new Observer<ViewEvent<AbstractView<?>>>() {
@@ -214,7 +256,9 @@ public class JobAdapter {
 			}
 
 		};
-		view.getJobView(job).getObservable().addObserver(jobViewObserver);
+		JobView jv = view.getJobView(job);
+		jv.getObservable().addObserver(jobViewObserver);
+		jv.getRunEventObservable().addObserver(runEventObserver);
 	}
 
 	public void destroy(Graph graph) {
@@ -253,11 +297,10 @@ public class JobAdapter {
 		return outports.get(po);
 	}
 
-	private void setUpCells(Graph graph, Job job, WorkflowCell wfc) {
+	private void setUpCells(Graph graph, WorkflowCell wfc) {
 		graph.beginUpdate();
 		try {
 			LayoutManager layoutManager = new NaiveLayoutManager();
-			this.job = job;
 			inports = new WeakHashMap<Port, InPortCell>();
 			outports = new WeakHashMap<Port, OutPortCell>();
 			locations = new WeakHashMap<Location, LocationAdapter>();

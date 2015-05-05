@@ -8,7 +8,6 @@ import org.vanda.studio.app.LayoutSelector;
 import org.vanda.util.Action;
 import org.vanda.view.View;
 import org.vanda.workflows.data.Database;
-import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
 
 
@@ -18,13 +17,11 @@ public interface WorkflowEditor {
 	void addToolWindow(JComponent c, LayoutSelector layout);
 	void focusToolWindow(JComponent c);
 	Application getApplication();
+	View getView();
 	Database getDatabase();
+	SyntaxAnalysis getSyntaxAnalysis();
 
 	void removeToolWindow(JComponent c);
-	void setPalette(JComponent c);
-	View getView();
-	SyntaxAnalysis getSyntaxAnalysis();
-	SemanticAnalysis getSemanticAnalysis();
 	void addAction(Action a, String imageName, KeyStroke keyStroke, int pos);
 	void enableAction(Action a);
 	void disableAction(Action a);

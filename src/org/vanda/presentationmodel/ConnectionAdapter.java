@@ -17,7 +17,6 @@ import org.vanda.render.jgraph.JobCell;
 import org.vanda.render.jgraph.InPortCell;
 import org.vanda.render.jgraph.OutPortCell;
 import org.vanda.render.jgraph.WorkflowCell;
-import org.vanda.studio.modules.workflows.impl.WorkflowEditorImpl.PopupMenu;
 import org.vanda.util.Observer;
 import org.vanda.view.AbstractView;
 import org.vanda.view.ConnectionView;

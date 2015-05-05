@@ -10,12 +10,13 @@ import org.vanda.render.jgraph.ConnectionCell;
 import org.vanda.render.jgraph.Graph;
 import org.vanda.render.jgraph.JobCell;
 import org.vanda.render.jgraph.InPortCell;
-import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.types.Types;
 import org.vanda.util.Observer;
+import org.vanda.util.Repository;
 import org.vanda.view.View;
 import org.vanda.workflows.elements.Literal;
 import org.vanda.workflows.elements.Port;
+import org.vanda.workflows.elements.Tool;
 import org.vanda.workflows.hyper.ConnectionKey;
 import org.vanda.workflows.hyper.ElementAdapter;
 import org.vanda.workflows.hyper.Job;
@@ -80,7 +81,7 @@ public class PresentationModel implements DataInterface {
 	// LayoutManagerFactoryInterface layoutManager = new JGraphRendering();
 	private View view;
 	private int update = 0;
-	protected final WorkflowEditor wfe;
+	protected final Repository<String, Tool> toolRepository;
 	private final WorkflowAdapter wfa;
 	private Observer<Workflows.WorkflowEvent<MutableWorkflow>> workflowObserver;
 	/*
@@ -92,9 +93,9 @@ public class PresentationModel implements DataInterface {
 
 	private final WorkflowListener workflowListener;
 
-	public PresentationModel(View view, WorkflowEditor wfe) {
+	public PresentationModel(View view, Repository<String, Tool> toolRepository) {
 		this.view = view;
-		this.wfe = wfe;
+		this.toolRepository = toolRepository;
 		this.wfa = new WorkflowAdapter(this, view);
 		graph = new Graph(wfa.getWorkflowCell());
 		jobs = new ArrayList<JobAdapter>();
@@ -230,7 +231,7 @@ public class PresentationModel implements DataInterface {
 		if (id.equals("literal"))
 			ele = new LiteralAdapter(new Literal(Types.undefined, "literal", null));
 		else
-			ele = new ToolAdapter(wfe.getApplication().getToolMetaRepository().getRepository().getItem(id));
+			ele = new ToolAdapter(toolRepository.getItem(id));
 		Job j = new Job(ele);
 		j.setDimensions(d);
 		addJobAdapter(j);

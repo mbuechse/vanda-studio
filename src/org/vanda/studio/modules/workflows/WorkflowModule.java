@@ -20,6 +20,7 @@ import org.vanda.fragment.impl.GeneratorImpl;
 import org.vanda.fragment.impl.ProfileImpl;
 import org.vanda.fragment.model.FragmentCompiler;
 import org.vanda.fragment.model.FragmentLinker;
+import org.vanda.fragment.model.Generator;
 import org.vanda.fragment.model.Profile;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
@@ -38,6 +39,8 @@ import org.vanda.studio.modules.workflows.tools.SaveTool;
 import org.vanda.studio.modules.workflows.tools.WorkflowToPDFToolFactory;
 import org.vanda.studio.modules.workflows.tools.semantic.InspectorTool;
 import org.vanda.studio.modules.workflows.tools.semantic.ProfileManager;
+import org.vanda.studio.modules.workflows.tools.semantic.RunNowTool;
+import org.vanda.studio.modules.workflows.tools.semantic.RunTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsToolFactory;
 import org.vanda.studio.modules.workflows.tools.semantic.ProfileManager.ProfileOpener;
@@ -75,6 +78,7 @@ public class WorkflowModule implements Module {
 		private final Profile profile;
 		private ProfileManager manager;
 		private final LinkedList<ToolFactory> toolFactories;
+		private final LinkedList<ToolFactory> execToolFactories;
 
 		public static String TOOL_PATH_KEY = "profileToolPath";
 		public static String TOOL_PATH_DEFAULT = System.getProperty("user.home") + "/.vanda/functions/";
@@ -111,10 +115,11 @@ public class WorkflowModule implements Module {
 			eefs.workflowFactories.add(new org.vanda.studio.modules.workflows.inspector.WorkflowEditor());
 			eefs.literalFactories.add(new LiteralEditor(app, fr));
 
+			Generator gen = new GeneratorImpl(app, profile);
 			LinkedList<SemanticsToolFactory> srep = new LinkedList<SemanticsToolFactory>();
-			// srep.add(new RunTool(new GeneratorImpl(app, profile)));
 			srep.add(new InspectorTool(eefs));
-			srep.add(new org.vanda.studio.modules.workflows.tools.semantic.RunTool(new GeneratorImpl(app, profile)));
+			srep.add(new RunTool(gen));
+			srep.add(new RunNowTool(gen));
 
 			toolFactories = new LinkedList<ToolFactory>();
 			toolFactories.add(new PaletteTool());
@@ -124,11 +129,19 @@ public class WorkflowModule implements Module {
 			toolFactories.add(new AssignmentTableToolFactory(eefs));
 			toolFactories.add(new AssignmentSwitchToolFactory());
 
+			srep = new LinkedList<SemanticsToolFactory>();
+			srep.add(new InspectorTool(eefs));
+			srep.add(new RunNowTool(gen));
+
+			execToolFactories = new LinkedList<ToolFactory>();
+			execToolFactories.add(new SemanticsTool(srep));
+
 			app.getWindowSystem().addAction(null, new OpenManagerAction(), null, 100);
 			app.getWindowSystem().addAction(null, new OpenWorkflowAction(), "document-open",
 					KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK), 0);
 			app.getWindowSystem().addAction(null, new NewWorkflowAction(), "document-new",
 					KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK), 1);
+			app.registerPreviewFactory(RunTool.EXECUTION, new WorkflowExecutionPreview(app, gen, execToolFactories));
 		}
 
 		protected class NewWorkflowAction implements Action {
