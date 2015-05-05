@@ -55,17 +55,6 @@ public class RootLinker implements FragmentLinker {
 	}
 
 	@Override
-	public List<String> convertInputs(List<String> outer) {
-		return outer;
-	}
-
-	@Override
-	public List<String> convertOutputs(List<String> inner, List<String> l,
-			String s) {
-		return inner;
-	}
-
-	@Override
 	public Fragment link(String name, List<Type> outerinput,
 			List<Type> innerinput, List<Type> inneroutput,
 			List<Type> outeroutput, FragmentBase fb, FragmentIO io)

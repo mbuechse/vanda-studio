@@ -28,33 +28,20 @@ public class GeneratorImpl implements Generator, FragmentIO {
 	private final Application app;
 	private Profile prof;
 
-	// static interface Functor<E extends Throwable> {
-	// void run() throws E;
-	// }
-
 	// The Generator class encapsulates stuff that should not be kept around
 	// all the time, and resource acquisition is initialization, blah blah
-	protected class TheGenerator {
+	protected class GenerationProcess implements FragmentBase {
 
-		// private final FragmentIO io;
 		private final WeakHashMap<Object, Fragment> map;
 		private final HashMap<String, Fragment> fragments; // i.e., functions
-		private final FragmentBase fb;
 		private final Map<String, Integer> uniqueMap;
 		private final Map<Object, String> uniqueStrings;
 
-		public TheGenerator() {
-			// io = ProfileImpl.this;
+		public GenerationProcess() {
 			uniqueMap = new HashMap<String, Integer>();
 			uniqueStrings = new HashMap<Object, String>();
 			map = new WeakHashMap<Object, Fragment>();
 			fragments = new HashMap<String, Fragment>();
-			fb = new FragmentBase() {
-				@Override
-				public Fragment getFragment(String name) {
-					return fragments.get(name);
-				}
-			};
 		}
 
 		public Fragment generateAtomic(Tool t) {
@@ -74,17 +61,12 @@ public class GeneratorImpl implements Generator, FragmentIO {
 			Fragment result = map.get(w);
 			if (result == null) {
 				String name = makeUnique(w.getName(), w);
-				// String name = makeUnique(ewf.getName(), ewf);
 				assert (synA.getFragmentType() != null);
-				// assert (ewf.getFragmentType() != null);
 				FragmentCompiler fc = prof.getCompiler(synA.getFragmentType());
-				// FragmentCompiler fc =
-				// prof.getCompiler(ewf.getFragmentType());
 				assert (fc != null);
-				Job[] jobs = synA.getSorted();
-				// Job[] jobs = ewf.getSortedJobs();
-				final ArrayList<Fragment> frags = new ArrayList<Fragment>(jobs.length);
-				for (final Job ji : jobs) {
+				Job[] sorted = synA.getSorted();
+				final ArrayList<Fragment> frags = new ArrayList<Fragment>(sorted.length);
+				for (final Job ji : sorted) {
 					ji.visit(new ElementVisitor() {
 						@Override
 						public void visitLiteral(Literal l) {
@@ -98,22 +80,16 @@ public class GeneratorImpl implements Generator, FragmentIO {
 					});
 				}
 				result = fc.compile(name, synA, semA, frags, GeneratorImpl.this);
-				// result = fc.compile(name, ewf, frags, GeneratorImpl.this);
 				assert (result != null);
 				map.put(w, result);
-				// map.put(ewf, result);
 				this.fragments.put(result.getId(), result);
 			}
 			return result.getId();
 		}
 
-		// public Fragment generate(DataflowAnalysis dfa) throws IOException {
-		// public String generate(ExecutableWorkflow ewf) throws IOException {
 		public String generate(MutableWorkflow ewf, SyntaxAnalysis synA, SemanticAnalysis semA) throws IOException {
-			// String root = generateFragment(ewf);
 			String root = generateFragment(ewf, synA, semA);
-			// String root = generateFragment(dfa);
-			return prof.getRootLinker(getRootType()).link(root, null, null, null, null, fb, GeneratorImpl.this).getId();
+			return prof.getRootLinker(getRootType()).link(root, null, null, null, null, this, GeneratorImpl.this).getId();
 		}
 
 		public String makeUnique(String prefix, Object key) {
@@ -129,14 +105,16 @@ public class GeneratorImpl implements Generator, FragmentIO {
 			return result;
 		}
 
+		@Override
+		public Fragment getFragment(String name) {
+			return fragments.get(name);
+		}
+
 	}
 
 	@Override
-	// public Fragment generate(DataflowAnalysis dfa) throws IOException {
-	// public String generate(ExecutableWorkflow ewf) throws IOException {
 	public String generate(MutableWorkflow ewf, SyntaxAnalysis synA, SemanticAnalysis semA) throws IOException {
-		return new TheGenerator().generate(ewf, synA, semA);
-		// return new TheGenerator().generate(dfa);
+		return new GenerationProcess().generate(ewf, synA, semA);
 	}
 
 	public GeneratorImpl(Application app, Profile prof) {

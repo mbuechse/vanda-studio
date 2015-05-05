@@ -38,9 +38,9 @@ public class ShellCompiler implements FragmentCompiler {
 		sb.append("function ");
 		sb.append(nname);
 		sb.append(" {\n");
-		int i = 0;
-//		for (final Job ji : dfa.getSorted()) {
-		for (final Job ji : synA.getSorted()) {
+		final Job[] sorted = synA.getSorted();
+		for (int i = 0; i < sorted.length; i++) {
+			final Job ji = sorted[i];
 			final Fragment frag = fragments.get(i);
 			ji.visit(new ElementVisitor() {
 
@@ -62,21 +62,14 @@ public class ShellCompiler implements FragmentCompiler {
 					sb.append(' ');
 					sb.append(frag.getId());
 					sb.append(' ');
-//					sb.append(dfa.getRootDir(t));
-//					sb.append(ji.getToolPrefix());
-//					sb.append(semA.getDFA().getJobSpec(ji));
 					sb.append(semA.getDFA().getJobId(ji));
 					for (Port ip : frag.getInputPorts()) {
 						sb.append(" \"");
-//						sb.append(fio.findFile(dfa.getValue(ji.bindings.get(ip))));
-//						sb.append(fio.findFile(ji.getValuedBinding(ip).getValue()));
 						sb.append(fio.findFile(semA.getDFA().getValue(ji.bindings.get(ip))));
 						sb.append('\"');
 					}
 					for (Port op : frag.getOutputPorts()) {
 						sb.append(" \"");
-//						sb.append(fio.findFile(dfa.getValue(ji.bindings.get(op))));
-//						sb.append(fio.findFile(ji.getValuedBinding(op).getValue()));
 						sb.append(fio.findFile(semA.getDFA().getValue(ji.bindings.get(op))));;
 						sb.append('\"');
 					}
@@ -85,7 +78,6 @@ public class ShellCompiler implements FragmentCompiler {
 				}
 				
 			});
-			i++;
 		}
 		sb.append("}\n\n");
 		return new StaticFragment(nname, Fragments.EMPTY_LIST,
