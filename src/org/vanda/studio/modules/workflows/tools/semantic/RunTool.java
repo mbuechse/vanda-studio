@@ -77,12 +77,11 @@ public class RunTool implements SemanticsToolFactory {
 					new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");
 					new org.vanda.run.serialization.Storer().store(rc, filePath + ".run");
 					// XXX ServiceLocator antipattern
-					app.getPreviewFactory(EXECUTION).createPreview(filePath);
+					app.getPreviewFactory(EXECUTION).openEditor(filePath + ".xwf");
 				} catch (Exception e) {
 					wfe.getApplication().sendMessage(new ExceptionMessage(e));
 				}
 			}
-
 		}
 
 		private Application app;
@@ -97,24 +96,6 @@ public class RunTool implements SemanticsToolFactory {
 			app = wfe.getApplication();
 			wfe.addAction(new RunAction(), "system-run", KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_MASK), 4);
 		}
-
-		// TODO: probably obsolete, remove after some testing
-		// private String generate() {
-		// // try {
-		// // synA.checkWorkflow();
-		// // } catch (Exception e1) {
-		// // app.sendMessage(new ExceptionMessage(e1));
-		// // }
-		// if (semA.getDFA().isConnected() &&
-		// Types.canUnify(synA.getFragmentType(), prof.getRootType())) {
-		// try {
-		// return prof.generate(wfe.getView().getWorkflow(), synA, semA);
-		// } catch (IOException e) {
-		// app.sendMessage(new ExceptionMessage(e));
-		// }
-		// }
-		// return null;
-		// }
 	}
 
 	private final Generator prof;

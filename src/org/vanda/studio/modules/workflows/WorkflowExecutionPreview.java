@@ -14,9 +14,11 @@ import org.vanda.workflows.data.Database;
 import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.serialization.Loader;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 public class WorkflowExecutionPreview implements PreviewFactory {
-	final Application app;
-	final List<ToolFactory> toolFactories;
+	private final Application app;
+	private final List<ToolFactory> toolFactories;
 
 	public WorkflowExecutionPreview(Application app, List<ToolFactory> toolFactories) {
 		this.app = app;
@@ -25,23 +27,23 @@ public class WorkflowExecutionPreview implements PreviewFactory {
 
 	@Override
 	public JComponent createPreview(String filePath) {
-		Pair<MutableWorkflow, Database> phd;
-		// TODO this is not specific to an "execution editor", and it should be added to the xwf file
-		// RunConfig rc;
-		try {
-			phd = new Loader(app.getToolMetaRepository().getRepository()).load(filePath + ".xwf");
-			// rc = new org.vanda.run.serialization.Loader().load(filePath + ".run");
-			WorkflowExecution wfe = new WorkflowExecution(app, phd, toolFactories);
-			return wfe.getComponent();
-		} catch (Exception e) {
-			app.sendMessage(new ExceptionMessage(e));
-			return null;
-		}
+		throw new NotImplementedException();
 	}
 
 	@Override
-	public void openEditor(String value) {
-		// do nothing
+	public void openEditor(String filePath) {
+		Pair<MutableWorkflow, Database> phd;
+		// TODO this is not specific to an "execution editor", and it should be
+		// added to the xwf file
+		// RunConfig rc;
+		try {
+			phd = new Loader(app.getToolMetaRepository().getRepository()).load(filePath);
+			// rc = new org.vanda.run.serialization.Loader().load(filePath +
+			// ".run");
+			new WorkflowExecution(app, toolFactories, phd);
+			// let's hope the GUI will hold a reference
+		} catch (Exception e) {
+			app.sendMessage(new ExceptionMessage(e));
+		}
 	}
-
 }

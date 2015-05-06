@@ -29,7 +29,7 @@ public class WorkflowExecution extends DefaultWorkflowEditorImpl {
 
 	private final PresentationModel pm;
 
-	public WorkflowExecution(Application app, Pair<MutableWorkflow, Database> phd, List<ToolFactory> toolFactories)
+	public WorkflowExecution(Application app, List<ToolFactory> toolFactories, Pair<MutableWorkflow, Database> phd)
 			throws TypeCheckingException {
 		super(app, phd);
 

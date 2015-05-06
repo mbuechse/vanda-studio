@@ -28,7 +28,6 @@ import org.vanda.studio.modules.workflows.data.DirectorySelector;
 import org.vanda.studio.modules.workflows.data.DoubleSelector;
 import org.vanda.studio.modules.workflows.data.ElementSelector;
 import org.vanda.studio.modules.workflows.data.IntegerSelector;
-import org.vanda.studio.modules.workflows.impl.WorkflowEditorImpl;
 import org.vanda.studio.modules.workflows.inspector.ElementEditorFactories;
 import org.vanda.studio.modules.workflows.inspector.LiteralEditor;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
@@ -44,21 +43,16 @@ import org.vanda.studio.modules.workflows.tools.semantic.RunTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsToolFactory;
 import org.vanda.studio.modules.workflows.tools.semantic.ProfileManager.ProfileOpener;
+import org.vanda.types.CompositeType;
+import org.vanda.types.Type;
 import org.vanda.util.Action;
-import org.vanda.util.ExceptionMessage;
 import org.vanda.util.ExternalRepository;
 import org.vanda.util.CompositeFactory;
 import org.vanda.util.ListRepository;
-import org.vanda.util.Pair;
-import org.vanda.workflows.data.Database;
-import org.vanda.workflows.hyper.MutableWorkflow;
-import org.vanda.workflows.serialization.Loader;
-
-// TODO this module needs a "application object model" of its own
-// essentially, it needs to have submodules
-// dependency injection something something
 
 public class WorkflowModule implements Module {
+	
+	public static final Type WORKFLOW = new CompositeType("Workflow");
 
 	@Override
 	public Object createInstance(Application a) {
@@ -77,8 +71,6 @@ public class WorkflowModule implements Module {
 		private final ListRepository<Profile> repository;
 		private final Profile profile;
 		private ProfileManager manager;
-		private final LinkedList<ToolFactory> toolFactories;
-		private final LinkedList<ToolFactory> execToolFactories;
 
 		public static final String TOOL_PATH_KEY = "profileToolPath";
 		public static final String TOOL_PATH_DEFAULT = System.getProperty("user.home") + "/.vanda/functions/";
@@ -115,33 +107,36 @@ public class WorkflowModule implements Module {
 			eefs.workflowFactories.add(new org.vanda.studio.modules.workflows.inspector.WorkflowEditor());
 			eefs.literalFactories.add(new LiteralEditor(app, fr));
 
+			ToolFactory pdftool = new WorkflowToPDFToolFactory(app);
 			Generator gen = new GeneratorImpl(app, profile);
 			LinkedList<SemanticsToolFactory> srep = new LinkedList<SemanticsToolFactory>();
-			srep.add(new InspectorTool(eefs));
-			srep.add(new RunTool(gen));
-			srep.add(new RunNowTool(gen));
-
-			toolFactories = new LinkedList<ToolFactory>();
-			toolFactories.add(new PaletteTool());
-			toolFactories.add(new SaveTool());
-			toolFactories.add(new WorkflowToPDFToolFactory(app));
-			toolFactories.add(new SemanticsTool(srep));
-			toolFactories.add(new AssignmentTableToolFactory(eefs));
-			toolFactories.add(new AssignmentSwitchToolFactory());
-
 			srep = new LinkedList<SemanticsToolFactory>();
 			srep.add(new InspectorTool(eefs));
 			srep.add(new RunNowTool(gen));
 
-			execToolFactories = new LinkedList<ToolFactory>();
-			execToolFactories.add(new SemanticsTool(srep));
+			LinkedList<ToolFactory> toolFactories;
+			toolFactories = new LinkedList<ToolFactory>();
+			toolFactories.add(pdftool);
+			toolFactories.add(new SemanticsTool(srep));
+			app.registerPreviewFactory(RunTool.EXECUTION, new WorkflowExecutionPreview(app, toolFactories));
+
+			srep = new LinkedList<SemanticsToolFactory>(srep);
+			srep.add(new RunTool(gen));
+
+			toolFactories = new LinkedList<ToolFactory>();
+			toolFactories.add(new PaletteTool());
+			toolFactories.add(new SaveTool());
+			toolFactories.add(pdftool);
+			toolFactories.add(new SemanticsTool(srep));
+			toolFactories.add(new AssignmentTableToolFactory(eefs));
+			toolFactories.add(new AssignmentSwitchToolFactory());
+			app.registerPreviewFactory(WORKFLOW, new WorkflowPreview(app, toolFactories));
 
 			// app.getWindowSystem().addAction(null, new OpenManagerAction(), null, 100);
 			app.getWindowSystem().addAction(null, new NewWorkflowAction(), "document-new",
 					KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK), 0);
 			app.getWindowSystem().addAction(null, new OpenWorkflowAction(), "document-open",
 					KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK), 1);
-			app.registerPreviewFactory(RunTool.EXECUTION, new WorkflowExecutionPreview(app, execToolFactories));
 		}
 
 		protected class NewWorkflowAction implements Action {
@@ -152,11 +147,7 @@ public class WorkflowModule implements Module {
 
 			@Override
 			public void invoke() {
-				MutableWorkflow mwf = new MutableWorkflow("Workflow");
-				Database d = new Database();
-				new WorkflowEditorImpl(app, toolFactories, new Pair<MutableWorkflow, Database>(mwf, d));
-				// something will hold a reference to it since it will be in the
-				// GUI
+				app.getPreviewFactory(WORKFLOW).openEditor("");
 			}
 		}
 
@@ -185,13 +176,7 @@ public class WorkflowModule implements Module {
 					File chosenFile = chooser.getSelectedFile();
 					app.setProperty("lastDir", chosenFile.getParentFile().getAbsolutePath());
 					String filePath = chosenFile.getPath();
-					Pair<MutableWorkflow, Database> phd;
-					try {
-						phd = new Loader(app.getToolMetaRepository().getRepository()).load(filePath);
-						new WorkflowEditorImpl(app, toolFactories, phd);
-					} catch (Exception e) {
-						app.sendMessage(new ExceptionMessage(e));
-					}
+					app.getPreviewFactory(WORKFLOW).openEditor(filePath);
 				}
 			}
 		}
