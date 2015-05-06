@@ -141,7 +141,7 @@ public class WorkflowModule implements Module {
 					KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK), 0);
 			app.getWindowSystem().addAction(null, new OpenWorkflowAction(), "document-open",
 					KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK), 1);
-			app.registerPreviewFactory(RunTool.EXECUTION, new WorkflowExecutionPreview(app, gen, execToolFactories));
+			app.registerPreviewFactory(RunTool.EXECUTION, new WorkflowExecutionPreview(app, execToolFactories));
 		}
 
 		protected class NewWorkflowAction implements Action {
