@@ -127,11 +127,6 @@ public class PresentationModel implements DataInterface {
 		for (JobAdapter ja : jobs) {
 			if (ja.getJobCell() == tparval) {
 				j = ja.getJob();
-				break;
-			}
-		}
-		for (JobAdapter ja : jobs) {
-			if (ja.getJob() == j) {
 				for (Port pi : ja.getJob().getInputPorts()) {
 					if (ja.getInPortCell(pi) == tval) {
 						p = pi;

@@ -87,7 +87,7 @@ public class WorkflowEditorImpl extends DefaultWorkflowEditorImpl {
 					+ "; class=com.mxgraph.swing.util.mxGraphTransferable");
 		} catch (ClassNotFoundException cnfe) {
 			// do nothing
-			System.out.println("Problem!");
+			System.err.println("Problem!");
 		}
 	}
 
