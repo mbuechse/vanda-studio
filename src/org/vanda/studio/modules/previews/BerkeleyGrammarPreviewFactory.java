@@ -35,10 +35,6 @@ public class BerkeleyGrammarPreviewFactory implements PreviewFactory {
 		private JButton bMore;
 		private static final int SIZE = 20;
 		private int columns;
-
-		public BerkeleyGrammarPreview(String value, String postfix) {
-			this(value, postfix, 5);
-		}
 		
 		public BerkeleyGrammarPreview(String value, String postfix, int cols) {
 			super();
@@ -136,7 +132,7 @@ public class BerkeleyGrammarPreviewFactory implements PreviewFactory {
 
 	@Override
 	public JComponent createPreview(String value) {
-		return new JScrollPane(new BerkeleyGrammarPreview(value, postfix));
+		return new JScrollPane(new BerkeleyGrammarPreview(value, postfix, 5));
 	}
 
 	@Override
@@ -157,9 +153,9 @@ public class BerkeleyGrammarPreviewFactory implements PreviewFactory {
 		t.start();
 	}
 
-	@Override
-	public JComponent createSmallPreview(String value) {
-		return new JScrollPane(new BerkeleyGrammarPreview(value, postfix, 1));
-	}
+//	@Override
+//	public JComponent createSmallPreview(String value) {
+//		return new JScrollPane(new BerkeleyGrammarPreview(value, postfix, 1));
+//	}
 
 }

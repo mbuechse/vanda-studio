@@ -80,8 +80,8 @@ public class WorkflowModule implements Module {
 		private final LinkedList<ToolFactory> toolFactories;
 		private final LinkedList<ToolFactory> execToolFactories;
 
-		public static String TOOL_PATH_KEY = "profileToolPath";
-		public static String TOOL_PATH_DEFAULT = System.getProperty("user.home") + "/.vanda/functions/";
+		public static final String TOOL_PATH_KEY = "profileToolPath";
+		public static final String TOOL_PATH_DEFAULT = System.getProperty("user.home") + "/.vanda/functions/";
 
 		public WorkflowModuleInstance(Application a) {
 			app = a;
@@ -136,11 +136,11 @@ public class WorkflowModule implements Module {
 			execToolFactories = new LinkedList<ToolFactory>();
 			execToolFactories.add(new SemanticsTool(srep));
 
-			app.getWindowSystem().addAction(null, new OpenManagerAction(), null, 100);
-			app.getWindowSystem().addAction(null, new OpenWorkflowAction(), "document-open",
-					KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK), 0);
+			// app.getWindowSystem().addAction(null, new OpenManagerAction(), null, 100);
 			app.getWindowSystem().addAction(null, new NewWorkflowAction(), "document-new",
-					KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK), 1);
+					KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK), 0);
+			app.getWindowSystem().addAction(null, new OpenWorkflowAction(), "document-open",
+					KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_MASK), 1);
 			app.registerPreviewFactory(RunTool.EXECUTION, new WorkflowExecutionPreview(app, gen, execToolFactories));
 		}
 

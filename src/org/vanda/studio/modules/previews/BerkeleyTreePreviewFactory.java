@@ -564,24 +564,24 @@ public class BerkeleyTreePreviewFactory implements PreviewFactory {
 		t.start();
 	}
 
-	@Override
-	public JComponent createSmallPreview(String value) {
-		Scanner scan;
-		try {
-			scan = new Scanner(new FileInputStream(value));
-			String line = scan.nextLine();
-			scan.close();
-			TreeView jTree = new TreeView(parseTree(line));
-			JScrollPane sTree = new JScrollPane(jTree);
-			DragScrollListener dsl = new DragScrollListener(jTree, sTree);
-			jTree.addMouseMotionListener(dsl);
-			jTree.addMouseListener(dsl);
-			jTree.addMouseWheelListener(dsl);
-			sTree.setPreferredSize(new Dimension(200, 150));
-			jTree.zoomOut().zoomOut();
-			return sTree;
-		} catch (Exception e) {
-			return new JLabel("wrong format");
-		}
-	}
+//	@Override
+//	public JComponent createSmallPreview(String value) {
+//		Scanner scan;
+//		try {
+//			scan = new Scanner(new FileInputStream(value));
+//			String line = scan.nextLine();
+//			scan.close();
+//			TreeView jTree = new TreeView(parseTree(line));
+//			JScrollPane sTree = new JScrollPane(jTree);
+//			DragScrollListener dsl = new DragScrollListener(jTree, sTree);
+//			jTree.addMouseMotionListener(dsl);
+//			jTree.addMouseListener(dsl);
+//			jTree.addMouseWheelListener(dsl);
+//			sTree.setPreferredSize(new Dimension(200, 150));
+//			jTree.zoomOut().zoomOut();
+//			return sTree;
+//		} catch (Exception e) {
+//			return new JLabel("wrong format");
+//		}
+//	}
 }

@@ -106,9 +106,4 @@ final class DictionaryPreviewFactory implements PreviewFactory {
 			app.sendMessage(new ExceptionMessage(e));
 		}
 	}
-
-	@Override
-	public JComponent createSmallPreview(String absolutePath) {
-		return createPreview(absolutePath);
-	}
 }

@@ -13,20 +13,15 @@ public class PreviewsModule implements Module {
 
 	@Override
 	public Object createInstance(Application app) {
-		app.registerPreviewFactory(new CompositeType("PennTreeCorpus"),
-				new BerkeleyTreePreviewFactory(app));
-		app.registerPreviewFactory(new CompositeType("BerkeleyGrammar.sm6"),
-				new BerkeleyGrammarPreviewFactory(app, ".prev"));
-		app.registerPreviewFactory(new CompositeType("LAPCFG-Grammar"),
-				new BerkeleyGrammarPreviewFactory(app, "/level1.grammar"));
-		app.registerPreviewFactory(new CompositeType("EMSteps"),
-				new DictionaryPreviewFactory(app));
-		app.registerPreviewFactory(new CompositeType("Scores"),
-				new ScoresPreviewFactory(app));
-		app.registerPreviewFactory(new CompositeType("Alignments"),
-				new AlignmentsPreviewFactory(app));
-		app.registerPreviewFactory(new CompositeType("log"),
-				new LogPreviewFactory());
+		app.registerPreviewFactory(new CompositeType("PennTreeCorpus"), new BerkeleyTreePreviewFactory(app));
+		app.registerPreviewFactory(new CompositeType("BerkeleyGrammar.sm6"), new BerkeleyGrammarPreviewFactory(app,
+				".prev"));
+		app.registerPreviewFactory(new CompositeType("LAPCFG-Grammar"), new BerkeleyGrammarPreviewFactory(app,
+				"/level1.grammar"));
+		app.registerPreviewFactory(new CompositeType("EMSteps"), new DictionaryPreviewFactory(app));
+		app.registerPreviewFactory(new CompositeType("Scores"), new ScoresPreviewFactory(app));
+		app.registerPreviewFactory(new CompositeType("Alignments"), new AlignmentsPreviewFactory(app));
+		app.registerPreviewFactory(new CompositeType("log"), new LogPreviewFactory());
 		app.registerPreviewFactory(null, new MonospacePreviewFactory(app));
 		return null;
 	}

@@ -76,11 +76,6 @@ public class ScoresPreviewFactory implements PreviewFactory {
 	}
 
 	@Override
-	public JComponent createSmallPreview(String absolutePath) {
-		return createPreview(absolutePath);
-	}
-
-	@Override
 	public void openEditor(final String value) {
 		Thread t = new Thread(new Runnable() {
 

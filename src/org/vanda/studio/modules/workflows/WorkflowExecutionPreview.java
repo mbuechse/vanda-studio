@@ -43,11 +43,6 @@ public class WorkflowExecutionPreview implements PreviewFactory {
 	}
 
 	@Override
-	public JComponent createSmallPreview(String absolutePath) {
-		return createPreview(absolutePath);
-	}
-
-	@Override
 	public void openEditor(String value) {
 		// do nothing
 	}
