@@ -46,6 +46,7 @@ public class WorkflowEditorImpl extends DefaultWorkflowEditorImpl {
 		view.getWorkflow().getObservable().addObserver(mwfObserver);
 
 		synUp = new ErrorHighlighter(app, syntaxAnalysis, view);
+		syntaxAnalysis.getSyntaxChangedObservable().addObserver(synUp);
 
 		component = new MyMxGraphComponent(presentationModel.getVisualization().getGraph());
 		new mxDropTargetListener(presentationModel, component);
