@@ -30,11 +30,11 @@ public class WorkflowExecutionPreview implements PreviewFactory {
 	@Override
 	public JComponent createPreview(String filePath) {
 		Pair<MutableWorkflow, Database> phd;
-		RunConfig rc;
+		RunConfig rc;  // TODO this is not specific to an "execution editor", and it should be added to the xwf file
 		try {
 			phd = new Loader(app.getToolMetaRepository().getRepository()).load(filePath + ".xwf");
 			rc = new org.vanda.run.serialization.Loader().load(filePath + ".run");
-			WorkflowExecution wfe = new WorkflowExecution(app, phd, prof, rc, toolFactories);
+			WorkflowExecution wfe = new WorkflowExecution(app, phd, toolFactories);
 			return wfe.getComponent();
 		} catch (Exception e) {
 			app.sendMessage(new ExceptionMessage(e));

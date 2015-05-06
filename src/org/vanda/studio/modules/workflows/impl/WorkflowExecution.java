@@ -6,9 +6,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
-import org.vanda.fragment.model.Generator;
 import org.vanda.presentationmodel.PresentationModel;
-import org.vanda.run.RunConfig;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.util.Pair;
@@ -21,7 +19,8 @@ import com.mxgraph.swing.mxGraphComponent;
 /**
  * execution environment for experiments
  * 
- * more or less obsolete -- one could use the standard WorkflowEditorImpl as well, thanks to the RunNowTool
+ * more or less obsolete -- one could use the standard WorkflowEditorImpl as
+ * well, thanks to the RunNowTool
  * 
  * @author kgebhardt, buechse
  * 
@@ -30,12 +29,13 @@ public class WorkflowExecution extends DefaultWorkflowEditorImpl {
 
 	private final PresentationModel pm;
 
-	public WorkflowExecution(Application app, Pair<MutableWorkflow, Database> phd, Generator prof, RunConfig rc,
-			List<ToolFactory> toolFactories) throws TypeCheckingException {
+	public WorkflowExecution(Application app, Pair<MutableWorkflow, Database> phd, List<ToolFactory> toolFactories)
+			throws TypeCheckingException {
 		super(app, phd);
 
 		pm = new PresentationModel(view, app.getToolMetaRepository().getRepository());
-		// XXX this is a hack, because the underlying visualization components should not be accessed
+		// XXX this is a hack, because the underlying visualization components
+		// should not be accessed
 		pm.getVisualization().setGraphImmutable();
 
 		// setup component design
