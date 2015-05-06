@@ -7,7 +7,7 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
 import org.vanda.fragment.model.Generator;
-import org.vanda.presentationmodel.PresentationModel;
+import org.vanda.presentationmodel.execution.PresentationModel;
 import org.vanda.run.RunConfig;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
@@ -34,7 +34,7 @@ public class WorkflowExecution extends DefaultWorkflowEditorImpl {
 			List<ToolFactory> toolFactories) throws TypeCheckingException {
 		super(app, phd);
 
-		pm = new PresentationModel(view, app.getToolMetaRepository().getRepository());
+		pm = new PresentationModel(view);
 
 		// setup component design
 		component = (mxGraphComponent) pm.getVisualization().getGraphComponent();

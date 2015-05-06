@@ -5,8 +5,6 @@ import java.awt.event.MouseEvent;
 import org.vanda.render.jgraph.Cell;
 import org.vanda.render.jgraph.Cells.CellListener;
 import org.vanda.render.jgraph.Graph;
-import org.vanda.render.jgraph.JobCell;
-import org.vanda.render.jgraph.LayoutManager;
 import org.vanda.render.jgraph.LocationCell;
 import org.vanda.render.jgraph.Cells.CellEvent;
 import org.vanda.render.jgraph.Cells.MarkChangedEvent;
@@ -97,9 +95,8 @@ public class LocationAdapter {
 
 	View view;
 
-	public LocationAdapter(Graph g, View view, LayoutManager layoutManager, JobCell jobCell, Port port,
-			Location location) {
-		locationCell = new LocationCell(g, layoutManager, jobCell);
+	public LocationAdapter(Graph g, View view, Port port, Location location) {
+		locationCell = new LocationCell(g);
 
 		this.locationCellListener = new LocationCellListener();
 		locationCellObserver = new Observer<CellEvent<Cell>>() {

@@ -160,8 +160,7 @@ public class JobAdapter {
 			List<Port> in = job.getInputPorts();
 
 			for (Port ip : in) {
-				InPortCell ipc = new InPortCell(g, layoutManager, jobCell,
-						"InPortCell");
+				InPortCell ipc = new InPortCell(g);
 				inports.put(ip, ipc);
 				jobCell.addCell(ipc, null);
 			}
@@ -169,12 +168,10 @@ public class JobAdapter {
 			// insert a cell for every output port
 			List<Port> out = job.getOutputPorts();
 			for (Port op : out) {
-				OutPortCell opc = new OutPortCell(g, layoutManager, jobCell,
-						"OutPortCell");
+				OutPortCell opc = new OutPortCell(g);
 				outports.put(op, opc);
 				jobCell.addCell(opc, null);
-				LocationAdapter locA = new LocationAdapter(g, layoutManager,
-						jobCell);
+				LocationAdapter locA = new LocationAdapter(g);
 				locations.put(op, locA);
 				jobCell.addCell(locA.locationCell, null);
 

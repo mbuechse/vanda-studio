@@ -8,7 +8,7 @@ public class WorkflowCell extends Cell {
 	DataInterface di;
 
 	public WorkflowCell(DataInterface di) {
-		super(null, null, null);
+		super(null, null);
 		this.di = di;
 	}
 

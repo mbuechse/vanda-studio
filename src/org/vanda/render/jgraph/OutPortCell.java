@@ -3,13 +3,9 @@ package org.vanda.render.jgraph;
 import com.mxgraph.model.mxICell;
 
 public class OutPortCell extends Cell {
-	final String portType; // input or output port
-
-	public OutPortCell(Graph graph, LayoutManager layout, Cell parent,
-			String portType) 
+	public OutPortCell(Graph graph) 
 	{
-		super(JGraphRendering.outPortRenderer, layout, graph);
-		this.portType = portType;
+		super(JGraphRendering.outPortRenderer, graph);
 	}
 
 	@Override

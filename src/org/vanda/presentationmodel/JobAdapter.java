@@ -41,7 +41,6 @@ import org.vanda.workflows.hyper.Location;
 
 public class JobAdapter {
 	private class JobCellListener implements CellListener<Cell> {
-
 		@Override
 		public void insertCell(Cell c) {
 			// the following is necessary if the job is not in the model
@@ -120,7 +119,6 @@ public class JobAdapter {
 			}
 			menu.show(e.getComponent(), e.getX(), e.getY());
 		}
-
 	}
 
 	private class JobListener implements Jobs.JobListener<Job> {
@@ -138,7 +136,6 @@ public class JobAdapter {
 	}
 
 	private class JobViewListener implements ViewListener<AbstractView<?>> {
-
 		@Override
 		public void highlightingChanged(AbstractView<?> v) {
 			// TODO Auto-generated method stub
@@ -161,7 +158,6 @@ public class JobAdapter {
 	}
 	
 	private class RunEventListenerImpl implements RunEventListener {
-
 		@Override
 		public void cancelled() {
 			jobCell.setCancelled();
@@ -186,11 +182,13 @@ public class JobAdapter {
 		public void running() {
 			jobCell.setRunning();					
 		}
-		
 	}
 
-	private Map<Port, InPortCell> inports;
+	private final View view;
 	private final Job job;
+	private final Map<Port, InPortCell> inports;
+	private final Map<Port, OutPortCell> outports;
+	private final Map<Location, LocationAdapter> locations;
 	private JobCell jobCell;
 	private final JobCellListener jobCellListener;
 	private final Observer<CellEvent<Cell>> jobCellObserver;
@@ -201,40 +199,34 @@ public class JobAdapter {
 	private Observer<RunEvent> runEventObserver;
 	private RunEventListener runEventListener;
 
-	private Map<Location, LocationAdapter> locations;
-
-	private Map<Port, OutPortCell> outports;
-
-	private View view;
-
 	public JobAdapter(Job job, Graph graph, View view, WorkflowCell wfc) {
 		this.view = view;
 		this.job = job;
+		inports = new WeakHashMap<Port, InPortCell>();
+		outports = new WeakHashMap<Port, OutPortCell>();
+		locations = new WeakHashMap<Location, LocationAdapter>();
 		setUpCells(graph, wfc);
-		this.jobListener = new JobListener();
-		this.jobCellListener = new JobCellListener();
+		jobListener = new JobListener();
+		jobCellListener = new JobCellListener();
 
-		// Register at Job
+		// register at Job
 		if (job.getObservable() != null) {
 			jobObserver = new Observer<Jobs.JobEvent<Job>>() {
-
 				@Override
 				public void notify(JobEvent<Job> event) {
 					event.doNotify(jobListener);
 				}
-
 			};
 			job.getObservable().addObserver(jobObserver);
 		} else
 			jobObserver = null;
-		// register at jobCell
+		
+		// register at JobCell
 		jobCellObserver = new Observer<CellEvent<Cell>>() {
-
 			@Override
 			public void notify(CellEvent<Cell> event) {
 				event.doNotify(jobCellListener);
 			}
-
 		};
 		jobCell.getObservable().addObserver(jobCellObserver);
 
@@ -249,12 +241,10 @@ public class JobAdapter {
 		// register at jobView
 		jobViewListener = new JobViewListener();
 		jobViewObserver = new Observer<ViewEvent<AbstractView<?>>>() {
-
 			@Override
 			public void notify(ViewEvent<AbstractView<?>> event) {
 				event.doNotify(jobViewListener);
 			}
-
 		};
 		JobView jv = view.getJobView(job);
 		jv.getObservable().addObserver(jobViewObserver);
@@ -285,7 +275,6 @@ public class JobAdapter {
 	}
 
 	public Job getJob() {
-		// return jobCell.getJob();
 		return job;
 	}
 
@@ -298,20 +287,17 @@ public class JobAdapter {
 	}
 
 	private void setUpCells(Graph graph, WorkflowCell wfc) {
+		// to be called exactly once
 		graph.beginUpdate();
 		try {
 			LayoutManager layoutManager = new NaiveLayoutManager();
-			inports = new WeakHashMap<Port, InPortCell>();
-			outports = new WeakHashMap<Port, OutPortCell>();
-			locations = new WeakHashMap<Location, LocationAdapter>();
 			jobCell = new JobCell(graph, job.selectRenderer(JGraphRendering.getRendererAssortment()), job.getName(),
 					job.getX(), job.getY(), job.getWidth(), job.getHeight());
 
 			// insert a cell for every input port
 			List<Port> in = job.getInputPorts();
-
 			for (Port ip : in) {
-				InPortCell ipc = new InPortCell(graph, layoutManager, jobCell, "InPortCell");
+				InPortCell ipc = new InPortCell(graph);
 				inports.put(ip, ipc);
 				jobCell.addCell(ipc, null);
 			}
@@ -319,11 +305,10 @@ public class JobAdapter {
 			// insert a cell for every output port
 			List<Port> out = job.getOutputPorts();
 			for (Port op : out) {
-				OutPortCell opc = new OutPortCell(graph, layoutManager, jobCell, "OutPortCell");
+				OutPortCell opc = new OutPortCell(graph);
 				outports.put(op, opc);
 				jobCell.addCell(opc, null);
-				LocationAdapter locA = new LocationAdapter(graph, view, layoutManager, jobCell, op,
-						job.bindings.get(op));
+				LocationAdapter locA = new LocationAdapter(graph, view, op, job.bindings.get(op));
 				locations.put(job.bindings.get(op), locA);
 				jobCell.addCell(locA.locationCell, null);
 			}

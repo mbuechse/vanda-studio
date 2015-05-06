@@ -29,7 +29,6 @@ import org.vanda.workflows.hyper.MutableWorkflow;
 
 public class ConnectionAdapter {
 	private class ConnectionCellListener implements CellListener<Cell> {
-
 		@Override
 		public void insertCell(Cell c) {
 			// do nothing
@@ -84,11 +83,9 @@ public class ConnectionAdapter {
 			menu.add(item);
 			menu.show(e.getComponent(), e.getX(), e.getY());
 		}
-
 	}
 
 	private class ConnectionViewListener implements ViewListener<AbstractView<?>> {
-
 		@Override
 		public void highlightingChanged(AbstractView<?> v) {
 			// TODO Auto-generated method stub
@@ -165,18 +162,11 @@ public class ConnectionAdapter {
 		OutPortCell sourcePortCell = visualization.getSourceCell();
 		JobCell sourceJobCell = (JobCell) sourcePortCell.getParentCell();
 		PresentationModel pm = (PresentationModel) ((WorkflowCell) visualization.getParentCell()).getDataInterface();
-		Job sourceJob = null;
-		JobAdapter sourceJobAdapter = null;
-		Port sourcePort = null;
 
-		for (JobAdapter ja : pm.getJobs()) {
-			if (ja.getJobCell() == sourceJobCell) {
-				sourceJob = ja.getJob();
-				sourceJobAdapter = ja;
-				break;
-			}
-		}
-		for (Port op : sourceJob.getOutputPorts()) {
+		JobAdapter sourceJobAdapter = pm.getJobAdapterForCell(sourceJobCell);
+		Port sourcePort = null;
+		assert sourceJobAdapter != null;
+		for (Port op : sourceJobAdapter.getJob().getOutputPorts()) {
 			if (sourceJobAdapter.getOutPortCell(op) == sourcePortCell) {
 				sourcePort = op;
 				break;
@@ -186,7 +176,7 @@ public class ConnectionAdapter {
 		// Add Connection to Workflow
 		// This is done last, because it will trigger the typecheck,
 		// which requires the ConnectionView to be created before
-		view.getWorkflow().addConnection(connectionKey, sourceJob.bindings.get(sourcePort));
+		view.getWorkflow().addConnection(connectionKey, sourceJobAdapter.getJob().bindings.get(sourcePort));
 	}
 
 	/**
@@ -207,14 +197,8 @@ public class ConnectionAdapter {
 		Job targetJob = cc.target;
 		Port sourcePort = mwf.getConnectionSource(cc).targetPort;
 		Port targetPort = cc.targetPort;
-		JobAdapter sJA = null;
-		JobAdapter tJA = null;
-		for (JobAdapter jA : pm.getJobs()) {
-			if (jA.getJob() == sourceJob)
-				sJA = jA;
-			if (jA.getJob() == targetJob)
-				tJA = jA;
-		}
+		JobAdapter sJA = pm.getJobAdapterForJob(sourceJob);
+		JobAdapter tJA = pm.getJobAdapterForJob(targetJob);
 		assert (sJA != null && tJA != null);
 		OutPortCell source = sJA.getOutPortCell(sourcePort);
 		InPortCell target = tJA.getInPortCell(targetPort);
@@ -227,23 +211,19 @@ public class ConnectionAdapter {
 		AbstractView<?> connectionView = view.getConnectionView(connectionKey);
 
 		connectionViewObserver = new Observer<ViewEvent<AbstractView<?>>>() {
-
 			@Override
 			public void notify(ViewEvent<AbstractView<?>> event) {
 				event.doNotify(connectionViewListener);
 			}
-
 		};
 		connectionView.getObservable().addObserver(connectionViewObserver);
 
 		connectionCellListener = new ConnectionCellListener();
 		connectionCellObserver = new Observer<CellEvent<Cell>>() {
-
 			@Override
 			public void notify(CellEvent<Cell> event) {
 				event.doNotify(connectionCellListener);
 			}
-
 		};
 		visualization.getObservable().addObserver(connectionCellObserver);
 	}

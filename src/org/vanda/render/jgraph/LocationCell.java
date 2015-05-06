@@ -5,9 +5,9 @@ import com.mxgraph.model.mxICell;
 
 public class LocationCell extends Cell {
 
-	public LocationCell(final Graph graph, LayoutManager layout, Cell parent) {
+	public LocationCell(final Graph graph) {
 
-		super(JGraphRendering.locationRenderer, layout, graph);
+		super(JGraphRendering.locationRenderer, graph);
 	}
 
 	@Override

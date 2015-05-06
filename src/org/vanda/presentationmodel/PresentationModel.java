@@ -122,27 +122,20 @@ public class PresentationModel implements DataInterface {
 	 * @param tval
 	 */
 	private void addConnectionAdapter(ConnectionCell connectionCell, JobCell tparval, InPortCell tval) {
-		Job j = null;
 		Port p = null;
-		for (JobAdapter ja : jobs) {
-			if (ja.getJobCell() == tparval) {
-				j = ja.getJob();
-				for (Port pi : ja.getJob().getInputPorts()) {
-					if (ja.getInPortCell(pi) == tval) {
-						p = pi;
-						break;
-					}
-				}
+		JobAdapter ja = getJobAdapterForCell(tparval);
+		for (Port pi : ja.getJob().getInputPorts()) {
+			if (ja.getInPortCell(pi) == tval) {
+				p = pi;
 				break;
 			}
 		}
-		assert (j != null && p != null);
-		ConnectionKey connectionKey = new ConnectionKey(j, p);
+		assert (ja != null && p != null);
+		ConnectionKey connectionKey = new ConnectionKey(ja.getJob(), p);
 		beginUpdate();
 		if (!connections.containsKey(connectionKey))
 			connections.put(connectionKey, new ConnectionAdapter(connectionKey, connectionCell, view));
 		endUpdate();
-
 	}
 
 	/**
@@ -160,7 +153,7 @@ public class PresentationModel implements DataInterface {
 		if (!job.isInserted()) {
 			view.getWorkflow().addChild(job);
 		}
-		JobAdapter ja = getJobAdapter(job);
+		JobAdapter ja = getJobAdapterForJob(job);
 		if (ja == null) {
 			ja = new JobAdapter(job, graph, view, wfa.getWorkflowCell());
 			jobs.add(ja);
@@ -169,9 +162,16 @@ public class PresentationModel implements DataInterface {
 		return ja;
 	}
 	
-	public JobAdapter getJobAdapter(Job job) {
+	public JobAdapter getJobAdapterForJob(Job job) {
 		for (JobAdapter ja : jobs)
 			if (ja.getJob() == job)
+				return ja;
+		return null;
+	}
+	
+	public JobAdapter getJobAdapterForCell(JobCell cell) {
+		for (JobAdapter ja : jobs)
+			if (ja.getJobCell() == cell)
 				return ja;
 		return null;
 	}
@@ -204,7 +204,7 @@ public class PresentationModel implements DataInterface {
 	}
 
 	public void removeJobAdapter(MutableWorkflow mwf, Job j) {
-		JobAdapter toDelete = getJobAdapter(j);
+		JobAdapter toDelete = getJobAdapterForJob(j);
 		if (toDelete != null) {
 			jobs.remove(toDelete);
 			toDelete.destroy(graph);

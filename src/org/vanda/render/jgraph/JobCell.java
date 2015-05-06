@@ -20,7 +20,7 @@ public class JobCell extends Cell {
 	public JobCell(final Graph graph, Renderer r, String label, double x, double y, double w, double h) {
 
 		// r = null to prevent rendering in supertype
-		super(null, null, graph);
+		super(null, graph);
 		this.label = label;
 		setZ(r);
 		visualization = new mxCell(this, new mxGeometry(), null);

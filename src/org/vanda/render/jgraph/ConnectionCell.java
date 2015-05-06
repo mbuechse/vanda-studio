@@ -13,14 +13,13 @@ public class ConnectionCell extends Cell {
 	boolean handdrawn;
 
 	public ConnectionCell() {
-		super(null, null, null);
+		super(null, null);
 		handdrawn = true;
 	}
 
-	public ConnectionCell(final Graph graph, OutPortCell source,
-			InPortCell target) {
+	public ConnectionCell(final Graph graph, OutPortCell source, InPortCell target) {
 		// r = null, to fit connection creation scheme
-		super(null, null, graph);
+		super(null, graph);
 		handdrawn = false;
 
 		// create mxCell and add it to Graph

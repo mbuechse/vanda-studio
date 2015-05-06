@@ -18,7 +18,7 @@ public abstract class Cell {
 
 	protected Object z;
 
-	protected Cell(Renderer r, LayoutManager layoutManager, final Graph graph) {
+	protected Cell(Renderer r, final Graph graph) {
 		
 		observable = new MultiplexObserver<CellEvent<Cell>>();
 		setZ(r);
