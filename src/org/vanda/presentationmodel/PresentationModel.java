@@ -160,14 +160,20 @@ public class PresentationModel implements DataInterface {
 		if (!job.isInserted()) {
 			view.getWorkflow().addChild(job);
 		}
-		for (JobAdapter ja : jobs) {
+		JobAdapter ja = getJobAdapter(job);
+		if (ja == null) {
+			ja = new JobAdapter(job, graph, view, wfa.getWorkflowCell());
+			jobs.add(ja);
+			graph.refresh();
+		}
+		return ja;
+	}
+	
+	public JobAdapter getJobAdapter(Job job) {
+		for (JobAdapter ja : jobs)
 			if (ja.getJob() == job)
 				return ja;
-		}
-		JobAdapter ja = new JobAdapter(job, graph, view, wfa.getWorkflowCell());
-		jobs.add(ja);
-		graph.refresh();
-		return ja;
+		return null;
 	}
 
 	void beginUpdate() {
@@ -198,11 +204,7 @@ public class PresentationModel implements DataInterface {
 	}
 
 	public void removeJobAdapter(MutableWorkflow mwf, Job j) {
-		JobAdapter toDelete = null;
-		for (JobAdapter ja : jobs) {
-			if (ja.getJob() == j)
-				toDelete = ja;
-		}
+		JobAdapter toDelete = getJobAdapter(j);
 		if (toDelete != null) {
 			jobs.remove(toDelete);
 			toDelete.destroy(graph);
