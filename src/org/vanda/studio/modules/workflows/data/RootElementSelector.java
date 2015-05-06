@@ -32,6 +32,7 @@ public final class RootElementSelector implements ElementSelector, Observer<Elem
 
 	private DataSourceMount current;
 	private Element innerElement;
+	private Observer<Element> innerListener;
 
 	private Element element;
 	private ElementSelector elementSelector;
@@ -47,7 +48,16 @@ public final class RootElementSelector implements ElementSelector, Observer<Elem
 		this.fr = fr;
 
 		current = null;
-		innerElement = null;
+		innerElement = new Element("");
+		innerListener = new Observer<Element>() {
+			@Override
+			public void notify(Element event) {
+				String v0 = element.getValue();
+				int i = v0.indexOf(':');
+				element.setValue(v0.substring(0, i) + ":" + event.getValue());
+			}
+		};
+		innerElement.getObservable().addObserver(innerListener);
 
 		dsList = new ArrayList<DataSourceMount>(rds.getMountTable().getItems());
 		Collections.sort(dsList, new Comparator<DataSourceMount>() {
@@ -123,7 +133,7 @@ public final class RootElementSelector implements ElementSelector, Observer<Elem
 				elementSelector.setElement(null);
 			current = rds.getMountTable().getItem(prefix);
 			jDSList.setSelectedItem(current);
-			innerElement = new Element(value);
+			innerElement.setValue(value);
 			elementSelector = fr.instantiate(current.ds);
 			elementSelector.setElement(innerElement);
 			component.add(elementSelector.getComponent(), BorderLayout.CENTER);
