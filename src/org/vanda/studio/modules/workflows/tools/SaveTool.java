@@ -18,8 +18,7 @@ public final class SaveTool implements ToolFactory {
 	@Override
 	public Object instantiate(WorkflowEditor wfe) {
 		Action a = new SaveWorkflowAction(wfe);
-		wfe.addAction(a, "document-save",
-				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK),0);
+		wfe.addAction(a, "document-save", KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK), 2);
 		return a;
 	}
 
@@ -45,10 +44,8 @@ public final class SaveTool implements ToolFactory {
 				public void approveSelection() {
 					File f = getSelectedFile();
 					if (f.exists() && getDialogType() == SAVE_DIALOG) {
-						int result = JOptionPane.showConfirmDialog(this,
-								"The file exists already. Replace?",
-								"Existing file",
-								JOptionPane.YES_NO_CANCEL_OPTION);
+						int result = JOptionPane.showConfirmDialog(this, "The file exists already. Replace?",
+								"Existing file", JOptionPane.YES_NO_CANCEL_OPTION);
 						switch (result) {
 						case JOptionPane.YES_OPTION:
 							super.approveSelection();
@@ -69,8 +66,7 @@ public final class SaveTool implements ToolFactory {
 			chooser.setDialogType(JFileChooser.SAVE_DIALOG);
 			chooser.setAcceptAllFileFilterUsed(false);
 			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			chooser.setFileFilter(new FileNameExtensionFilter(
-					"Workflow XML (*.xwf)", "xwf"));
+			chooser.setFileFilter(new FileNameExtensionFilter("Workflow XML (*.xwf)", "xwf"));
 			String lastDir = wfe.getApplication().getProperty("lastDir");
 			if (lastDir != null)
 				chooser.setCurrentDirectory(new File(lastDir));
@@ -80,8 +76,7 @@ public final class SaveTool implements ToolFactory {
 			// once file choice is approved, save the chosen file
 			if (result == JFileChooser.APPROVE_OPTION) {
 				File chosenFile = chooser.getSelectedFile();
-				wfe.getApplication().setProperty("lastDir",
-						chosenFile.getParentFile().getAbsolutePath());
+				wfe.getApplication().setProperty("lastDir", chosenFile.getParentFile().getAbsolutePath());
 				String filePath = chosenFile.getPath();
 				if (!filePath.endsWith(".xwf"))
 					filePath = filePath + ".xwf";

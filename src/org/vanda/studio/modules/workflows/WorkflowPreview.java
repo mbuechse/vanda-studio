@@ -15,13 +15,12 @@ import org.vanda.workflows.serialization.Loader;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class WorkflowExecutionPreview implements PreviewFactory {
+public class WorkflowPreview implements PreviewFactory {
 	private final Application app;
 	private final ToolFactory mainComponentToolFactory;
 	private final List<ToolFactory> toolFactories;
 
-	public WorkflowExecutionPreview(Application app, ToolFactory mainComponentToolFactory,
-			List<ToolFactory> toolFactories) {
+	public WorkflowPreview(Application app, ToolFactory mainComponentToolFactory, List<ToolFactory> toolFactories) {
 		this.app = app;
 		this.mainComponentToolFactory = mainComponentToolFactory;
 		this.toolFactories = toolFactories;
@@ -34,18 +33,20 @@ public class WorkflowExecutionPreview implements PreviewFactory {
 
 	@Override
 	public void openEditor(String filePath) {
-		Pair<MutableWorkflow, Database> phd;
-		// TODO this is not specific to an "execution editor", and it should be
-		// added to the xwf file
-		// RunConfig rc;
-		try {
-			phd = new Loader(app.getToolMetaRepository().getRepository()).load(filePath);
-			// rc = new org.vanda.run.serialization.Loader().load(filePath +
-			// ".run");
-			new WorkflowEditorImpl(app, mainComponentToolFactory, toolFactories, phd);
-			// let's hope the GUI will hold a reference
-		} catch (Exception e) {
-			app.sendMessage(new ExceptionMessage(e));
+		Pair<MutableWorkflow, Database> phd = null;
+		if ("".equals(filePath)) {
+			phd = new Pair<MutableWorkflow, Database>(new MutableWorkflow("Workflow"), new Database());
+		} else {
+			try {
+				phd = new Loader(app.getToolMetaRepository().getRepository()).load(filePath);
+				// rc = new org.vanda.run.serialization.Loader().load(filePath +
+				// ".run");
+			} catch (Exception e) {
+				app.sendMessage(new ExceptionMessage(e));
+			}
 		}
+		if (phd != null)
+			new WorkflowEditorImpl(app, mainComponentToolFactory, toolFactories, phd);
+		// let's hope the GUI will hold a reference
 	}
 }

@@ -206,10 +206,10 @@ public class RunNowTool implements SemanticsToolFactory {
 			runAction = new RunAction();
 			dbListener = new DbListener();
 			wfe.getDatabase().getObservable().addObserver(dbListener);
-			wfe.addAction(runAction, "player-time", KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_MASK), 0);
-			wfe.addAction(cancelAction, "process-stop", KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), 1);
+			wfe.addAction(runAction, "player-time", KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_MASK), 3);
+			wfe.addAction(cancelAction, "process-stop", KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), 4);
 			wfe.addAction(new ClearWorkflowDirectoryAction(wfe), "run-build-clean",
-					KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), 3);
+					KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), 5);
 			wfe.disableAction(cancelAction);
 		}
 

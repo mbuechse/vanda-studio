@@ -33,6 +33,8 @@ import org.vanda.studio.modules.workflows.inspector.LiteralEditor;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.tools.AssignmentSwitchToolFactory;
 import org.vanda.studio.modules.workflows.tools.AssignmentTableToolFactory;
+import org.vanda.studio.modules.workflows.tools.ErrorHighlighterFactory;
+import org.vanda.studio.modules.workflows.tools.MainComponentToolFactory;
 import org.vanda.studio.modules.workflows.tools.PaletteTool;
 import org.vanda.studio.modules.workflows.tools.SaveTool;
 import org.vanda.studio.modules.workflows.tools.WorkflowToPDFToolFactory;
@@ -51,7 +53,7 @@ import org.vanda.util.CompositeFactory;
 import org.vanda.util.ListRepository;
 
 public class WorkflowModule implements Module {
-	
+
 	public static final Type WORKFLOW = new CompositeType("Workflow");
 
 	@Override
@@ -118,21 +120,25 @@ public class WorkflowModule implements Module {
 			toolFactories = new LinkedList<ToolFactory>();
 			toolFactories.add(pdftool);
 			toolFactories.add(new SemanticsTool(srep));
-			app.registerPreviewFactory(RunTool.EXECUTION, new WorkflowExecutionPreview(app, toolFactories));
+			app.registerPreviewFactory(RunTool.EXECUTION, new WorkflowExecutionPreview(app,
+					new MainComponentToolFactory(/* immutable= */true), toolFactories));
 
 			srep = new LinkedList<SemanticsToolFactory>(srep);
 			srep.add(new RunTool(gen));
 
 			toolFactories = new LinkedList<ToolFactory>();
+			toolFactories.add(new ErrorHighlighterFactory());
 			toolFactories.add(new PaletteTool());
 			toolFactories.add(new SaveTool());
 			toolFactories.add(pdftool);
 			toolFactories.add(new SemanticsTool(srep));
 			toolFactories.add(new AssignmentTableToolFactory(eefs));
 			toolFactories.add(new AssignmentSwitchToolFactory());
-			app.registerPreviewFactory(WORKFLOW, new WorkflowPreview(app, toolFactories));
+			app.registerPreviewFactory(WORKFLOW, new WorkflowPreview(app, new MainComponentToolFactory(false),
+					toolFactories));
 
-			// app.getWindowSystem().addAction(null, new OpenManagerAction(), null, 100);
+			// app.getWindowSystem().addAction(null, new OpenManagerAction(),
+			// null, 100);
 			app.getWindowSystem().addAction(null, new NewWorkflowAction(), "document-new",
 					KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK), 0);
 			app.getWindowSystem().addAction(null, new OpenWorkflowAction(), "document-open",
