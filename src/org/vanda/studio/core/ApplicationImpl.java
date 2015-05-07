@@ -60,10 +60,6 @@ public final class ApplicationImpl implements Application {
 	protected static String PROPERTIES_FILE = System.getProperty("user.home") + "/.vanda/studio.conf";
 
 	public ApplicationImpl() {
-		this(true);
-	}
-
-	public ApplicationImpl(boolean gui) {
 		modes = new ArrayList<UIMode>();
 		addUIModes(modes);
 		messageObservable = new MultiplexObserver<Message>();
@@ -76,10 +72,7 @@ public final class ApplicationImpl implements Application {
 		toolRepository = new CompositeRepository<String, Tool>();
 		rootDataSource = new RootDataSource(dataSourceRepository);
 		shutdownObservable = new MultiplexObserver<Application>();
-		if (gui)
-			windowSystem = new WindowSystemImpl(this);
-		else
-			windowSystem = null;
+		windowSystem = new WindowSystemImpl(this);
 		types = new HashSet<Type>();
 		properties = new Properties();
 		try {
@@ -105,16 +98,13 @@ public final class ApplicationImpl implements Application {
 		toolRepository.getAddObservable().addObserver(typeObserver);
 		
 		// Register a Monospace font that can display all Unicode characters
-		if (gui) {
-			try {
-				URL url = ClassLoader.getSystemClassLoader().getResource(
-						"unifont-5.1.20080907.ttf");
-				
-				Font monospaceFont = Font.createFont(Font.TRUETYPE_FONT, new File(url.getFile()));
-				GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(monospaceFont);
-			} catch (Exception e) {
-			}
+		try {
+			URL url = ClassLoader.getSystemClassLoader().getResource(
+					"unifont-5.1.20080907.ttf");
 			
+			Font monospaceFont = Font.createFont(Font.TRUETYPE_FONT, new File(url.getFile()));
+			GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(monospaceFont);
+		} catch (Exception e) {
 		}
 	}
 
