@@ -3,7 +3,6 @@ package org.vanda.studio.modules.workflows.run;
 import java.util.Date;
 
 import org.vanda.run.RunStates.*;
-import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.run.RunStatesImpl.*;
 import org.vanda.util.MultiplexObserver;
 
@@ -13,13 +12,11 @@ public class Run implements RunState {
 	private final MultiplexObserver<RunEvent> observable1 = new MultiplexObserver<RunEvent>();
 	private final MultiplexObserver<RunEventId> observable;
 	private RunState state;
-	private Application app;
 
-	public Run(Application app, String id) {
+	public Run(String id) {
 		date = new Date();
 		this.id = id;
 		observable = new MultiplexObserver<RunEventId>();
-		this.app = app;
 		state = new StateInit(rt);
 		state.process();
 	}
@@ -86,7 +83,7 @@ public class Run implements RunState {
 	
 		@Override
 		public void doRun() {
-			state = new StateRunning(observable, id, app, this);
+			state = new StateRunning(observable, id, this);
 			state.process();
 			observable1.notify(state);
 		}

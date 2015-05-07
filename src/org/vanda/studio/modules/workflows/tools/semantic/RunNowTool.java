@@ -64,12 +64,9 @@ public class RunNowTool implements SemanticsToolFactory {
 				return false;
 			if (dir.exists()) {
 				for (File f : dir.listFiles()) {
-					if (f.isDirectory()) {
-						success = success & emptyDirectory(f);
-						success = success & f.delete();
-					} else {
-						success = success & f.delete();
-					}
+					if (f.isDirectory())
+						success &= emptyDirectory(f);
+					success &= f.delete();
 				}
 			}
 			return success;
@@ -175,7 +172,7 @@ public class RunNowTool implements SemanticsToolFactory {
 					for (Job j : synA.getSorted())
 						view.getJobView(j).notify(READY);
 					reo = new RunEventObserver(wfe.getDatabase().get(0));
-					run = new Run(app, id);
+					run = new Run(id);
 					run.getObservableId().addObserver(reo);
 					run.getObservable().addObserver(Tool.this);
 					run.run();

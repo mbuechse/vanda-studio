@@ -10,9 +10,7 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 import org.vanda.run.RunStates.*;
-import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.run.RunStatesImpl.RunTransitions;
-import org.vanda.util.ExceptionMessage;
 import org.vanda.util.Observer;
 import org.vanda.util.RCChecker;
 import org.vanda.util.Util;
@@ -21,15 +19,13 @@ public class StateRunning implements RunState {
 
 	private final Observer<RunEventId> obs;
 	private final String id;
-	private final Application app;
 	private final RunTransitions rt;
 
 	private Worker w;
 
-	public StateRunning(Observer<RunEventId> obs, String id, Application app, RunTransitions rt) {
+	public StateRunning(Observer<RunEventId> obs, String id, RunTransitions rt) {
 		this.obs = obs;
 		this.id = id;
-		this.app = app;
 		this.rt = rt;
 	}
 
@@ -66,9 +62,11 @@ public class StateRunning implements RunState {
 		@Override
 		protected String doInBackground() {
 			try {
+				// TODO use path from runconfig
 				process = Runtime.getRuntime().exec(RCChecker.getOutPath() + "/" + id, null, null);
 			} catch (Exception e) {
-				app.sendMessage(new ExceptionMessage(e));
+				// TODO maybe trigger cancel event or something, but get rid of this coupling
+				// app.sendMessage(new ExceptionMessage(e));
 			}
 
 			// ignore stderr, parse stdout
