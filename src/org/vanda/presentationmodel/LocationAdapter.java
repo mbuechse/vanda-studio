@@ -67,12 +67,6 @@ public class LocationAdapter {
 	private class LocationViewListener implements ViewListener<AbstractView<?>> {
 
 		@Override
-		public void highlightingChanged(AbstractView<?> v) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
 		public void markChanged(AbstractView<?> v) {
 			locationCell.getObservable().notify(new MarkChangedEvent<Cell>(locationCell));
 		}

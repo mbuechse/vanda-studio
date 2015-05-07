@@ -64,10 +64,6 @@ public class RunTool implements SemanticsToolFactory {
 			public void evokeExecution(List<Integer> assignmentSelection, String filePath) {
 				f.dispose();
 				
-				// TODO: probably obsolete, remove after testing
-				// String id = generate();
-				// if (id != null) {
-				// serialize Workflow + Database
 				ExecutableWorkflowBuilder ewf = new ExecutableWorkflowBuilder(wfe.getView().getWorkflow(), synA);
 				for (Integer i : assignmentSelection)
 					ewf.addAssigment(wfe.getDatabase().getRow(i));

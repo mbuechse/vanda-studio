@@ -12,8 +12,6 @@ import org.vanda.view.Views.*;
  */
 public abstract class AbstractView<T> {
 
-	protected boolean highlighted;
-
 	protected boolean marked;
 
 	protected final MultiplexObserver<ViewEvent<AbstractView<?>>> observable = new MultiplexObserver<ViewEvent<AbstractView<?>>>();
@@ -32,28 +30,12 @@ public abstract class AbstractView<T> {
 		return observable;
 	}
 
-	public boolean isHighlighted() {
-		return highlighted;
-	}
-
 	public boolean isMarked() {
 		return marked;
 	}
 
 	public boolean isSelected() {
 		return selected;
-	}
-
-	/**
-	 * not used: highlighted == marked
-	 * TODO: clean up!
-	 * @param highlighted
-	 */
-	public void setHighlighted(boolean highlighted) {
-		if (this.highlighted != highlighted) {
-			this.highlighted = highlighted;
-			// observable.notify(new HighEvent<AbstractView>(this));
-		}
 	}
 
 	public void setMarked(boolean marked) {

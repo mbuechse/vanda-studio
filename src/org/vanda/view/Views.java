@@ -7,20 +7,6 @@ import org.vanda.workflows.hyper.MutableWorkflow;
 
 public final class Views {
 
-	public static class HighlightingChangedEvent<V> implements ViewEvent<V> {
-		private final V v;
-
-		public HighlightingChangedEvent(V v) {
-			this.v = v;
-		}
-
-		@Override
-		public void doNotify(ViewListener<V> vl) {
-			vl.highlightingChanged(v);
-		}
-
-	}
-
 	public static class MarkChangedEvent<V> implements ViewEvent<V> {
 		private final V v;
 
@@ -142,8 +128,6 @@ public final class Views {
 	}
 
 	public static interface ViewListener<V> {
-		void highlightingChanged(V v);
-
 		void markChanged(V v);
 
 		void selectionChanged(V v);

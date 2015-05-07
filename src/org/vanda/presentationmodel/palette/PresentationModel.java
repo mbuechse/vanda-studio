@@ -28,13 +28,6 @@ public class PresentationModel implements DataInterface {
 	protected final WorkflowCell workflowCell;
 	Component comp;
 
-	/*
-	 * map that holds Layouts for all Job-Types, where String is
-	 * <code>Job.getName()</code>
-	 */
-	// static final Map<String, LayoutManager> layouts = null; //TODO define
-	// some Layouts
-
 	public PresentationModel() {
 		this.workflowCell = new WorkflowCell(this);
 		graph = new Graph(workflowCell);

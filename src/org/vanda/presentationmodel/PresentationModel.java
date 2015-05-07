@@ -78,18 +78,11 @@ public class PresentationModel implements DataInterface {
 	private Map<ConnectionKey, ConnectionAdapter> connections;
 	protected final Graph graph;
 	private List<JobAdapter> jobs;
-	// LayoutManagerFactoryInterface layoutManager = new JGraphRendering();
 	private View view;
 	private int update = 0;
 	protected final Repository<String, Tool> toolRepository;
 	private final WorkflowAdapter wfa;
 	private Observer<Workflows.WorkflowEvent<MutableWorkflow>> workflowObserver;
-	/*
-	 * map that holds Layouts for all Job-Types, where String is
-	 * <code>Job.getName()</code>
-	 */
-	// static final Map<String, LayoutManager> layouts = null; //TODO define
-	// some Layouts
 
 	private final WorkflowListener workflowListener;
 

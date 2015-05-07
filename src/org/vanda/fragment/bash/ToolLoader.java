@@ -17,7 +17,6 @@ public class ToolLoader implements ExternalRepository.Loader<ShellTool> {
 
 	@Override
 	public void load(Observer<ShellTool> o) {
-		// TODO Auto-generated method stub
 		for (File f : (new File(path)).listFiles()) {
 			if (f.isFile() && f.getAbsolutePath().endsWith(".bash"))
 				loadFromFile(f, o);

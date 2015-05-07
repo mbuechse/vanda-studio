@@ -47,6 +47,7 @@ public class RunNowTool implements SemanticsToolFactory {
 
 		@Override
 		public void invoke() {
+			// TODO use path from runconfig
 			File d = new File(wfe.getApplication().getProperty("outputPath"));
 			if (JOptionPane.OK_OPTION == JOptionPane.showOptionDialog(wfe.getApplication().getWindowSystem()
 					.getMainWindow(), "Do you want to empty " + d.getAbsolutePath() + "?", "Empty working directory",

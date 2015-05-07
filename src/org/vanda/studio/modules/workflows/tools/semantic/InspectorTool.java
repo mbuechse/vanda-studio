@@ -83,11 +83,6 @@ public class InspectorTool implements SemanticsToolFactory {
 				public void selectionChanged(View v) {
 					update();
 				}
-
-				@Override
-				public void highlightingChanged(View v) {
-					// do nothing
-				}
 			};
 
 			viewObserver = new Observer<ViewEvent<View>>() {

@@ -50,8 +50,7 @@ public class WorkflowAdapter {
 
 		@Override
 		public void rightClick(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+			// TODO offer a context menu?
 		}
 		
 	}

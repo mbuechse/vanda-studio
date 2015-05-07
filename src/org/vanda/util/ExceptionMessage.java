@@ -43,16 +43,4 @@ public final class ExceptionMessage implements Message {
 		return d;
 	}
 
-	// // @Override
-	// public void onSelect(Application app) {
-	//	// TODO invoke change in mxGraph
-	//
-	// }
-
-	// @Override
-	// public void onDeselect(Application app) {
-	//	// TODO invoke change in mxGraph
-	// 
-	// }
-
 }

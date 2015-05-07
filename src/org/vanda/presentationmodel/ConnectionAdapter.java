@@ -36,8 +36,8 @@ public class ConnectionAdapter {
 
 		@Override
 		public void markChanged(Cell c) {
-			// TODO Auto-generated method stub
-
+			// TODO why no propagation to the model?
+			// Auto-generated method stub
 		}
 
 		@Override
@@ -86,12 +86,6 @@ public class ConnectionAdapter {
 	}
 
 	private class ConnectionViewListener implements ViewListener<AbstractView<?>> {
-		@Override
-		public void highlightingChanged(AbstractView<?> v) {
-			// TODO Auto-generated method stub
-
-		}
-
 		@Override
 		public void markChanged(AbstractView<?> v) {
 			if (v.isMarked())

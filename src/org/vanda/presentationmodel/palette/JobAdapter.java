@@ -22,6 +22,7 @@ import org.vanda.workflows.elements.Port;
 import org.vanda.workflows.hyper.Job;
 
 public class JobAdapter {
+	// TODO can't we use the regular presentation model?
 	private class JobCellListener implements CellListener<Cell> {
 
 		@Override
@@ -44,8 +45,8 @@ public class JobAdapter {
 
 		@Override
 		public void markChanged(Cell c) {
-			// TODO Auto-generated method stub
-
+			// TODO why no propagation to the model?
+			// Auto-generated method stub
 		}
 
 		@Override

@@ -59,8 +59,8 @@ public class JobAdapter {
 
 		@Override
 		public void markChanged(Cell c) {
-			// TODO Auto-generated method stub
-
+			// TODO why no propagation to the model?
+			// Auto-generated method stub
 		}
 
 		@Override
@@ -136,11 +136,6 @@ public class JobAdapter {
 	}
 
 	private class JobViewListener implements ViewListener<AbstractView<?>> {
-		@Override
-		public void highlightingChanged(AbstractView<?> v) {
-			// TODO Auto-generated method stub
-		}
-
 		@Override
 		public void markChanged(AbstractView<?> v) {
 			if (v.isMarked()) {

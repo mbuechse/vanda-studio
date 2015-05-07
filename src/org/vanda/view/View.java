@@ -50,10 +50,6 @@ public class View implements WorkflowListener<MutableWorkflow> {
 		viewEventListener = new ViewListener<AbstractView<?>>() {
 
 			@Override
-			public void highlightingChanged(AbstractView<?> v) {
-			}
-
-			@Override
 			public void markChanged(AbstractView<?> v) {
 				observable.notify(new MarkChangedEvent<View>(View.this));
 			}
