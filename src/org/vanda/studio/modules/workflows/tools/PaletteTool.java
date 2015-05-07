@@ -25,6 +25,7 @@ import org.vanda.studio.app.WindowSystem;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.types.Types;
+import org.vanda.util.Repository;
 import org.vanda.workflows.elements.Literal;
 import org.vanda.workflows.elements.Tool;
 import org.vanda.workflows.hyper.Job;
@@ -50,6 +51,7 @@ public class PaletteTool implements ToolFactory {
 
 	public static class Palette {
 		protected final WorkflowEditor wfe;
+		protected final Repository<String, Tool> toolRepository;
 		protected Component searchGraph;
 		protected JPanel palette;
 		protected JXTaskPaneContainer taskPaneContainer;
@@ -60,8 +62,9 @@ public class PaletteTool implements ToolFactory {
 		protected JPanel searchPane;
 		protected final ArrayList<Job> templates;
 
-		public Palette(WorkflowEditor wfe) {
+		public Palette(WorkflowEditor wfe, Repository<String, Tool> toolRepository) {
 			this.wfe = wfe;
+			this.toolRepository = toolRepository;
 			taskPaneContainer = new JXTaskPaneContainer();
 			scrollPane = new JScrollPane();
 			templates = new ArrayList<Job>();
@@ -110,8 +113,7 @@ public class PaletteTool implements ToolFactory {
 			taskPaneContainer.add(resultPane);
 
 			// get all palette items
-			for (Tool t : wfe.getApplication().getToolMetaRepository()
-					.getRepository().getItems()) {
+			for (Tool t : toolRepository.getItems()) {
 				if ("".equals(t.getStatus()))
 					templates.add(new Job(new ToolAdapter(t)));
 			}
@@ -206,10 +208,16 @@ public class PaletteTool implements ToolFactory {
 		// mxGraphComponent c = new mxGraphComponent(da.getGraph());
 		return pm.getComponent();
 	}
+	
+	private final Repository<String, Tool> toolRepository;
+	
+	public PaletteTool(Repository<String, Tool> toolRepository) {
+		this.toolRepository = toolRepository;
+	}
 
 	@Override
 	public Object instantiate(WorkflowEditor wfe) {
-		return new Palette(wfe);
+		return new Palette(wfe, toolRepository);
 	}
 
 }

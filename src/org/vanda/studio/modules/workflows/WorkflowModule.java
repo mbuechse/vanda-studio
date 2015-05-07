@@ -109,7 +109,7 @@ public class WorkflowModule implements Module {
 			eefs.workflowFactories.add(new org.vanda.studio.modules.workflows.inspector.WorkflowEditor());
 			eefs.literalFactories.add(new LiteralEditor(app, fr));
 
-			ToolFactory pdftool = new WorkflowToPDFToolFactory(app);
+			ToolFactory pdftool = new WorkflowToPDFToolFactory(app.getToolMetaRepository().getRepository());
 			Generator gen = new GeneratorImpl(app, profile);
 			LinkedList<SemanticsToolFactory> srep = new LinkedList<SemanticsToolFactory>();
 			srep = new LinkedList<SemanticsToolFactory>();
@@ -121,21 +121,22 @@ public class WorkflowModule implements Module {
 			toolFactories.add(pdftool);
 			toolFactories.add(new SemanticsTool(srep));
 			app.registerPreviewFactory(RunTool.EXECUTION, new WorkflowExecutionPreview(app,
-					new MainComponentToolFactory(/* immutable= */true), toolFactories));
+					new MainComponentToolFactory(app.getToolMetaRepository().getRepository(),
+					/* immutable= */true), toolFactories));
 
 			srep = new LinkedList<SemanticsToolFactory>(srep);
 			srep.add(new RunTool(gen));
 
 			toolFactories = new LinkedList<ToolFactory>();
 			toolFactories.add(new ErrorHighlighterFactory());
-			toolFactories.add(new PaletteTool());
+			toolFactories.add(new PaletteTool(app.getToolMetaRepository().getRepository()));
 			toolFactories.add(new SaveTool());
 			toolFactories.add(pdftool);
 			toolFactories.add(new SemanticsTool(srep));
-			toolFactories.add(new AssignmentTableToolFactory(eefs));
+			toolFactories.add(new AssignmentTableToolFactory(eefs, app.getRootDataSource()));
 			toolFactories.add(new AssignmentSwitchToolFactory());
-			app.registerPreviewFactory(WORKFLOW, new WorkflowPreview(app, new MainComponentToolFactory(false),
-					toolFactories));
+			app.registerPreviewFactory(WORKFLOW, new WorkflowPreview(app, new MainComponentToolFactory(app
+					.getToolMetaRepository().getRepository(), false), toolFactories));
 
 			// app.getWindowSystem().addAction(null, new OpenManagerAction(),
 			// null, 100);

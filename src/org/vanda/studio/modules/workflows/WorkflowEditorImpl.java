@@ -14,6 +14,8 @@ import org.vanda.studio.modules.workflows.model.MainComponentTool;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.util.Action;
+import org.vanda.util.MultiplexObserver;
+import org.vanda.util.Observable;
 import org.vanda.util.Observer;
 import org.vanda.util.Pair;
 import org.vanda.view.View;
@@ -41,12 +43,28 @@ public class WorkflowEditorImpl implements WorkflowEditor, WorkflowListener<Muta
 	protected final Collection<Object> tools;
 	protected final MainComponentTool mainComponentTool;
 	protected final JComponent component;
+	protected final MultiplexObserver<WorkflowEditor> shutdownObservable;
+	protected final MultiplexObserver<WorkflowEditor> uiModeObservable;
 
 	public WorkflowEditorImpl(Application app, ToolFactory mainComponentFactory, List<ToolFactory> toolFactories,
 			Pair<MutableWorkflow, Database> phd) {
 		this.app = app;
 		view = new View(phd.fst);
 		database = phd.snd;
+		shutdownObservable = new MultiplexObserver<WorkflowEditor>();
+		uiModeObservable = new MultiplexObserver<WorkflowEditor>();
+		app.getShutdownObservable().addObserver(new Observer<Application>() {
+			@Override
+			public void notify(Application event) {
+				shutdownObservable.notify(WorkflowEditorImpl.this);
+			}
+		});
+		app.getUIModeObservable().addObserver(new Observer<Application>() {
+			@Override
+			public void notify(Application event) {
+				uiModeObservable.notify(WorkflowEditorImpl.this);
+			}
+		});
 		syntaxAnalysis = new SyntaxAnalysis();
 		view.getWorkflow().getObservable().addObserver(syntaxAnalysis);
 		tools = new ArrayList<Object>();
@@ -189,6 +207,31 @@ public class WorkflowEditorImpl implements WorkflowEditor, WorkflowListener<Muta
 	@Override
 	public SyntaxAnalysis getSyntaxAnalysis() {
 		return syntaxAnalysis;
+	}
+
+	@Override
+	public String getProperty(String key) {
+		return app.getProperty(getClass().getName() + "." + key);
+	}
+
+	@Override
+	public void setProperty(String key, String value) {
+		app.setProperty(getClass().getName() + "." + key, value);
+	}
+
+	@Override
+	public Observable<WorkflowEditor> getShutdownObservable() {
+		return shutdownObservable;
+	}
+
+	@Override
+	public Observable<WorkflowEditor> getUIModeObservable() {
+		return uiModeObservable;
+	}
+
+	@Override
+	public boolean isLargeContent() {
+		return app.getUIMode().isLargeContent();
 	}
 
 }

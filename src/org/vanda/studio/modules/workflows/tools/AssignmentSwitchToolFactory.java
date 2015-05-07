@@ -26,12 +26,10 @@ import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.SwingUtilities;
 
-import org.vanda.studio.app.Application;
 import org.vanda.studio.app.WindowSystem;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.util.Action;
-import org.vanda.util.ExceptionMessage;
 import org.vanda.util.Observer;
 import org.vanda.workflows.data.Database;
 import org.vanda.workflows.data.Databases.DatabaseEvent;
@@ -156,11 +154,11 @@ public class AssignmentSwitchToolFactory implements ToolFactory {
 			// Buttons & Textfield
 			PreviousAssignmentAction prev = new PreviousAssignmentAction(db);
 			wfe.addAction(prev, KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_MASK), 5);
-			prevButton = createNavigationButton(prev, "arrow-left", wfe.getApplication());
+			prevButton = createNavigationButton(prev, "arrow-left");
 
 			NextAssignmentAction next = new NextAssignmentAction(db);
 			wfe.addAction(next, KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_MASK), 6);
-			nextButton = createNavigationButton(next, "arrow-right", wfe.getApplication());
+			nextButton = createNavigationButton(next, "arrow-right");
 
 			aName = new JTextField() {
 				private static final long serialVersionUID = 3301633459959703449L;
@@ -225,7 +223,7 @@ public class AssignmentSwitchToolFactory implements ToolFactory {
 
 		}
 
-		private JButton createNavigationButton(final Action a, String imageName, Application app) {
+		private JButton createNavigationButton(final Action a, String imageName) {
 			URL url = ClassLoader.getSystemClassLoader().getResource(imageName + ".png");
 			JButton b = new JButton();
 			b.addActionListener(new ActionListener() {
@@ -242,7 +240,8 @@ public class AssignmentSwitchToolFactory implements ToolFactory {
 				b.setMargin(new Insets(0, 0, 0, 0));
 				b.setToolTipText(a.getName());
 			} catch (IOException e1) {
-				app.sendMessage(new ExceptionMessage(e1));
+				// TODO achieve this in another way, maybe via the WorkflowEditor
+				// app.sendMessage(new ExceptionMessage(e1));
 				b.setText(a.getName());
 			}
 			return b;

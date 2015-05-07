@@ -43,7 +43,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 
 import org.vanda.datasources.RootDataSource;
-import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.inspector.ElementEditorFactories;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
@@ -67,15 +66,15 @@ public class AssignmentTableToolFactory implements ToolFactory {
 
 		private WorkflowEditor wfe;
 		private JFrame f = null;
-		private final Observer<Application> shutdownObserver;
+		private final Observer<WorkflowEditor> shutdownObserver;
 		protected Observer<DatabaseEvent<Database>> databaseObserver;
 
 		public OpenAssignmentTableAction(WorkflowEditor wfe) {
 			this.wfe = wfe;
-			shutdownObserver = new Observer<Application>() {
+			shutdownObserver = new Observer<WorkflowEditor>() {
 
 				@Override
-				public void notify(Application event) {
+				public void notify(WorkflowEditor event) {
 					if (f != null) {
 						SwingUtilities.invokeLater(new Runnable() {
 							@Override
@@ -86,7 +85,7 @@ public class AssignmentTableToolFactory implements ToolFactory {
 					}
 				}
 			};
-			wfe.getApplication().getShutdownObservable().addObserver(shutdownObserver);
+			wfe.getShutdownObservable().addObserver(shutdownObserver);
 		}
 
 		@Override
@@ -108,7 +107,7 @@ public class AssignmentTableToolFactory implements ToolFactory {
 					}
 				});
 			else {
-				AssignmentTableDialog lt = new AssignmentTableDialog(wfe);
+				AssignmentTableDialog lt = new AssignmentTableDialog(rds, wfe);
 				f = new JFrame("Assignment table");
 				f.addWindowListener(new WindowAdapter() {
 					@Override
@@ -119,7 +118,9 @@ public class AssignmentTableToolFactory implements ToolFactory {
 				f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 				f.setContentPane(lt);
 				f.pack();
-				f.setLocationRelativeTo(wfe.getApplication().getWindowSystem().getMainWindow());
+				f.setLocationRelativeTo(null);
+				// find another way, maybe use the editor's main component
+				// wfe.getApplication().getWindowSystem().getMainWindow()
 				f.setVisible(true);
 
 			}
@@ -185,9 +186,9 @@ public class AssignmentTableToolFactory implements ToolFactory {
 			}
 		};
 
-		public AssignmentTableModel(WorkflowEditor wfe) {
+		public AssignmentTableModel(RootDataSource rds, WorkflowEditor wfe) {
 			db = wfe.getDatabase();
-			rds = wfe.getApplication().getRootDataSource();
+			this.rds = rds;
 			literals = new TreeMap<Integer, Literal>();
 			for (Job j : wfe.getView().getWorkflow().getChildren())
 				j.visit(literalAddedVisitor);
@@ -385,8 +386,8 @@ public class AssignmentTableToolFactory implements ToolFactory {
 
 		private static final long serialVersionUID = -7089434006145996832L;
 
-		public TransposedAssignmentTableModel(WorkflowEditor wfe) {
-			super(wfe);
+		public TransposedAssignmentTableModel(RootDataSource rds, WorkflowEditor wfe) {
+			super(rds, wfe);
 		}
 
 		@Override
@@ -643,7 +644,7 @@ public class AssignmentTableToolFactory implements ToolFactory {
 		private final JPanel buttonAndTabelPanel;
 		private final JPanel literalEditorPanel;
 
-		public AssignmentTableDialog(WorkflowEditor wfe) {
+		public AssignmentTableDialog(RootDataSource rds, WorkflowEditor wfe) {
 			super(new BorderLayout());
 			transposeState = new Normal();
 			db = wfe.getDatabase();
@@ -654,8 +655,8 @@ public class AssignmentTableToolFactory implements ToolFactory {
 			buttonAndTabelPanel.setLayout(layout);
 
 			// create Table in normal mode
-			atm = new AssignmentTableModel(wfe);
-			tatm = new TransposedAssignmentTableModel(wfe);
+			atm = new AssignmentTableModel(rds, wfe);
+			tatm = new TransposedAssignmentTableModel(rds, wfe);
 			table = new JTable(atm);
 			table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 				private static final long serialVersionUID = -6915713192476941622L;
@@ -896,10 +897,12 @@ public class AssignmentTableToolFactory implements ToolFactory {
 		}
 	}
 
-	private ElementEditorFactories eefs;
+	private final ElementEditorFactories eefs;
+	private final RootDataSource rds;
 
-	public AssignmentTableToolFactory(ElementEditorFactories eefs) {
+	public AssignmentTableToolFactory(ElementEditorFactories eefs, RootDataSource rds) {
 		this.eefs = eefs;
+		this.rds = rds;
 	}
 
 	@Override

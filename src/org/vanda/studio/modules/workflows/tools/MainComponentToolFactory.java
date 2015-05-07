@@ -17,7 +17,6 @@ import javax.swing.ScrollPaneConstants;
 import org.vanda.presentationmodel.PresentationModel;
 import org.vanda.render.jgraph.Cell;
 import org.vanda.render.jgraph.mxDropTargetListener;
-import org.vanda.studio.app.Application;
 import org.vanda.studio.app.WindowSystem;
 import org.vanda.studio.modules.workflows.model.MainComponentTool;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
@@ -25,7 +24,9 @@ import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.util.Action;
 import org.vanda.util.HasActions;
 import org.vanda.util.Observer;
+import org.vanda.util.Repository;
 import org.vanda.util.Util;
+import org.vanda.workflows.elements.Tool;
 
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.mxGraphOutline;
@@ -37,17 +38,15 @@ public class MainComponentToolFactory implements ToolFactory {
 
 	public static class MainComponentToolImpl implements MainComponentTool {
 		
-		private final Application app;
 		private final WorkflowEditor wfe;
 		private final PresentationModel presentationModel;
-		private Observer<Application> appObserver;
+		private Observer<WorkflowEditor> appObserver;
 		private final mxGraphComponent component;
 		protected mxGraphOutline outline;
 		
-		public MainComponentToolImpl(WorkflowEditor wfe, boolean immutable) {
+		public MainComponentToolImpl(Repository<String, Tool> toolRepository, WorkflowEditor wfe, boolean immutable) {
 			this.wfe = wfe;
-			this.app = wfe.getApplication();
-			presentationModel = new PresentationModel(wfe.getView(), app.getToolMetaRepository().getRepository());
+			presentationModel = new PresentationModel(wfe.getView(), toolRepository);
 			component = new MyMxGraphComponent(presentationModel.getVisualization().getGraph());
 			new mxDropTargetListener(presentationModel, component);
 			if (immutable) {
@@ -79,11 +78,9 @@ public class MainComponentToolFactory implements ToolFactory {
 		 * @author afischer
 		 */
 		protected static class MouseZoomAdapter implements MouseWheelListener {
-			protected Application app;
 			protected mxGraphComponent component;
 	
-			public MouseZoomAdapter(Application app, mxGraphComponent component) {
-				this.app = app;
+			public MouseZoomAdapter(mxGraphComponent component) {
 				this.component = component;
 			}
 	
@@ -182,25 +179,25 @@ public class MainComponentToolFactory implements ToolFactory {
 	
 		protected void configureComponent() {
 			component.setDragEnabled(false);
-			component.getGraphControl().addMouseWheelListener(new MouseZoomAdapter(app, component));
+			component.getGraphControl().addMouseWheelListener(new MouseZoomAdapter(component));
 			component.setPanning(true);
 			component.setPageVisible(false);
 			component.setVerticalPageCount(0);
 			component.setHorizontalPageCount(0);
 			component.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			component.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-			appObserver = new Observer<Application>() {
+			appObserver = new Observer<WorkflowEditor>() {
 				@Override
-				public void notify(Application a) {
-					if (a.getUIMode().isLargeContent())
+				public void notify(WorkflowEditor a) {
+					if (a.isLargeContent())
 						component.zoomTo(1.5, false);
 					else
 						component.zoomActual();
 				}
 			};
-			app.getUIModeObservable().addObserver(appObserver);
+			wfe.getUIModeObservable().addObserver(appObserver);
 			// initialize zoom
-			appObserver.notify(app);
+			appObserver.notify(wfe);
 			
 		}
 	
@@ -247,14 +244,16 @@ public class MainComponentToolFactory implements ToolFactory {
 	}
 	
 	private final boolean immutable;
+	private final Repository<String, Tool> toolRepository;
 	
-	public MainComponentToolFactory(boolean immutable) {
+	public MainComponentToolFactory(Repository<String, Tool> toolRepository, boolean immutable) {
 		this.immutable = immutable;
+		this.toolRepository = toolRepository;
 	}
 
 	@Override
 	public Object instantiate(WorkflowEditor wfe) {
-		return new MainComponentToolImpl(wfe, immutable);
+		return new MainComponentToolImpl(toolRepository, wfe, immutable);
 	}
 
 }

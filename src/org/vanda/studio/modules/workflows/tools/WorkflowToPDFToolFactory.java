@@ -12,11 +12,11 @@ import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.fop.svg.PDFTranscoder;
 import org.vanda.presentationmodel.PresentationModel;
-import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.util.Action;
-import org.vanda.util.ExceptionMessage;
+import org.vanda.util.Repository;
+import org.vanda.workflows.elements.Tool;
 import org.w3c.dom.Document;
 
 import com.mxgraph.util.mxCellRenderer;
@@ -43,7 +43,8 @@ public final class WorkflowToPDFToolFactory implements ToolFactory {
 			JFileChooser chooser = new JFileChooser("");
 			chooser.setDialogType(JFileChooser.SAVE_DIALOG);
 			chooser.setVisible(true);
-			int result = chooser.showSaveDialog(wfe.getApplication().getWindowSystem().getMainWindow());
+			int result = chooser.showSaveDialog(null);
+			// wfe.getApplication().getWindowSystem().getMainWindow()
 
 			if (result == JFileChooser.APPROVE_OPTION) {
 				File chosenFile;
@@ -52,8 +53,7 @@ public final class WorkflowToPDFToolFactory implements ToolFactory {
 				else
 					chosenFile = new File(chooser.getSelectedFile().getPath() + ".pdf");
 				try {
-					PresentationModel pm = new PresentationModel(wfe.getView(), wfe.getApplication()
-							.getToolMetaRepository().getRepository());
+					PresentationModel pm = new PresentationModel(wfe.getView(), toolRepository);
 					mxGraph graph = pm.getVisualization().getGraph();
 					Document svg = mxCellRenderer.createSvgDocument(graph, null, 1, null, null);
 					String code = mxUtils.getPrettyXml(svg.getDocumentElement());
@@ -64,17 +64,16 @@ public final class WorkflowToPDFToolFactory implements ToolFactory {
 					output.getOutputStream().flush();
 					output.getOutputStream().close();
 				} catch (Exception e) {
-					app.sendMessage(new ExceptionMessage(e));
+					// app.sendMessage(new ExceptionMessage(e));
 				}
 			}
 		}
 	}
+	
+	private final Repository<String, Tool> toolRepository;
 
-	private Application app;
-
-	public WorkflowToPDFToolFactory(Application app) {
-		super();
-		this.app = app;
+	public WorkflowToPDFToolFactory(Repository<String, Tool> toolRepository) {
+		this.toolRepository = toolRepository;
 	}
 
 	@Override
