@@ -2,17 +2,14 @@ package org.vanda.studio.modules.workflows.tools.semantic;
 
 import java.awt.event.KeyEvent;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 
-import org.vanda.runner.RunConfig;
-import org.vanda.runner.RunConfigEditor;
-import org.vanda.runner.RunConfigEditor.RemoveMeAsSoonAsPossible;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
+import org.vanda.studio.modules.workflows.tools.semantic.AssignmentSelectionDialog.RemoveMeAsSoonAsPossible;
 import org.vanda.types.CompositeType;
 import org.vanda.types.Type;
 import org.vanda.util.Action;
@@ -24,11 +21,13 @@ import org.vanda.workflows.serialization.Storer;
 
 public class RunTool implements SemanticsToolFactory {
 	public static final Type EXECUTION = new CompositeType("Execution");
-	
+
 	private class Tool {
 		/**
-		 * Opens a dialog in which the setting for a RunConifg can be assigned. 
-		 * On execution it creates the RunConfig and opens the ExecutionPerspetive.
+		 * Opens a dialog in which the setting for a RunConifg can be assigned.
+		 * On execution it creates the RunConfig and opens the
+		 * ExecutionPerspetive.
+		 * 
 		 * @author kgebhardt
 		 *
 		 */
@@ -44,10 +43,11 @@ public class RunTool implements SemanticsToolFactory {
 			public void invoke() {
 				boolean validWorkflow = synA.getCyclicConnections() == null && synA.getTypeErrors() == null;
 				validWorkflow &= semA.getDFA().isConnected();
-						// && Types.canUnify(synA.getFragmentType(), prof.getRootType());
+				// && Types.canUnify(synA.getFragmentType(),
+				// prof.getRootType());
 				f = new JDialog(wfe.getApplication().getWindowSystem().getMainWindow(), "Execute Workflow");
-				RunConfigEditor rce = new RunConfigEditor(wfe.getView().getWorkflow(), wfe.getDatabase(),
-						app.getRootDataSource(), app.getProperty("outputPath"), RunAction.this, validWorkflow);
+				AssignmentSelectionDialog rce = new AssignmentSelectionDialog(wfe.getView().getWorkflow(),
+						wfe.getDatabase(), app.getRootDataSource(), RunAction.this, validWorkflow);
 				f.setContentPane(rce.getComponent());
 				f.setAlwaysOnTop(true);
 				f.setAutoRequestFocus(true);
@@ -60,15 +60,13 @@ public class RunTool implements SemanticsToolFactory {
 
 			public void evokeExecution(List<Integer> assignmentSelection, String filePath) {
 				f.dispose();
-				
+
 				ExecutableWorkflowBuilder ewf = new ExecutableWorkflowBuilder(wfe.getView().getWorkflow(), synA);
 				for (Integer i : assignmentSelection)
 					ewf.addAssigment(wfe.getDatabase().getRow(i));
 				filePath += "/" + ewf.getWorkflow().getName() + new Date().toString();
-				RunConfig rc = new RunConfig(filePath, new HashMap<String, Integer>());
 				try {
 					new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");
-					new org.vanda.runner.serialization.Storer().store(rc, filePath + ".run");
 					// XXX ServiceLocator antipattern
 					app.getPreviewFactory(EXECUTION).openEditor(filePath + ".xwf");
 				} catch (Exception e) {
