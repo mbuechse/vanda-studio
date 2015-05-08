@@ -24,7 +24,7 @@ run () {
 	tmpDir="${args[3]}"
 	mkdir -p "$tmpDir"
 	
-	logFile="${args[3]}/log"
+	logFile="${args[3]}.log"
 	touch "$logFile"
 	
 	echo "Checking: ${args[0]}" >> "$logFile"

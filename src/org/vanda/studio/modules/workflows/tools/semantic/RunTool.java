@@ -13,7 +13,6 @@ import org.vanda.studio.modules.workflows.tools.semantic.AssignmentSelectionDial
 import org.vanda.types.CompositeType;
 import org.vanda.types.Type;
 import org.vanda.util.Action;
-import org.vanda.util.ExceptionMessage;
 import org.vanda.workflows.data.ExecutableWorkflowBuilder;
 import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
