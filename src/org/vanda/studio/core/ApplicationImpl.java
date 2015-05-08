@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import org.vanda.datasources.DataSourceMount;
 import org.vanda.datasources.RootDataSource;
+import org.vanda.run.RunnerFactory;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.PreviewFactory;
 import org.vanda.studio.app.UIMode;
@@ -46,9 +47,9 @@ public final class ApplicationImpl implements Application {
 	protected ModuleManager moduleManager;
 	protected final MultiplexObserver<Message> messageObservable;
 	protected final MultiplexObserver<Application> modeObservable;
-	// protected final CompositeRepository<Profile> profileRepository;
 	protected final HashMap<Type, PreviewFactory> previewFactories;
 	protected final CompositeRepository<String, DataSourceMount> dataSourceRepository;
+	protected final CompositeRepository<String, RunnerFactory> runnerFactoryRepository;
 	protected final CompositeRepository<String, Tool> toolRepository;
 	protected final RootDataSource rootDataSource;
 	protected final MultiplexObserver<Application> shutdownObservable;
@@ -66,7 +67,7 @@ public final class ApplicationImpl implements Application {
 		mode = modes.get(0);
 		// converterToolRepository = new CompositeRepository<Tool>();
 		modeObservable = new MultiplexObserver<Application>();
-		// profileRepository = new CompositeRepository<Profile>();
+		runnerFactoryRepository = new CompositeRepository<String, RunnerFactory>();
 		previewFactories = new HashMap<Type, PreviewFactory>();
 		dataSourceRepository = new CompositeRepository<String, DataSourceMount>();
 		toolRepository = new CompositeRepository<String, Tool>();
@@ -288,5 +289,10 @@ public final class ApplicationImpl implements Application {
 	@Override
 	public MetaRepository<String, DataSourceMount> getDataSourceMetaRepository() {
 		return dataSourceRepository;
+	}
+
+	@Override
+	public MetaRepository<String, RunnerFactory> getRunnerFactoryMetaRepository() {
+		return runnerFactoryRepository;
 	}
 }

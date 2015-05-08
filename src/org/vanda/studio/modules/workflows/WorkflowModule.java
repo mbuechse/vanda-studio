@@ -12,16 +12,6 @@ import org.vanda.datasources.DataSource;
 import org.vanda.datasources.DirectoryDataSource;
 import org.vanda.datasources.DoubleDataSource;
 import org.vanda.datasources.IntegerDataSource;
-import org.vanda.fragment.bash.RootLinker;
-import org.vanda.fragment.bash.ShellCompiler;
-import org.vanda.fragment.bash.ShellTool;
-import org.vanda.fragment.bash.ToolLoader;
-import org.vanda.fragment.impl.GeneratorImpl;
-import org.vanda.fragment.impl.ProfileImpl;
-import org.vanda.fragment.model.FragmentCompiler;
-import org.vanda.fragment.model.FragmentLinker;
-import org.vanda.fragment.model.Generator;
-import org.vanda.fragment.model.Profile;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
 import org.vanda.studio.modules.workflows.data.DirectorySelector;
@@ -39,18 +29,14 @@ import org.vanda.studio.modules.workflows.tools.PaletteTool;
 import org.vanda.studio.modules.workflows.tools.SaveTool;
 import org.vanda.studio.modules.workflows.tools.WorkflowToPDFToolFactory;
 import org.vanda.studio.modules.workflows.tools.semantic.InspectorTool;
-import org.vanda.studio.modules.workflows.tools.semantic.ProfileManager;
 import org.vanda.studio.modules.workflows.tools.semantic.RunNowTool;
 import org.vanda.studio.modules.workflows.tools.semantic.RunTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsToolFactory;
-import org.vanda.studio.modules.workflows.tools.semantic.ProfileManager.ProfileOpener;
 import org.vanda.types.CompositeType;
 import org.vanda.types.Type;
 import org.vanda.util.Action;
-import org.vanda.util.ExternalRepository;
 import org.vanda.util.CompositeFactory;
-import org.vanda.util.ListRepository;
 
 public class WorkflowModule implements Module {
 
@@ -70,35 +56,9 @@ public class WorkflowModule implements Module {
 
 		private final Application app;
 		private final ElementEditorFactories eefs;
-		private final ListRepository<Profile> repository;
-		private final Profile profile;
-		private ProfileManager manager;
-
-		public static final String TOOL_PATH_KEY = "profileToolPath";
-		public static final String TOOL_PATH_DEFAULT = System.getProperty("user.home") + "/.vanda/functions/";
 
 		public WorkflowModuleInstance(Application a) {
 			app = a;
-			ListRepository<FragmentCompiler> compilers = new ListRepository<FragmentCompiler>();
-			compilers.addItem(new ShellCompiler());
-			ListRepository<FragmentLinker> linkers = new ListRepository<FragmentLinker>();
-			linkers.addItem(new RootLinker());
-			ExternalRepository<ShellTool> er;
-			String path = app.getProperty(TOOL_PATH_KEY);
-			if (path == null) {
-				path = TOOL_PATH_DEFAULT;
-				app.setProperty(TOOL_PATH_KEY, TOOL_PATH_DEFAULT);
-			}
-			er = new ExternalRepository<ShellTool>(new ToolLoader(path));
-			er.refresh();
-			
-			profile = new ProfileImpl();
-			profile.getFragmentCompilerMetaRepository().addRepository(compilers);
-			profile.getFragmentLinkerMetaRepository().addRepository(linkers);
-			profile.getFragmentToolMetaRepository().addRepository(er);
-			repository = new ListRepository<Profile>();
-			repository.addItem(profile);
-			manager = null;
 
 			CompositeFactory<DataSource, ElementSelector> fr = new CompositeFactory<DataSource, ElementSelector>();
 			fr.put(DoubleDataSource.class, new DoubleSelector.Fäctory());
@@ -110,11 +70,10 @@ public class WorkflowModule implements Module {
 			eefs.literalFactories.add(new LiteralEditor(app, fr));
 
 			ToolFactory pdftool = new WorkflowToPDFToolFactory(app.getToolMetaRepository().getRepository());
-			Generator gen = new GeneratorImpl(profile);
 			LinkedList<SemanticsToolFactory> srep = new LinkedList<SemanticsToolFactory>();
 			srep = new LinkedList<SemanticsToolFactory>();
 			srep.add(new InspectorTool(eefs));
-			srep.add(new RunNowTool(gen));
+			srep.add(new RunNowTool(app.getRunnerFactoryMetaRepository().getRepository()));
 
 			LinkedList<ToolFactory> toolFactories;
 			toolFactories = new LinkedList<ToolFactory>();
@@ -185,26 +144,6 @@ public class WorkflowModule implements Module {
 					String filePath = chosenFile.getPath();
 					app.getPreviewFactory(WORKFLOW).openEditor(filePath);
 				}
-			}
-		}
-
-		public final class OpenManagerAction implements Action, ProfileOpener {
-			@Override
-			public String getName() {
-				return "Manage Fragment Profiles...";
-			}
-
-			@Override
-			public void invoke() {
-				if (manager == null) {
-					manager = new ProfileManager(app, repository, this);
-				}
-				manager.focus();
-			}
-
-			@Override
-			public void closeManager() {
-				manager = null;
 			}
 		}
 

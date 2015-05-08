@@ -87,7 +87,7 @@ public class GeneratorImpl implements Generator, FragmentIO {
 
 		public String generate(MutableWorkflow ewf, SyntaxAnalysis synA, SemanticAnalysis semA) throws IOException {
 			String root = generateFragment(ewf, synA, semA);
-			return prof.getRootLinker(getRootType()).link(root, null, null, null, null, this, GeneratorImpl.this).getId();
+			return prof.getRootLinker(prof.getRootType()).link(root, null, null, null, null, this, GeneratorImpl.this).getId();
 		}
 
 		public String makeUnique(String prefix, Object key) {

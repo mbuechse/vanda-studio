@@ -2,21 +2,21 @@ package org.vanda.studio.modules.workflows.run;
 
 import java.util.Date;
 
+import org.vanda.run.Runner;
 import org.vanda.run.RunStates.*;
 import org.vanda.studio.modules.workflows.run.RunStatesImpl.*;
 import org.vanda.util.MultiplexObserver;
 
-public class Run implements RunState {
+public class RunnerImpl implements Runner {
 	private final Date date;
 	private final String id;
 	private final MultiplexObserver<RunEvent> observable1 = new MultiplexObserver<RunEvent>();
-	private final MultiplexObserver<RunEventId> observable;
+	private final MultiplexObserver<RunEventId> observable = new MultiplexObserver<RunEventId>();
 	private RunState state;
 
-	public Run(String id) {
+	public RunnerImpl(String id) {
 		date = new Date();
 		this.id = id;
-		observable = new MultiplexObserver<RunEventId>();
 		state = new StateInit(rt);
 		state.process();
 	}

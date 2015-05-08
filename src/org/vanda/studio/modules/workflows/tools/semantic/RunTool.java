@@ -12,7 +12,7 @@ import org.vanda.run.RunConfig;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.studio.modules.workflows.run.RunConfigEditor;
-import org.vanda.studio.modules.workflows.run.RunConfigEditor.Runner;
+import org.vanda.studio.modules.workflows.run.RunConfigEditor.RemoveMeAsSoonAsPossible;
 import org.vanda.types.CompositeType;
 import org.vanda.types.Type;
 import org.vanda.util.Action;
@@ -32,7 +32,7 @@ public class RunTool implements SemanticsToolFactory {
 		 * @author kgebhardt
 		 *
 		 */
-		public final class RunAction implements Action, Runner {
+		public final class RunAction implements Action, RemoveMeAsSoonAsPossible {
 			private JDialog f;
 
 			@Override

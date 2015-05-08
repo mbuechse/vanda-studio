@@ -40,10 +40,10 @@ public final class Launcher implements Runnable {
 		Module[] ms = {
 				new org.vanda.studio.modules.messages.MessageModule(),
 				new org.vanda.studio.modules.tools.ToolsModule(),
+				new org.vanda.studio.modules.run.RunModule(),
 				new org.vanda.studio.modules.previews.PreviewsModule(),
 				new org.vanda.studio.modules.workflows.WorkflowModule(),
 				new org.vanda.studio.modules.datasources.DataSourceModule() };
-		// app.registerPreviewFactory(null, new DefaultPreviewFactory(app));
 
 		ModuleManager moduleManager = new ModuleManager(app);
 		moduleManager.loadModules();

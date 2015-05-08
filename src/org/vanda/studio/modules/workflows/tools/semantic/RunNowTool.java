@@ -2,24 +2,22 @@ package org.vanda.studio.modules.workflows.tools.semantic;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
-import org.vanda.fragment.model.Generator;
 import org.vanda.run.RunStates;
 import org.vanda.run.RunStates.RunEvent;
 import org.vanda.run.RunStates.RunEventId;
 import org.vanda.run.RunStates.RunEventListener;
-import org.vanda.studio.app.Application;
+import org.vanda.run.Runner;
+import org.vanda.run.RunnerFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
-import org.vanda.studio.modules.workflows.run.Run;
 import org.vanda.util.Action;
-import org.vanda.util.ExceptionMessage;
 import org.vanda.util.Observer;
+import org.vanda.util.Repository;
 import org.vanda.view.JobView;
 import org.vanda.view.View;
 import org.vanda.workflows.data.Database;
@@ -167,35 +165,31 @@ public class RunNowTool implements SemanticsToolFactory {
 			@Override
 			public void invoke() {
 				// compile
-				String id = generate();
+				run = runnerFactoryRepository.getItems().iterator().next()
+						.createRunner(wfe.getView().getWorkflow(), wfe.getDatabase());
 				// run after successful compilation
-				if (id != null) {
-					for (Job j : synA.getSorted())
-						view.getJobView(j).notify(READY);
-					reo = new RunEventObserver(wfe.getDatabase().get(0));
-					run = new Run(id);
-					run.getObservableId().addObserver(reo);
-					run.getObservable().addObserver(Tool.this);
-					run.run();
-					wfe.enableAction(cancelAction);
-					wfe.disableAction(this);
-				}
+				for (Job j : synA.getSorted())
+					view.getJobView(j).notify(READY);
+				reo = new RunEventObserver(wfe.getDatabase().get(0));
+				run.getObservableId().addObserver(reo);
+				run.getObservable().addObserver(Tool.this);
+				run.run();
+				wfe.enableAction(cancelAction);
+				wfe.disableAction(this);
 			}
 		}
 
-		private final Application app;
 		private final WorkflowEditor wfe;
 		private final View view;
 		private final SemanticAnalysis semA;
 		private final SyntaxAnalysis synA;
-		private Run run;
+		private Runner run;
 		private RunEventObserver reo;
 		private final RunAction runAction;
 		private final CancelAction cancelAction;
 		private final DbListener dbListener;
 
 		public Tool(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA) {
-			app = wfe.getApplication();
 			this.wfe = wfe;
 			view = wfe.getView();
 			this.synA = synA;
@@ -209,15 +203,6 @@ public class RunNowTool implements SemanticsToolFactory {
 			wfe.addAction(new ClearWorkflowDirectoryAction(wfe), "run-build-clean",
 					KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), 5);
 			wfe.disableAction(cancelAction);
-		}
-
-		private String generate() {
-			try {
-				return prof.generate(wfe.getView().getWorkflow(), synA, semA);
-			} catch (IOException e) {
-				app.sendMessage(new ExceptionMessage(e));
-			}
-			return null;
 		}
 
 		@Override
@@ -255,10 +240,10 @@ public class RunNowTool implements SemanticsToolFactory {
 		}
 	}
 
-	private final Generator prof;
+	private final Repository<String, RunnerFactory> runnerFactoryRepository;
 
-	public RunNowTool(Generator prof) {
-		this.prof = prof;
+	public RunNowTool(Repository<String, RunnerFactory> runnerFactoryRepository) {
+		this.runnerFactoryRepository = runnerFactoryRepository;
 	}
 
 	@Override

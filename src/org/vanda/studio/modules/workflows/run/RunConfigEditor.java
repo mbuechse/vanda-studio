@@ -48,7 +48,7 @@ import org.vanda.workflows.hyper.MutableWorkflow;
  * 
  */
 public class RunConfigEditor {
-	public interface Runner {
+	public interface RemoveMeAsSoonAsPossible {
 		public void evokeExecution(List<Integer> assignmentSelection, String filePath);
 	}
 
@@ -64,7 +64,7 @@ public class RunConfigEditor {
 		return pan;
 	}
 
-	public RunConfigEditor(final MutableWorkflow mwf, Database db, RootDataSource rds, String path, final Runner r,
+	public RunConfigEditor(final MutableWorkflow mwf, Database db, RootDataSource rds, String path, final RemoveMeAsSoonAsPossible r,
 			boolean validWorkflow) {		
 		// Panel and basic Layout
 		pan = new JPanel();

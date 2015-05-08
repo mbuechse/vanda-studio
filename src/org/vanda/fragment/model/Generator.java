@@ -14,7 +14,5 @@ public interface Generator {
 	
 	Type getRootType();
 
-//	Fragment generate(DataflowAnalysis dfa) throws IOException;
-//	String generate(ExecutableWorkflow ewf) throws IOException;
 	String generate(MutableWorkflow ewf, SyntaxAnalysis synA, SemanticAnalysis semA) throws IOException;
 }

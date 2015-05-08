@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.vanda.datasources.DataSourceMount;
 import org.vanda.datasources.RootDataSource;
+import org.vanda.run.RunnerFactory;
 import org.vanda.types.Type;
 import org.vanda.util.Message;
 import org.vanda.util.MetaRepository;
@@ -38,6 +39,12 @@ public interface Application {
 	 * add or remove their own repositories here.
 	 */
 	MetaRepository<String, DataSourceMount> getDataSourceMetaRepository();
+	
+	/**
+	 * Returns the repository of Runner repositories. Modules should
+	 * add or remove their own repositories here.
+	 */
+	MetaRepository<String, RunnerFactory> getRunnerFactoryMetaRepository();
 	
 	RootDataSource getRootDataSource();
 	
