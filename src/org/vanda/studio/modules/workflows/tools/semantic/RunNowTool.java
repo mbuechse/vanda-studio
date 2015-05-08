@@ -233,4 +233,9 @@ public class RunNowTool implements SemanticsToolFactory {
 		return new Tool(wfe, synA, semA);
 	}
 
+	@Override
+	public String getId() {
+		return "Workflow execution editor plugin";
+	}
+
 }

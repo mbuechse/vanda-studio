@@ -100,4 +100,9 @@ public class RunTool implements SemanticsToolFactory {
 		return new Tool(wfe, synA, semA);
 	}
 
+	@Override
+	public String getId() {
+		return "Workflow expansion editor plugin";
+	}
+
 }

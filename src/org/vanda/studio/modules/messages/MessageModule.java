@@ -12,6 +12,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
+import org.vanda.studio.app.WindowSystem;
 import org.vanda.util.Action;
 import org.vanda.util.Message;
 import org.vanda.util.Observer;
@@ -25,25 +26,6 @@ public class MessageModule implements Module {
 
 	@Override
 	public Object createInstance(Application a) {
-		/*
-		 * Type t1 = new TypeVariable(Token.getToken(0)); Type t2 = new
-		 * TypeVariable(Token.getToken(1)); Type t3 = new
-		 * TypeVariable(Token.getToken(2)); Type t4 = new
-		 * TypeVariable(Token.getToken(3)); Type t5 = new
-		 * TypeVariable(Token.getToken(4)); Type t6 = new
-		 * TypeVariable(Token.getToken(5)); ArrayList<Type> u1 = new
-		 * ArrayList<Type>(1); u1.add(new TypeVariable(Token.getToken(6))); Type
-		 * tau1 = new CompositeType("String"); Type tau2 = new
-		 * CompositeType("[]", u1); Type tau3 = u1.get(0); ArrayList<Type> u2 =
-		 * new ArrayList<Type>(1); u2.add(new TypeVariable(Token.getToken(7)));
-		 * Type tau4 = new CompositeType("[]", u2); Type tau5 = u2.get(0);
-		 * Set<Equation> eqs = new HashSet<Equation>(); eqs.add(new Equation(t1,
-		 * tau1)); eqs.add(new Equation(t2, tau2)); eqs.add(new Equation(t3,
-		 * tau3)); eqs.add(new Equation(t1, tau4)); eqs.add(new Equation(t4,
-		 * tau5)); try { Types.unify(eqs); System.out.println(eqs); } catch
-		 * (Exception e) { e.printStackTrace(); }
-		 */
-
 		return new Messages(a);
 	}
 
@@ -92,7 +74,7 @@ public class MessageModule implements Module {
 			});
 			scrollPane = new JScrollPane(messageList);
 			scrollPane.setName("Messages");
-			// app.getWindowSystem().addToolWindow(null, null, scrollPane, WindowSystem.NORTHEAST);
+			app.getWindowSystem().addToolWindow(null, null, scrollPane, WindowSystem.NORTHEAST);
 			app.getMessageObservable().addObserver(this);
 			app.sendMessage(new Message() {
 

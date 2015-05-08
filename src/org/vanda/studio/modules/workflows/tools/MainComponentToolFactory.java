@@ -17,6 +17,7 @@ import javax.swing.ScrollPaneConstants;
 import org.vanda.presentationmodel.PresentationModel;
 import org.vanda.render.jgraph.Cell;
 import org.vanda.render.jgraph.mxDropTargetListener;
+import org.vanda.studio.app.Application;
 import org.vanda.studio.app.WindowSystem;
 import org.vanda.studio.modules.workflows.model.MainComponentTool;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
@@ -35,12 +36,40 @@ import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxGraphView;
 
 public class MainComponentToolFactory implements ToolFactory {
+	
+	private final Application app;
+	
+	@SuppressWarnings("serial")
+	protected static class MyMxGraphComponent extends mxGraphComponent {
 
-	public static class MainComponentToolImpl implements MainComponentTool {
+		public MyMxGraphComponent(mxGraph graph) {
+			super(graph);
+			// DO NOT change this setting, otherwise selecting an inner
+			// workflow's parent job is kind of hard because the inner workflow
+			// is always selected
+			setSwimlaneSelectionEnabled(false);
+		}
+
+		@Override
+		/**
+		 * Note: This is not used during drag and drop operations due to limitations
+		 * of the underlying API. To enable this for move operations set dragEnabled
+		 * to false.
+		 *
+		 * @param event
+		 * @return Returns true if the given event is a panning event.
+		 */
+		public boolean isPanningEvent(MouseEvent event) {
+			return (event != null) && !event.isShiftDown() && event.isControlDown();
+		}
+
+	}
+
+	public class MainComponentToolImpl implements MainComponentTool {
 		
 		private final WorkflowEditor wfe;
 		private final PresentationModel presentationModel;
-		private Observer<WorkflowEditor> appObserver;
+		private Observer<Application> appObserver;
 		private final mxGraphComponent component;
 		private final mxGraphOutline outline;
 		
@@ -61,12 +90,6 @@ public class MainComponentToolFactory implements ToolFactory {
 			configureComponent();
 			component.getGraphControl().addMouseListener(new EditMouseAdapter());
 			component.addKeyListener(new DelKeyListener());
-//			SwingUtilities.invokeLater(new Runnable() {
-//				@Override
-//				public void run() {
-//					component.getVerticalScrollBar().setValue((int) (component.getVerticalScrollBar().getMaximum() * 0.35));
-//				}
-//			});
 			outline = new mxGraphOutline(component);
 			setupOutline();
 			wfe.addAction(new ResetZoomAction(), KeyStroke.getKeyStroke(KeyEvent.VK_0, KeyEvent.CTRL_MASK), 8);
@@ -78,13 +101,7 @@ public class MainComponentToolFactory implements ToolFactory {
 		 * 
 		 * @author afischer
 		 */
-		protected static class MouseZoomAdapter implements MouseWheelListener {
-			protected mxGraphComponent component;
-	
-			public MouseZoomAdapter(mxGraphComponent component) {
-				this.component = component;
-			}
-	
+		protected class MouseZoomAdapter implements MouseWheelListener {
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				Rectangle r = component.getViewport().getViewRect();
@@ -152,53 +169,27 @@ public class MainComponentToolFactory implements ToolFactory {
 			}
 		}
 	
-		@SuppressWarnings("serial")
-		protected static class MyMxGraphComponent extends mxGraphComponent {
-	
-			public MyMxGraphComponent(mxGraph graph) {
-				super(graph);
-				// DO NOT change this setting, otherwise selecting an inner
-				// workflow's parent job is kind of hard because the inner workflow
-				// is always selected
-				setSwimlaneSelectionEnabled(false);
-			}
-	
-			@Override
-			/**
-			 * Note: This is not used during drag and drop operations due to limitations
-			 * of the underlying API. To enable this for move operations set dragEnabled
-			 * to false.
-			 *
-			 * @param event
-			 * @return Returns true if the given event is a panning event.
-			 */
-			public boolean isPanningEvent(MouseEvent event) {
-				return (event != null) && !event.isShiftDown() && event.isControlDown();
-			}
-	
-		}
-	
 		protected void configureComponent() {
 			component.setDragEnabled(false);
-			component.getGraphControl().addMouseWheelListener(new MouseZoomAdapter(component));
+			component.getGraphControl().addMouseWheelListener(new MouseZoomAdapter());
 			component.setPanning(true);
 			component.setPageVisible(false);
 			component.setVerticalPageCount(0);
 			component.setHorizontalPageCount(0);
 			component.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			component.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-			appObserver = new Observer<WorkflowEditor>() {
+			appObserver = new Observer<Application>() {
 				@Override
-				public void notify(WorkflowEditor a) {
-					if (a.isLargeContent())
+				public void notify(Application a) {
+					if (a.getUIMode().isLargeContent())
 						component.zoomTo(1.5, false);
 					else
 						component.zoomActual();
 				}
 			};
-			wfe.getUIModeObservable().addObserver(appObserver);
+			app.getUIModeObservable().addObserver(appObserver);
 			// initialize zoom
-			appObserver.notify(wfe);
+			appObserver.notify(app);
 			
 		}
 	
@@ -247,7 +238,8 @@ public class MainComponentToolFactory implements ToolFactory {
 	private final boolean immutable;
 	private final Repository<String, Tool> toolRepository;
 	
-	public MainComponentToolFactory(Repository<String, Tool> toolRepository, boolean immutable) {
+	public MainComponentToolFactory(Application app, Repository<String, Tool> toolRepository, boolean immutable) {
+		this.app = app;
 		this.immutable = immutable;
 		this.toolRepository = toolRepository;
 	}
@@ -255,6 +247,11 @@ public class MainComponentToolFactory implements ToolFactory {
 	@Override
 	public Object instantiate(WorkflowEditor wfe) {
 		return new MainComponentToolImpl(toolRepository, wfe, immutable);
+	}
+
+	@Override
+	public String getId() {
+		return "Main workflow editing component";
 	}
 
 }

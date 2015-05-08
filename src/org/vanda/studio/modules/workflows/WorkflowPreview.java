@@ -1,7 +1,5 @@
 package org.vanda.studio.modules.workflows;
 
-import java.util.List;
-
 import javax.swing.JComponent;
 
 import org.vanda.studio.app.Application;
@@ -20,11 +18,11 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class WorkflowPreview implements PreviewFactory {
 	private final Application app;
 	private final ToolFactory mainComponentToolFactory;
-	private final List<ToolFactory> toolFactories;
+	private final Repository<String, ToolFactory> toolFactories;
 	private final Repository<String, Tool> toolRepository;
 
-	public WorkflowPreview(Application app, ToolFactory mainComponentToolFactory, List<ToolFactory> toolFactories,
-			Repository<String, Tool> toolRepository) {
+	public WorkflowPreview(Application app, ToolFactory mainComponentToolFactory,
+			Repository<String, Tool> toolRepository, Repository<String, ToolFactory> toolFactories) {
 		this.app = app;
 		this.mainComponentToolFactory = mainComponentToolFactory;
 		this.toolFactories = toolFactories;
@@ -51,7 +49,7 @@ public class WorkflowPreview implements PreviewFactory {
 			}
 		}
 		if (phd != null)
-			new WorkflowEditorImpl(app, mainComponentToolFactory, toolFactories, phd);
+			new WorkflowEditorImpl(app, mainComponentToolFactory, toolFactories.getItems(), phd);
 		// let's hope the GUI will hold a reference
 	}
 }

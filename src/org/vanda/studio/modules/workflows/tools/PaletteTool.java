@@ -220,4 +220,9 @@ public class PaletteTool implements ToolFactory {
 		return new Palette(wfe, toolRepository);
 	}
 
+	@Override
+	public String getId() {
+		return "Palette tool";
+	}
+
 }

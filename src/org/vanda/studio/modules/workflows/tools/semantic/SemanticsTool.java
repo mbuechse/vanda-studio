@@ -57,4 +57,9 @@ public class SemanticsTool implements ToolFactory {
 		return new Tool(wfe, repository);
 	}
 
+	@Override
+	public String getId() {
+		return "Semantic plugin-provider editor plugin";
+	}
+
 }

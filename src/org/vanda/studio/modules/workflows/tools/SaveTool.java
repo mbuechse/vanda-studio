@@ -90,4 +90,9 @@ public final class SaveTool implements ToolFactory {
 		}
 	}
 
+	@Override
+	public String getId() {
+		return "Save tool";
+	}
+
 }

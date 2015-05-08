@@ -39,6 +39,7 @@ import org.vanda.types.Type;
 import org.vanda.util.AbstractRepository;
 import org.vanda.util.Action;
 import org.vanda.util.CompositeFactory;
+import org.vanda.util.ListRepository;
 import org.vanda.util.MetaRepository;
 import org.vanda.util.PreviewFactory;
 import org.vanda.util.Repository;
@@ -54,14 +55,17 @@ public class WorkflowModule implements Module {
 	private final MetaRepository<Type, PreviewFactory> previewFactoryMeta;
 	private final Repository<String, BuildSystem> buildSystemRepository;
 	private final Repository<String, Tool> toolRepository;
+	private final MetaRepository<String, ToolFactory> toolFactoryMeta;
 
 	public WorkflowModule(Repository<String, Tool> toolRepository,
 			Repository<String, BuildSystem> buildSystemRepository, RootDataSource rootDataSource,
-			MetaRepository<Type, PreviewFactory> previewFactoryMeta) {
+			MetaRepository<Type, PreviewFactory> previewFactoryMeta,
+			MetaRepository<String, ToolFactory> toolFactoryMeta) {
 		this.toolRepository = toolRepository;
 		this.rootDataSource = rootDataSource;
 		this.buildSystemRepository = buildSystemRepository;
 		this.previewFactoryMeta = previewFactoryMeta;
+		this.toolFactoryMeta = toolFactoryMeta;
 	}
 
 	@Override
@@ -89,6 +93,8 @@ public class WorkflowModule implements Module {
 		public WorkflowModuleInstance(Application a) {
 			app = a;
 			sr = new StaticRepository();
+			WorkflowPreview executionPreviewFactory = new WorkflowPreview(app, new MainComponentToolFactory(app,
+					toolRepository, false), toolRepository, toolFactoryMeta.getRepository());
 
 			CompositeFactory<DataSource, ElementSelector> fr = new CompositeFactory<DataSource, ElementSelector>();
 			fr.put(DoubleDataSource.class, new DoubleSelector.Fäctory());
@@ -99,33 +105,23 @@ public class WorkflowModule implements Module {
 			eefs.workflowFactories.add(new org.vanda.studio.modules.workflows.inspector.WorkflowEditor());
 			eefs.literalFactories.add(new LiteralEditor(app, rootDataSource, fr));
 
-			ToolFactory pdftool = new WorkflowToPDFToolFactory(toolRepository);
 			LinkedList<SemanticsToolFactory> srep = new LinkedList<SemanticsToolFactory>();
 			srep = new LinkedList<SemanticsToolFactory>();
 			srep.add(new InspectorTool(eefs, previewFactoryMeta.getRepository()));
 			srep.add(new RunNowTool(buildSystemRepository));
-
-			LinkedList<ToolFactory> toolFactories;
-			toolFactories = new LinkedList<ToolFactory>();
-			toolFactories.add(pdftool);
-			toolFactories.add(new SemanticsTool(srep));
-			PreviewFactory executionPreviewFactory = new WorkflowExecutionPreview(app, new MainComponentToolFactory(
-					toolRepository, /* immutable= */true), toolFactories, toolRepository);
-			sr.put(EXECUTION, executionPreviewFactory);
-
-			srep = new LinkedList<SemanticsToolFactory>(srep);
 			srep.add(new RunTool(app, rootDataSource, executionPreviewFactory));
 
-			toolFactories = new LinkedList<ToolFactory>();
-			toolFactories.add(new ErrorHighlighterFactory());
-			toolFactories.add(new PaletteTool(toolRepository));
-			toolFactories.add(new SaveTool());
-			toolFactories.add(pdftool);
-			toolFactories.add(new SemanticsTool(srep));
-			toolFactories.add(new AssignmentTableToolFactory(eefs, rootDataSource));
-			toolFactories.add(new AssignmentSwitchToolFactory());
-			sr.put(WORKFLOW, new WorkflowPreview(app, new MainComponentToolFactory(toolRepository, false),
-					toolFactories, toolRepository));
+			ListRepository<ToolFactory> lr = new ListRepository<ToolFactory>();
+			lr.addItem(new ErrorHighlighterFactory());
+			lr.addItem(new PaletteTool(toolRepository));
+			lr.addItem(new SaveTool());
+			lr.addItem(new WorkflowToPDFToolFactory(toolRepository));
+			lr.addItem(new SemanticsTool(srep));
+			lr.addItem(new AssignmentTableToolFactory(app, fr, rootDataSource));
+			lr.addItem(new AssignmentSwitchToolFactory());
+			toolFactoryMeta.addRepository(lr);
+			sr.put(EXECUTION, executionPreviewFactory);
+			sr.put(WORKFLOW, executionPreviewFactory);
 			previewFactoryMeta.addRepository(sr);
 
 			// app.getWindowSystem().addAction(null, new OpenManagerAction(),

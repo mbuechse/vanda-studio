@@ -36,7 +36,7 @@ public class ScoresPreviewFactory implements PreviewFactory {
 				return null;
 			sScores = new Scanner(scores);
 			sMeta = new Scanner(meta);
-			File sentences = new File(app.findFile(sMeta.nextLine()));
+			File sentences = new File(sMeta.nextLine());
 			sMeta.close();
 			sSentences = new Scanner(sentences);
 			List<String> left = new ArrayList<String>();

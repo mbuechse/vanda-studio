@@ -7,29 +7,53 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.SwingUtilities;
 
+import org.vanda.datasources.DataSourceMount;
+import org.vanda.datasources.RootDataSource;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
+import org.vanda.studio.modules.workflows.model.ToolFactory;
+import org.vanda.types.Type;
+import org.vanda.util.CompositeRepository;
 import org.vanda.util.ExceptionMessage;
+import org.vanda.util.MetaRepository;
+import org.vanda.util.PreviewFactory;
 import org.vanda.util.RCChecker;
+import org.vanda.workflows.elements.Tool;
+import org.vanda.workflows.run.BuildSystem;
 
+// dependency injection class (application builder, so to speak)
 public final class Launcher implements Runnable {
+
+	private final MetaRepository<Type, PreviewFactory> previewFactoryMeta;
+	private final MetaRepository<String, DataSourceMount> dataSourceMeta;
+	private final MetaRepository<String, BuildSystem> buildSystemMeta;
+	private final MetaRepository<String, Tool> toolMeta;
+	private final MetaRepository<String, ToolFactory> toolFactoryMeta;
+	
+	private final RootDataSource rootDataSource;
+	private final ApplicationImpl app = new ApplicationImpl();
 
 	private Launcher() {
 		// I'm a private launcher, a launcher for money ...
+		buildSystemMeta = new CompositeRepository<String, BuildSystem>();
+		previewFactoryMeta = new CompositeRepository<Type, PreviewFactory>();
+		dataSourceMeta = new CompositeRepository<String, DataSourceMount>();
+		toolMeta = new CompositeRepository<String, Tool>();
+		toolFactoryMeta = new CompositeRepository<String, ToolFactory>();
+		rootDataSource = new RootDataSource(dataSourceMeta.getRepository());
 	}
 
 	@Override
 	public void run() {
-		ApplicationImpl app = new ApplicationImpl();
 		Module[] ms = {
-				new org.vanda.studio.modules.messages.MessageModule(),
-				new org.vanda.studio.modules.tools.ToolsModule(app.getToolMetaRepository()),
-				new org.vanda.studio.modules.run.RunModule(app.getRunnerFactoryMetaRepository()),
-				new org.vanda.studio.modules.previews.PreviewsModule(app.getPreviewFactoryMetaRepository()),
-				new org.vanda.studio.modules.workflows.WorkflowModule(app.getToolMetaRepository().getRepository(), app
-						.getRunnerFactoryMetaRepository().getRepository(), app.getRootDataSource(),
-						app.getPreviewFactoryMetaRepository()),
-				new org.vanda.studio.modules.datasources.DataSourceModule(app.getDataSourceMetaRepository()) };
+				// new org.vanda.studio.modules.messages.MessageModule(),
+				new org.vanda.studio.modules.tools.ToolsModule(toolMeta),
+				new org.vanda.studio.modules.run.RunModule(buildSystemMeta),
+				new org.vanda.studio.modules.previews.PreviewsModule(previewFactoryMeta),
+				new org.vanda.studio.modules.workflows.WorkflowModule(toolMeta.getRepository(),
+						buildSystemMeta.getRepository(), rootDataSource, previewFactoryMeta,
+						toolFactoryMeta),
+				new org.vanda.studio.modules.datasources.DataSourceModule(dataSourceMeta) };
 
 		ModuleManager moduleManager = new ModuleManager(app);
 		for (Module m : ms)
@@ -46,7 +70,7 @@ public final class Launcher implements Runnable {
 	 *            Command line Arguments
 	 */
 	public static void main(String[] args) {
-		RCChecker.readRC();  // TODO oh boy
+		RCChecker.readRC(); // TODO oh boy
 		SwingUtilities.invokeLater(new Launcher());
 	}
 

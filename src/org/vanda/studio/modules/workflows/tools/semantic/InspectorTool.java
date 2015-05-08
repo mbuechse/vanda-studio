@@ -115,7 +115,6 @@ public class InspectorTool implements SemanticsToolFactory {
 			};
 			semA.getObservable().addObserver(semanticObserver);
 
-			this.wfe.focusToolWindow(contentPane);
 			update();
 		}
 
@@ -174,5 +173,10 @@ public class InspectorTool implements SemanticsToolFactory {
 	// public Object instantiate(WorkflowEditor wfe, Model model, View view) {
 	public Object instantiate(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA) {
 		return new Inspector(wfe, synA, semA, wfe.getView());
+	}
+
+	@Override
+	public String getId() {
+		return "Inspector tool editor plugin";
 	}
 }

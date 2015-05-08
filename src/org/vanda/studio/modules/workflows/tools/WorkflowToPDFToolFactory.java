@@ -82,4 +82,9 @@ public final class WorkflowToPDFToolFactory implements ToolFactory {
 		wfe.addAction(a, "application-pdf", KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_MASK), 8);
 		return a;
 	}
+
+	@Override
+	public String getId() {
+		return "Export to PDF tool";
+	}
 }

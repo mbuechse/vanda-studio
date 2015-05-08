@@ -5,7 +5,6 @@ import javax.swing.KeyStroke;
 
 import org.vanda.studio.app.LayoutSelector;
 import org.vanda.util.Action;
-import org.vanda.util.Observable;
 import org.vanda.view.View;
 import org.vanda.workflows.data.Database;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
@@ -23,9 +22,6 @@ public interface WorkflowEditor {
 	
 	String getProperty(String key);
 	void setProperty(String key, String value);
-	Observable<WorkflowEditor> getShutdownObservable();
-	Observable<WorkflowEditor> getUIModeObservable();
-	boolean isLargeContent();
 
 	void removeToolWindow(JComponent c);
 	void addAction(Action a, String imageName, KeyStroke keyStroke, int pos);

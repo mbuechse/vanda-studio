@@ -106,9 +106,9 @@ public class AlignmentsPreviewFactory implements PreviewFactory {
 		public void initialize() throws FileNotFoundException {
 			File f = new File(file + ".meta");
 			Scanner mHandle = new Scanner(f);
-			File f1 = new File(app.findFile(mHandle.nextLine()));
+			File f1 = new File(mHandle.nextLine());
 			fHandle = new Scanner(f1);
-			File f2 = new File(app.findFile(mHandle.nextLine()));
+			File f2 = new File(mHandle.nextLine());
 			eHandle = new Scanner(f2);
 			mHandle.close();
 			File f3 = new File(file);

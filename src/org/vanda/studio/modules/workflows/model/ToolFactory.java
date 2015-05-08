@@ -1,5 +1,7 @@
 package org.vanda.studio.modules.workflows.model;
 
-public interface ToolFactory {
+import org.vanda.util.HasId;
+
+public interface ToolFactory extends HasId {
 	Object instantiate(WorkflowEditor wfe);
 }

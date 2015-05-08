@@ -254,4 +254,9 @@ public class AssignmentSwitchToolFactory implements ToolFactory {
 		return new EditAssignmentTool(wfe);
 	}
 
+	@Override
+	public String getId() {
+		return "Assignment switcher editor plugin";
+	}
+
 }

@@ -76,4 +76,9 @@ public class ErrorHighlighterFactory implements ToolFactory {
 		return eh;
 	}
 
+	@Override
+	public String getId() {
+		return "Error highlighter editor plugin";
+	}
+
 }

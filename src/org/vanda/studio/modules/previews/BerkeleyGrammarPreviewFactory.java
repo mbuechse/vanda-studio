@@ -47,7 +47,7 @@ public class BerkeleyGrammarPreviewFactory implements PreviewFactory {
 			gbc.gridx = 0;
 			gbc.gridy = 0;
 			try {
-				fs = new Scanner(new FileInputStream(app.findFile(value + postfix)));
+				fs = new Scanner(new FileInputStream(value + postfix));
 				bMore = new JButton(new AbstractAction("more") {
 
 					private static final long serialVersionUID = 1L;

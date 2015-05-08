@@ -16,23 +16,17 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
-import org.vanda.datasources.DataSourceMount;
-import org.vanda.datasources.RootDataSource;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.UIMode;
 import org.vanda.studio.app.WindowSystem;
 import org.vanda.types.Type;
-import org.vanda.util.CompositeRepository;
 import org.vanda.util.ExceptionMessage;
 import org.vanda.util.Message;
-import org.vanda.util.MetaRepository;
 import org.vanda.util.MultiplexObserver;
 import org.vanda.util.Observable;
 import org.vanda.util.Observer;
-import org.vanda.util.PreviewFactory;
 import org.vanda.workflows.elements.Port;
 import org.vanda.workflows.elements.Tool;
-import org.vanda.workflows.run.BuildSystem;
 
 /**
  * @author buechse
@@ -46,11 +40,6 @@ public final class ApplicationImpl implements Application {
 	protected ModuleManager moduleManager;
 	protected final MultiplexObserver<Message> messageObservable;
 	protected final MultiplexObserver<Application> modeObservable;
-	protected final MetaRepository<Type, PreviewFactory> previewFactoryRepository;
-	protected final MetaRepository<String, DataSourceMount> dataSourceRepository;
-	protected final MetaRepository<String, BuildSystem> runnerFactoryRepository;
-	protected final MetaRepository<String, Tool> toolRepository;
-	protected final RootDataSource rootDataSource;
 	protected final MultiplexObserver<Application> shutdownObservable;
 	protected final WindowSystemImpl windowSystem;
 	protected final HashSet<Type> types;
@@ -66,20 +55,16 @@ public final class ApplicationImpl implements Application {
 		mode = modes.get(0);
 		// converterToolRepository = new CompositeRepository<Tool>();
 		modeObservable = new MultiplexObserver<Application>();
-		runnerFactoryRepository = new CompositeRepository<String, BuildSystem>();
-		previewFactoryRepository = new CompositeRepository<Type, PreviewFactory>();
-		dataSourceRepository = new CompositeRepository<String, DataSourceMount>();
-		toolRepository = new CompositeRepository<String, Tool>();
-		rootDataSource = new RootDataSource(dataSourceRepository.getRepository());
 		shutdownObservable = new MultiplexObserver<Application>();
 		windowSystem = new WindowSystemImpl(this);
-		types = new HashSet<Type>();
 		properties = new Properties();
 		try {
 			properties.loadFromXML(new FileInputStream(PROPERTIES_FILE));
 		} catch (Exception e) {
 			sendMessage(new ExceptionMessage(e));
 		}
+		
+		types = new HashSet<Type>();
 		typeObserver = new Observer<Tool>() {
 
 			@Override
@@ -93,9 +78,7 @@ public final class ApplicationImpl implements Application {
 			}
 
 		};
-
-		// converterToolRepository.getAddObservable().addObserver(typeObserver);
-		toolRepository.getAddObservable().addObserver(typeObserver);
+		// toolRepository.getAddObservable().addObserver(typeObserver);
 		
 		// Register a Monospace font that can display all Unicode characters
 		try {
@@ -116,23 +99,6 @@ public final class ApplicationImpl implements Application {
 	@Override
 	public String createUniqueId() {
 		return UUID.randomUUID().toString().toUpperCase();
-	}
-
-	@Override
-	public String findFile(String value) {
-		// System.out.println(getProperty("inputPath"));
-		if (value == null)
-			return "";
-		if (value.startsWith("/"))
-			return value;
-		if (value.contains(":")) {
-			return rootDataSource.getValue(value);
-		}
-		if (new File(getProperty("inputPath") + value).exists())
-			return getProperty("inputPath") + value;
-		if (new File(getProperty("outputPath") + value).exists())
-			return getProperty("outputPath") + value;
-		return value;
 	}
 
 	@Override
@@ -219,16 +185,6 @@ public final class ApplicationImpl implements Application {
 		});
 	}
 
-	// @Override
-	public MetaRepository<String, Tool> getToolMetaRepository() {
-		return toolRepository;
-	}
-
-	// @Override
-	public RootDataSource getRootDataSource() {
-		return rootDataSource;
-	}
-
 	@Override
 	public Observable<Message> getMessageObservable() {
 		return messageObservable;
@@ -271,17 +227,5 @@ public final class ApplicationImpl implements Application {
 	
 	public void setModuleManager(ModuleManager moduleManager) {
 		this.moduleManager = moduleManager;
-	}
-
-	public MetaRepository<Type, PreviewFactory> getPreviewFactoryMetaRepository() {
-		return previewFactoryRepository;
-	}
-
-	public MetaRepository<String, DataSourceMount> getDataSourceMetaRepository() {
-		return dataSourceRepository;
-	}
-
-	public MetaRepository<String, BuildSystem> getRunnerFactoryMetaRepository() {
-		return runnerFactoryRepository;
 	}
 }
