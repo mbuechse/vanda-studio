@@ -33,7 +33,7 @@ import org.vanda.util.Observable;
 import org.vanda.util.Observer;
 import org.vanda.workflows.elements.Port;
 import org.vanda.workflows.elements.Tool;
-import org.vanda.workflows.run.RunnerFactory;
+import org.vanda.workflows.run.BuildSystem;
 
 /**
  * @author buechse
@@ -49,7 +49,7 @@ public final class ApplicationImpl implements Application {
 	protected final MultiplexObserver<Application> modeObservable;
 	protected final HashMap<Type, PreviewFactory> previewFactories;
 	protected final CompositeRepository<String, DataSourceMount> dataSourceRepository;
-	protected final CompositeRepository<String, RunnerFactory> runnerFactoryRepository;
+	protected final CompositeRepository<String, BuildSystem> runnerFactoryRepository;
 	protected final CompositeRepository<String, Tool> toolRepository;
 	protected final RootDataSource rootDataSource;
 	protected final MultiplexObserver<Application> shutdownObservable;
@@ -67,7 +67,7 @@ public final class ApplicationImpl implements Application {
 		mode = modes.get(0);
 		// converterToolRepository = new CompositeRepository<Tool>();
 		modeObservable = new MultiplexObserver<Application>();
-		runnerFactoryRepository = new CompositeRepository<String, RunnerFactory>();
+		runnerFactoryRepository = new CompositeRepository<String, BuildSystem>();
 		previewFactories = new HashMap<Type, PreviewFactory>();
 		dataSourceRepository = new CompositeRepository<String, DataSourceMount>();
 		toolRepository = new CompositeRepository<String, Tool>();
@@ -292,7 +292,7 @@ public final class ApplicationImpl implements Application {
 	}
 
 	@Override
-	public MetaRepository<String, RunnerFactory> getRunnerFactoryMetaRepository() {
+	public MetaRepository<String, BuildSystem> getRunnerFactoryMetaRepository() {
 		return runnerFactoryRepository;
 	}
 }

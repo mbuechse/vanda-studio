@@ -13,7 +13,7 @@ import org.vanda.util.Message;
 import org.vanda.util.MetaRepository;
 import org.vanda.util.Observable;
 import org.vanda.workflows.elements.Tool;
-import org.vanda.workflows.run.RunnerFactory;
+import org.vanda.workflows.run.BuildSystem;
 
 /**
  * Root node of the Vanda Studio Application Object Model.
@@ -44,7 +44,7 @@ public interface Application {
 	 * Returns the repository of Runner repositories. Modules should
 	 * add or remove their own repositories here.
 	 */
-	MetaRepository<String, RunnerFactory> getRunnerFactoryMetaRepository();
+	MetaRepository<String, BuildSystem> getRunnerFactoryMetaRepository();
 	
 	RootDataSource getRootDataSource();
 	

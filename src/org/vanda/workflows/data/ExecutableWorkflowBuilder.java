@@ -34,7 +34,7 @@ public class ExecutableWorkflowBuilder {
 		workflow = wf;
 		dims = workflowDimension(workflow);
 		this.synA = synA;
-		ewf = new MutableWorkflow(workflow.getName());
+		ewf = new MutableWorkflow(workflow.getName() + "Execution");  // TODO improve
 		edb = new Database();
 		edb.put(new Integer(0), "");  // special row id that does not influence job id 
 	}

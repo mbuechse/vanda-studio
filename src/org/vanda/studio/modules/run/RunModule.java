@@ -8,7 +8,6 @@ import org.vanda.fragment.impl.ProfileImpl;
 import org.vanda.fragment.model.FragmentCompiler;
 import org.vanda.fragment.model.FragmentLinker;
 import org.vanda.fragment.model.Profile;
-import org.vanda.runner.RunConfig;
 import org.vanda.runner.RunnerFactoryImpl;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
@@ -16,7 +15,7 @@ import org.vanda.studio.modules.run.ProfileManager.ProfileOpener;
 import org.vanda.util.Action;
 import org.vanda.util.ExternalRepository;
 import org.vanda.util.ListRepository;
-import org.vanda.workflows.run.RunnerFactory;
+import org.vanda.workflows.run.BuildSystem;
 
 public class RunModule implements Module {
 
@@ -50,9 +49,9 @@ public class RunModule implements Module {
 			profile.getFragmentCompilerMetaRepository().addRepository(compilers);
 			profile.getFragmentLinkerMetaRepository().addRepository(linkers);
 			profile.getFragmentToolMetaRepository().addRepository(er);
-			ListRepository<RunnerFactory> repository = new ListRepository<RunnerFactory>();
+			ListRepository<BuildSystem> repository = new ListRepository<BuildSystem>();
 			// TODO the runconfig must be workflow-specific
-			repository.addItem(new RunnerFactoryImpl(profile, new RunConfig(app.getProperty("outputPath"))));
+			repository.addItem(new RunnerFactoryImpl(profile, app.getProperty("outputPath")));
 			app.getRunnerFactoryMetaRepository().addRepository(repository);
 
 		}

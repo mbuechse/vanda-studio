@@ -57,12 +57,13 @@ public class RunTool implements SemanticsToolFactory {
 
 			}
 
-			public void evokeExecution(List<Integer> assignmentSelection, String filePath) {
+			public void evokeExecution(List<Integer> assignmentSelection) {
 				f.dispose();
 
 				ExecutableWorkflowBuilder ewf = new ExecutableWorkflowBuilder(wfe.getView().getWorkflow(), synA);
 				for (Integer i : assignmentSelection)
 					ewf.addAssigment(wfe.getDatabase().getRow(i));
+				String filePath = app.getProperty("outputPath");  // TODO revise
 				filePath += "/" + ewf.getWorkflow().getName() + new Date().toString();
 				try {
 					new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");

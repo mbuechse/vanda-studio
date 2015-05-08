@@ -123,7 +123,7 @@ public class GeneratorImpl implements Generator, FragmentIO {
 
 	@Override
 	public File createFile(String name) throws IOException {
-		File result = new File(path + File.pathSeparator + name);
+		File result = new File(path + File.separator + name);
 		result.createNewFile();
 		return result;
 	}

@@ -20,33 +20,15 @@ import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
+import org.vanda.workflows.run.BuildContext;
 import org.vanda.workflows.run.RunStates;
 import org.vanda.workflows.run.Runner;
-import org.vanda.workflows.run.RunnerFactory;
+import org.vanda.workflows.run.BuildSystem;
 import org.vanda.workflows.run.RunStates.RunEvent;
 import org.vanda.workflows.run.RunStates.RunEventId;
 import org.vanda.workflows.run.RunStates.RunEventListener;
 
 public class RunNowTool implements SemanticsToolFactory {
-
-	public class ClearWorkflowDirectoryAction implements Action {
-		private WorkflowEditor wfe;
-
-		public ClearWorkflowDirectoryAction(WorkflowEditor wfe) {
-			this.wfe = wfe;
-		}
-
-		@Override
-		public String getName() {
-			return "Clear Workflow directory";
-		}
-
-		@Override
-		public void invoke() {
-			runnerFactoryRepository.getItems().iterator().next().clean(wfe.getView().getWorkflow(), wfe.getDatabase());
-		}
-
-	}
 
 	public static Map<String, Job> createIdMap(MutableWorkflow wf, DataflowAnalysis dfa) {
 		Map<String, Job> result = new HashMap<String, Job>();
@@ -140,8 +122,7 @@ public class RunNowTool implements SemanticsToolFactory {
 			@Override
 			public void invoke() {
 				// compile
-				run = runnerFactoryRepository.getItems().iterator().next()
-						.createRunner(wfe.getView().getWorkflow(), wfe.getDatabase());
+				run = bc.build(wfe.getView().getWorkflow(), wfe.getDatabase());
 				// run after successful compilation
 				for (Job j : synA.getSorted())
 					view.getJobView(j).notify(READY);
@@ -154,10 +135,31 @@ public class RunNowTool implements SemanticsToolFactory {
 			}
 		}
 
+		public class ClearWorkflowDirectoryAction implements Action {
+			private WorkflowEditor wfe;
+
+			public ClearWorkflowDirectoryAction(WorkflowEditor wfe) {
+				this.wfe = wfe;
+			}
+
+			@Override
+			public String getName() {
+				return "Clear Workflow directory";
+			}
+
+			@Override
+			public void invoke() {
+				bc.clean(wfe.getView().getWorkflow(), wfe.getDatabase());
+			}
+
+		}
+
 		private final WorkflowEditor wfe;
 		private final View view;
 		private final SemanticAnalysis semA;
 		private final SyntaxAnalysis synA;
+		private final BuildSystem bs;
+		private final BuildContext bc;
 		private Runner run;
 		private RunEventObserver reo;
 		private final RunAction runAction;
@@ -165,6 +167,10 @@ public class RunNowTool implements SemanticsToolFactory {
 		private final DbListener dbListener;
 
 		public Tool(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA) {
+			bs = runnerFactoryRepository.getItems().iterator().next();
+			bc = bs.createBuildContext();
+			// TODO load and save settings -- WorkflowEditor must be ...
+			// "filename-aware" first (including Observer pattern)
 			this.wfe = wfe;
 			view = wfe.getView();
 			this.synA = synA;
@@ -215,9 +221,9 @@ public class RunNowTool implements SemanticsToolFactory {
 		}
 	}
 
-	private final Repository<String, RunnerFactory> runnerFactoryRepository;
+	private final Repository<String, BuildSystem> runnerFactoryRepository;
 
-	public RunNowTool(Repository<String, RunnerFactory> runnerFactoryRepository) {
+	public RunNowTool(Repository<String, BuildSystem> runnerFactoryRepository) {
 		this.runnerFactoryRepository = runnerFactoryRepository;
 	}
 

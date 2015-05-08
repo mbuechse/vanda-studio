@@ -11,13 +11,14 @@ import org.vanda.workflows.data.Databases.CursorChange;
 import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
 import org.vanda.workflows.hyper.Workflows.UpdatedEvent;
+import org.vanda.workflows.run.BuildContext;
 import org.vanda.workflows.run.Runner;
-import org.vanda.workflows.run.RunnerFactory;
+import org.vanda.workflows.run.BuildSystem;
 
-public class RunnerFactoryImpl implements RunnerFactory {
+public class RunnerFactoryImpl implements BuildSystem {
 	
 	private final Profile prof;
-	private RunConfig rc = null;
+	private final String defaultPath;
 
 	@Override
 	public String getCategory() {
@@ -55,13 +56,13 @@ public class RunnerFactoryImpl implements RunnerFactory {
 		return null;
 	}
 	
-	private static class BuildContext {
+	private static class BuildInnerContext {
 		private final RunConfig rc;
 		private final MutableWorkflow wf;
 		private final SyntaxAnalysis synA = new SyntaxAnalysis();
 		private final SemanticAnalysis semA = new SemanticAnalysis();
 		
-		public BuildContext(MutableWorkflow wf, Database db, RunConfig rc) {
+		public BuildInnerContext(MutableWorkflow wf, Database db, RunConfig rc) {
 			this.rc = rc;
 			this.wf = wf;
 			synA.notify(new UpdatedEvent<MutableWorkflow>(wf));
@@ -91,24 +92,49 @@ public class RunnerFactoryImpl implements RunnerFactory {
 		}
 	}
 	
-	@Override
-	public void clean(MutableWorkflow wf, Database db) {
-		new BuildContext(wf, db, rc).clean();
-	}
+	private class BuildContextImpl implements BuildContext {
+		
+		private final RunConfig rc;
+		
+		public BuildContextImpl(String defaultPath) {
+			rc = new RunConfig(defaultPath);
+		}
+		
+		@Override
+		public void clean(MutableWorkflow wf, Database db) {
+			new BuildInnerContext(wf, db, rc).clean();
+		}
+		
+		@Override
+		public void cleanTempFiles(MutableWorkflow wf, Database db) {
+			new BuildInnerContext(wf, db, rc).cleanTempFiles();
+		}
 	
-	@Override
-	public void cleanTempFiles(MutableWorkflow wf, Database db) {
-		new BuildContext(wf, db, rc).cleanTempFiles();
+		@Override
+		public Runner build(MutableWorkflow wf, Database db) {
+			return new BuildInnerContext(wf, db, rc).build(prof);
+		}
+
+		@Override
+		public void loadSettings(String pathToWorkflow) {
+			// TODO implement
+		}
+
+		@Override
+		public void saveSettings(String pathToWorkflow) {
+			// TODO implement
+		}
+	
 	}
 
 	@Override
-	public Runner createRunner(MutableWorkflow wf, Database db) {
-		return new BuildContext(wf, db, rc).build(prof);
+	public BuildContext createBuildContext() {
+		return new BuildContextImpl(defaultPath);
 	}
 	
-	public RunnerFactoryImpl(Profile prof, RunConfig rc) {
+	public RunnerFactoryImpl(Profile prof, String defaultPath) {
 		this.prof = prof;
-		this.rc = rc;
+		this.defaultPath = defaultPath;
 	}
 	
 }

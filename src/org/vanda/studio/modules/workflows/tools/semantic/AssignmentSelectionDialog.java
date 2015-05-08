@@ -2,7 +2,6 @@ package org.vanda.studio.modules.workflows.tools.semantic;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,11 +44,10 @@ import org.vanda.workflows.hyper.MutableWorkflow;
  */
 public class AssignmentSelectionDialog {
 	public interface RemoveMeAsSoonAsPossible {
-		public void evokeExecution(List<Integer> assignmentSelection, String filePath);
+		public void evokeExecution(List<Integer> assignmentSelection);
 	}
 
 	private JPanel pan;
-	public File dir;
 	private List<Integer> assignmentSelection;
 	private List<JCheckBox> assignmentCheckboxes;
 	private Map<Integer, JSpinner> priorityMap;
@@ -191,7 +189,7 @@ public class AssignmentSelectionDialog {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Collections.sort(assignmentSelection); // TODO sort by prio
-				r.evokeExecution(assignmentSelection, dir.getAbsolutePath());
+				r.evokeExecution(assignmentSelection);
 			}
 		});
 

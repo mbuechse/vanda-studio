@@ -1,11 +1,13 @@
 package org.vanda.studio.modules.workflows;
 
+import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import org.vanda.studio.app.Application;
@@ -68,8 +70,16 @@ public class WorkflowEditorImpl implements WorkflowEditor, WorkflowListener<Muta
 		syntaxAnalysis = new SyntaxAnalysis();
 		view.getWorkflow().getObservable().addObserver(syntaxAnalysis);
 		tools = new ArrayList<Object>();
+		component = new JPanel(new BorderLayout());
+		component.setName(view.getWorkflow().getName());
+		app.getWindowSystem().addContentWindow(null, component, null);
+
+		// focus window a FIRST TIME so that it gets its layout before we add the tools
+		app.getWindowSystem().focusContentWindow(component);
+		component.requestFocusInWindow();
+		
 		mainComponentTool = (MainComponentTool) mainComponentFactory.instantiate(this);
-		component = mainComponentTool.getComponent();
+		component.add(mainComponentTool.getComponent(), BorderLayout.CENTER);
 
 		mwfObserver = new Observer<WorkflowEvent<MutableWorkflow>>() {
 			@Override
@@ -79,8 +89,6 @@ public class WorkflowEditorImpl implements WorkflowEditor, WorkflowListener<Muta
 		};
 		view.getWorkflow().getObservable().addObserver(mwfObserver);
 
-		component.setName(view.getWorkflow().getName());
-		app.getWindowSystem().addContentWindow(null, component, null);
 
 		addAction(new CloseWorkflowAction(), KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_MASK), 1);
 
@@ -92,7 +100,7 @@ public class WorkflowEditorImpl implements WorkflowEditor, WorkflowListener<Muta
 		view.getWorkflow().beginUpdate();
 		view.getWorkflow().endUpdate();
 
-		// focus window
+		// FIXME focus window a SECOND TIME because otherwise the buttons are not being displayed
 		app.getWindowSystem().focusContentWindow(component);
 		component.requestFocusInWindow();
 		// init outline painting

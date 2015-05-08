@@ -42,7 +42,7 @@ public class MainComponentToolFactory implements ToolFactory {
 		private final PresentationModel presentationModel;
 		private Observer<WorkflowEditor> appObserver;
 		private final mxGraphComponent component;
-		protected mxGraphOutline outline;
+		private final mxGraphOutline outline;
 		
 		public MainComponentToolImpl(Repository<String, Tool> toolRepository, WorkflowEditor wfe, boolean immutable) {
 			this.wfe = wfe;
@@ -67,6 +67,7 @@ public class MainComponentToolFactory implements ToolFactory {
 //					component.getVerticalScrollBar().setValue((int) (component.getVerticalScrollBar().getMaximum() * 0.35));
 //				}
 //			});
+			outline = new mxGraphOutline(component);
 			setupOutline();
 			wfe.addAction(new ResetZoomAction(), KeyStroke.getKeyStroke(KeyEvent.VK_0, KeyEvent.CTRL_MASK), 8);
 		}
@@ -202,11 +203,11 @@ public class MainComponentToolFactory implements ToolFactory {
 		}
 	
 		protected void setupOutline() {
-			outline = new mxGraphOutline(component);
 			outline.setPreferredSize(new Dimension(250, 250));
 			outline.setName("Map");
 			// outline.setFitPage(true);
 			wfe.addToolWindow(outline, WindowSystem.NORTHEAST);
+			outline.updateScaleAndTranslate();
 		}
 
 		private void removeSelectedCell() {
