@@ -11,12 +11,6 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
 
-
-//import org.vanda.fragment.model.Model;
-
-
-
-
 import org.vanda.studio.app.WindowSystem;
 import org.vanda.studio.modules.workflows.inspector.AbstractEditorFactory;
 import org.vanda.studio.modules.workflows.inspector.AbstractPreviewFactory;

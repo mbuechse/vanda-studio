@@ -158,11 +158,6 @@ public class WorkflowEditorImpl implements WorkflowEditor, WorkflowListener<Muta
 	}
 
 	@Override
-	public Application getApplication() {
-		return app;
-	}
-
-	@Override
 	public Database getDatabase() {
 		return database;
 	}

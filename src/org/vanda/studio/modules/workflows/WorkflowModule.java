@@ -114,7 +114,7 @@ public class WorkflowModule implements Module {
 			sr.put(EXECUTION, executionPreviewFactory);
 
 			srep = new LinkedList<SemanticsToolFactory>(srep);
-			srep.add(new RunTool(rootDataSource, executionPreviewFactory));
+			srep.add(new RunTool(app, rootDataSource, executionPreviewFactory));
 
 			toolFactories = new LinkedList<ToolFactory>();
 			toolFactories.add(new ErrorHighlighterFactory());

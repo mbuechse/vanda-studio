@@ -19,6 +19,7 @@ import org.vanda.workflows.hyper.SyntaxAnalysis;
 import org.vanda.workflows.serialization.Storer;
 
 public class RunTool implements SemanticsToolFactory {
+	private final Application app;
 	private final RootDataSource rds;
 	private final PreviewFactory executionPreviewFactory;
 
@@ -45,7 +46,7 @@ public class RunTool implements SemanticsToolFactory {
 				validWorkflow &= semA.getDFA().isConnected();
 				// && Types.canUnify(synA.getFragmentType(),
 				// prof.getRootType());
-				f = new JDialog(wfe.getApplication().getWindowSystem().getMainWindow(), "Execute Workflow");
+				f = new JDialog(app.getWindowSystem().getMainWindow(), "Execute Workflow");
 				AssignmentSelectionDialog rce = new AssignmentSelectionDialog(wfe.getView().getWorkflow(),
 						wfe.getDatabase(), rds, RunAction.this, validWorkflow);
 				f.setContentPane(rce.getComponent());
@@ -76,7 +77,6 @@ public class RunTool implements SemanticsToolFactory {
 			}
 		}
 
-		private Application app;
 		private WorkflowEditor wfe;
 		private SemanticAnalysis semA;
 		private SyntaxAnalysis synA;
@@ -85,12 +85,12 @@ public class RunTool implements SemanticsToolFactory {
 			this.wfe = wfe;
 			this.synA = synA;
 			this.semA = semA;
-			app = wfe.getApplication();
 			wfe.addAction(new RunAction(), "system-run", KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_MASK), 6);
 		}
 	}
 
-	public RunTool(RootDataSource rds, PreviewFactory executionPreviewFactory) {
+	public RunTool(Application app, RootDataSource rds, PreviewFactory executionPreviewFactory) {
+		this.app = app;
 		this.rds = rds;
 		this.executionPreviewFactory = executionPreviewFactory;
 	}

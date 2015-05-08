@@ -3,7 +3,6 @@ package org.vanda.studio.modules.workflows.model;
 import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 
-import org.vanda.studio.app.Application;
 import org.vanda.studio.app.LayoutSelector;
 import org.vanda.util.Action;
 import org.vanda.util.Observable;
@@ -17,7 +16,7 @@ public interface WorkflowEditor {
 	void addAction(Action a, KeyStroke keyStroke, int pos);
 	void addToolWindow(JComponent c, LayoutSelector layout);
 	void focusToolWindow(JComponent c);
-	Application getApplication();
+
 	View getView();
 	Database getDatabase();
 	SyntaxAnalysis getSyntaxAnalysis();
