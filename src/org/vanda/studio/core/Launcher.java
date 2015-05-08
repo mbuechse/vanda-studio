@@ -32,7 +32,6 @@ public final class Launcher implements Runnable {
 				new org.vanda.studio.modules.datasources.DataSourceModule(app.getDataSourceMetaRepository()) };
 
 		ModuleManager moduleManager = new ModuleManager(app);
-		moduleManager.loadModules();
 		for (Module m : ms)
 			moduleManager.loadModule(m);
 		moduleManager.initModules();
