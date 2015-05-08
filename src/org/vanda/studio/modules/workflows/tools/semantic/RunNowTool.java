@@ -184,6 +184,7 @@ public class RunNowTool implements SemanticsToolFactory {
 			wfe.addAction(new ClearWorkflowDirectoryAction(wfe), "run-build-clean",
 					KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_MASK), 5);
 			wfe.disableAction(cancelAction);
+			// TODO if bc instanceof HasActions: add actions to GUI!
 		}
 
 		@Override

@@ -1,4 +1,4 @@
-package org.vanda.runner;
+package org.vanda.studio.modules.run;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.vanda.runner.RunConfig;
+
 // MB: TODO MVC editor for RunConfig objects
 
 public class RunConfigEditor {
@@ -28,7 +30,7 @@ public class RunConfigEditor {
 		return pan;
 	}
 
-	public RunConfigEditor(final RunConfig rc, String path) {		
+	public RunConfigEditor(final RunConfig rc) {		
 		// Panel and basic Layout
 		pan = new JPanel();
 		GroupLayout layout = new GroupLayout(pan);
@@ -37,7 +39,7 @@ public class RunConfigEditor {
 		layout.setAutoCreateGaps(true);
 		
 		// Execution Environment Folder Selection
-		dir = new File(path);
+		dir = new File(rc.getPath());
 		lFolder = new JLabel("Execution Environment");
 		tFolder = new JTextField(dir.getAbsolutePath());
 		tFolder.setMaximumSize(new Dimension(Short.MAX_VALUE, JTextField.HEIGHT));
