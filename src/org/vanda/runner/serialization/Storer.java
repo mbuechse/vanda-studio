@@ -21,12 +21,14 @@ public class Storer {
 		ppw.startNode("runconfig");
 		ppw.addAttribute("path", rc.getPath());
 		ppw.startNode("priorities");
+		/**
 		for (String id : rc.getJobPriorities().keySet()) {
 			ppw.startNode("job");
 			ppw.addAttribute("id", id);
 			ppw.addAttribute("priority", Integer.toHexString(rc.getJobPriorities().get(id)));
 			ppw.endNode();
 		}
+		*/
 		ppw.endNode(); // priorities
 		ppw.endNode(); // runconfig
 

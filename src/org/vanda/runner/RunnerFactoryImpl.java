@@ -17,6 +17,7 @@ import org.vanda.workflows.run.RunnerFactory;
 public class RunnerFactoryImpl implements RunnerFactory {
 	
 	private final Profile prof;
+	private RunConfig rc = null;
 
 	@Override
 	public String getCategory() {
@@ -54,30 +55,60 @@ public class RunnerFactoryImpl implements RunnerFactory {
 		return null;
 	}
 	
+	private static class BuildContext {
+		private final RunConfig rc;
+		private final MutableWorkflow wf;
+		private final SyntaxAnalysis synA = new SyntaxAnalysis();
+		private final SemanticAnalysis semA = new SemanticAnalysis();
+		
+		public BuildContext(MutableWorkflow wf, Database db, RunConfig rc) {
+			this.rc = rc;
+			this.wf = wf;
+			synA.notify(new UpdatedEvent<MutableWorkflow>(wf));
+			semA.notify(new CursorChange<Database>(db));
+			semA.notify(synA);	
+		}
+		
+		public Runner build(Profile prof) {
+			Generator gen = new GeneratorImpl(prof, rc.getPath());
+			String id;
+			try {
+				id = gen.generate(wf, synA, semA);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return new RunnerImpl(id);
+		}
+		
+		public void cleanTempFiles() {
+			// TODO implement
+		}
+		
+		public void clean() {
+			cleanTempFiles();
+			// now clean output files
+			// TODO implement
+		}
+	}
+	
 	@Override
 	public void clean(MutableWorkflow wf, Database db) {
-		// TODO implement
+		new BuildContext(wf, db, rc).clean();
+	}
+	
+	@Override
+	public void cleanTempFiles(MutableWorkflow wf, Database db) {
+		new BuildContext(wf, db, rc).cleanTempFiles();
 	}
 
 	@Override
 	public Runner createRunner(MutableWorkflow wf, Database db) {
-		Generator gen = new GeneratorImpl(prof);
-		SyntaxAnalysis synA = new SyntaxAnalysis();
-		SemanticAnalysis semA = new SemanticAnalysis();
-		synA.notify(new UpdatedEvent<MutableWorkflow>(wf));
-		semA.notify(new CursorChange<Database>(db));
-		semA.notify(synA);
-		String id;
-		try {
-			id = gen.generate(wf, synA, semA);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		return new RunnerImpl(id);
+		return new BuildContext(wf, db, rc).build(prof);
 	}
 	
-	public RunnerFactoryImpl(Profile prof) {
+	public RunnerFactoryImpl(Profile prof, RunConfig rc) {
 		this.prof = prof;
+		this.rc = rc;
 	}
 	
 }

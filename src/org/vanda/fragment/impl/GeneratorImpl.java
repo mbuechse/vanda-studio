@@ -24,7 +24,8 @@ import org.vanda.workflows.hyper.SyntaxAnalysis;
 
 public class GeneratorImpl implements Generator, FragmentIO {
 
-	private Profile prof;
+	private final Profile prof;
+	private final String path;
 
 	// The Generator class encapsulates stuff that should not be kept around
 	// all the time, and resource acquisition is initialization, blah blah
@@ -115,15 +116,14 @@ public class GeneratorImpl implements Generator, FragmentIO {
 		return new GenerationProcess().generate(ewf, synA, semA);
 	}
 
-	public GeneratorImpl(Profile prof) {
+	public GeneratorImpl(Profile prof, String path) {
 		this.prof = prof;
+		this.path = path;
 	}
 
 	@Override
 	public File createFile(String name) throws IOException {
-		// TODO use path from runconfig (and use pathSeparator)
-		// File result = new File(app.getProperty("outputPath") + name);
-		File result = new File(System.getProperty("user.home") + "/.vanda/output/" + name);
+		File result = new File(path + File.pathSeparator + name);
 		result.createNewFile();
 		return result;
 	}

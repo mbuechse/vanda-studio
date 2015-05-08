@@ -16,7 +16,7 @@ public class RunConfigBuilder {
 	}
 
 	public RunConfig build() {
-		return new RunConfig(path, priorities);
+		return new RunConfig(path);
 	}
 
 	public static Factory<RunConfigBuilder> createFactory() {

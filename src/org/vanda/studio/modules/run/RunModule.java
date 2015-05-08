@@ -1,7 +1,5 @@
 package org.vanda.studio.modules.run;
 
-import java.io.File;
-
 import org.vanda.fragment.bash.RootLinker;
 import org.vanda.fragment.bash.ShellCompiler;
 import org.vanda.fragment.bash.ShellTool;
@@ -10,6 +8,7 @@ import org.vanda.fragment.impl.ProfileImpl;
 import org.vanda.fragment.model.FragmentCompiler;
 import org.vanda.fragment.model.FragmentLinker;
 import org.vanda.fragment.model.Profile;
+import org.vanda.runner.RunConfig;
 import org.vanda.runner.RunnerFactoryImpl;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
@@ -28,14 +27,12 @@ public class RunModule implements Module {
 	public String getName() {
 		return "Run module for Vanda Studio";
 	}
-	
+
 	private static class RunModuleInstance {
-		
-		private final Application app;
+
 		private ProfileManager manager = null;
 
 		public RunModuleInstance(Application app) {
-			this.app = app;
 			ListRepository<FragmentCompiler> compilers = new ListRepository<FragmentCompiler>();
 			compilers.addItem(new ShellCompiler());
 			ListRepository<FragmentLinker> linkers = new ListRepository<FragmentLinker>();
@@ -48,15 +45,16 @@ public class RunModule implements Module {
 			}
 			er = new ExternalRepository<ShellTool>(new ToolLoader(path));
 			er.refresh();
-			
+
 			Profile profile = new ProfileImpl();
 			profile.getFragmentCompilerMetaRepository().addRepository(compilers);
 			profile.getFragmentLinkerMetaRepository().addRepository(linkers);
 			profile.getFragmentToolMetaRepository().addRepository(er);
 			ListRepository<RunnerFactory> repository = new ListRepository<RunnerFactory>();
-			repository.addItem(new RunnerFactoryImpl(profile));
+			// TODO the runconfig must be workflow-specific
+			repository.addItem(new RunnerFactoryImpl(profile, new RunConfig(app.getProperty("outputPath"))));
 			app.getRunnerFactoryMetaRepository().addRepository(repository);
-			
+
 		}
 
 		public final class OpenManagerAction implements Action, ProfileOpener {

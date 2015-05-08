@@ -1,11 +1,5 @@
 package org.vanda.runner;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Map;
-
-import org.vanda.workflows.hyper.Job;
-
 /**
  * Stores all information that is relevant for the execution system.
  * TODO this class is /specific/ to the execution system
@@ -15,31 +9,23 @@ import org.vanda.workflows.hyper.Job;
  *
  */
 public class RunConfig {
-	private final String path;
-	private final Date date;
-	private final Map<String, Integer> jobPriorities;
+	private String path;
+	private boolean debug;  // TODO respect this setting
 	
-	public RunConfig(String path, Map<String, Integer> jobPriorities) {
+	public RunConfig(String path) {
 		this.path = path;
-		this.date = new Date();
-		this.jobPriorities = jobPriorities;
+	}
+	
+	public boolean isDebug() {
+		return debug;
 	}
 	
 	public String getPath() {
 		return path;
 	}
 	
-	public Date getDate() {
-		return date;
-	}
-	
-	public Map<String, Integer> getJobPriorities() {
-		return jobPriorities;
-	}
-	
 	/**
 	 * @return a Comparator that is used by the TopSorter to implement Job priorities
-	 */
 	public Comparator<Job> generateComparator() {
 		return new Comparator<Job>() {
 
@@ -64,4 +50,5 @@ public class RunConfig {
 		};
 		
 	}
+	 */
 }
