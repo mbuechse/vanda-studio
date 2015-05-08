@@ -70,7 +70,7 @@ public class RunTool implements SemanticsToolFactory {
 					// XXX ServiceLocator antipattern
 					app.getPreviewFactory(EXECUTION).openEditor(filePath + ".xwf");
 				} catch (Exception e) {
-					wfe.getApplication().sendMessage(new ExceptionMessage(e));
+					// wfe.getApplication().sendMessage(new ExceptionMessage(e));
 				}
 			}
 		}

@@ -1,11 +1,9 @@
 package org.vanda.studio.modules.workflows.tools.semantic;
 
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
@@ -31,7 +29,7 @@ import org.vanda.workflows.run.RunStates.RunEventListener;
 
 public class RunNowTool implements SemanticsToolFactory {
 
-	public static class ClearWorkflowDirectoryAction implements Action {
+	public class ClearWorkflowDirectoryAction implements Action {
 		private WorkflowEditor wfe;
 
 		public ClearWorkflowDirectoryAction(WorkflowEditor wfe) {
@@ -45,30 +43,7 @@ public class RunNowTool implements SemanticsToolFactory {
 
 		@Override
 		public void invoke() {
-			// TODO use path from runconfig
-			File d = new File(wfe.getApplication().getProperty("outputPath"));
-			if (JOptionPane.OK_OPTION == JOptionPane.showOptionDialog(wfe.getApplication().getWindowSystem()
-					.getMainWindow(), "Do you want to empty " + d.getAbsolutePath() + "?", "Empty working directory",
-					JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[] {
-							"Empty directory!", "No, leave it." }, "default")) {
-				if (!emptyDirectory(d))
-					JOptionPane.showMessageDialog(wfe.getApplication().getWindowSystem().getMainWindow(),
-							"Deletion failed.");
-			}
-		}
-
-		static public boolean emptyDirectory(File dir) {
-			boolean success = true;
-			if (dir == null)
-				return false;
-			if (dir.exists()) {
-				for (File f : dir.listFiles()) {
-					if (f.isDirectory())
-						success &= emptyDirectory(f);
-					success &= f.delete();
-				}
-			}
-			return success;
+			runnerFactoryRepository.getItems().iterator().next().clean(wfe.getView().getWorkflow(), wfe.getDatabase());
 		}
 
 	}

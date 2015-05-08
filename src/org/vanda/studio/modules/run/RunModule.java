@@ -1,31 +1,22 @@
 package org.vanda.studio.modules.run;
 
-import java.io.IOException;
+import java.io.File;
 
 import org.vanda.fragment.bash.RootLinker;
 import org.vanda.fragment.bash.ShellCompiler;
 import org.vanda.fragment.bash.ShellTool;
 import org.vanda.fragment.bash.ToolLoader;
-import org.vanda.fragment.impl.GeneratorImpl;
 import org.vanda.fragment.impl.ProfileImpl;
 import org.vanda.fragment.model.FragmentCompiler;
 import org.vanda.fragment.model.FragmentLinker;
-import org.vanda.fragment.model.Generator;
 import org.vanda.fragment.model.Profile;
-import org.vanda.runner.RunnerImpl;
+import org.vanda.runner.RunnerFactoryImpl;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
 import org.vanda.studio.modules.run.ProfileManager.ProfileOpener;
 import org.vanda.util.Action;
 import org.vanda.util.ExternalRepository;
 import org.vanda.util.ListRepository;
-import org.vanda.workflows.data.Database;
-import org.vanda.workflows.data.Databases.CursorChange;
-import org.vanda.workflows.data.SemanticAnalysis;
-import org.vanda.workflows.hyper.MutableWorkflow;
-import org.vanda.workflows.hyper.SyntaxAnalysis;
-import org.vanda.workflows.hyper.Workflows.UpdatedEvent;
-import org.vanda.workflows.run.Runner;
 import org.vanda.workflows.run.RunnerFactory;
 
 public class RunModule implements Module {
@@ -36,69 +27,6 @@ public class RunModule implements Module {
 	@Override
 	public String getName() {
 		return "Run module for Vanda Studio";
-	}
-	
-	private static class RunnerFactoryImpl implements RunnerFactory {
-		
-		private final Profile prof;
-
-		@Override
-		public String getCategory() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getContact() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getDescription() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getName() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getVersion() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getId() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Runner createRunner(MutableWorkflow wf, Database db) {
-			Generator gen = new GeneratorImpl(prof);
-			SyntaxAnalysis synA = new SyntaxAnalysis();
-			SemanticAnalysis semA = new SemanticAnalysis();
-			synA.notify(new UpdatedEvent<MutableWorkflow>(wf));
-			semA.notify(new CursorChange<Database>(db));
-			semA.notify(synA);
-			String id;
-			try {
-				id = gen.generate(wf, synA, semA);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			return new RunnerImpl(id);
-		}
-		
-		public RunnerFactoryImpl(Profile prof) {
-			this.prof = prof;
-		}
-		
 	}
 	
 	private static class RunModuleInstance {
