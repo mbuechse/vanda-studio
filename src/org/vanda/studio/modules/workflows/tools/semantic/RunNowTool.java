@@ -262,7 +262,7 @@ public class RunNowTool implements SemanticsToolFactory {
 	}
 
 	@Override
-	public Object instantiate(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA, View view) {
+	public Object instantiate(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA) {
 		return new Tool(wfe, synA, semA);
 	}
 

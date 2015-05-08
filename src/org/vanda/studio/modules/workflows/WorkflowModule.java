@@ -79,17 +79,10 @@ public class WorkflowModule implements Module {
 
 		public WorkflowModuleInstance(Application a) {
 			app = a;
-			profile = new ProfileImpl();
 			ListRepository<FragmentCompiler> compilers = new ListRepository<FragmentCompiler>();
 			compilers.addItem(new ShellCompiler());
-			profile.getFragmentCompilerMetaRepository().addRepository(compilers);
 			ListRepository<FragmentLinker> linkers = new ListRepository<FragmentLinker>();
 			linkers.addItem(new RootLinker());
-			profile.getFragmentLinkerMetaRepository().addRepository(linkers);
-			repository = new ListRepository<Profile>();
-			repository.addItem(profile);
-			manager = null;
-
 			ExternalRepository<ShellTool> er;
 			String path = app.getProperty(TOOL_PATH_KEY);
 			if (path == null) {
@@ -97,8 +90,15 @@ public class WorkflowModule implements Module {
 				app.setProperty(TOOL_PATH_KEY, TOOL_PATH_DEFAULT);
 			}
 			er = new ExternalRepository<ShellTool>(new ToolLoader(path));
-			profile.getFragmentToolMetaRepository().addRepository(er);
 			er.refresh();
+			
+			profile = new ProfileImpl();
+			profile.getFragmentCompilerMetaRepository().addRepository(compilers);
+			profile.getFragmentLinkerMetaRepository().addRepository(linkers);
+			profile.getFragmentToolMetaRepository().addRepository(er);
+			repository = new ListRepository<Profile>();
+			repository.addItem(profile);
+			manager = null;
 
 			CompositeFactory<DataSource, ElementSelector> fr = new CompositeFactory<DataSource, ElementSelector>();
 			fr.put(DoubleDataSource.class, new DoubleSelector.Fäctory());
@@ -125,7 +125,7 @@ public class WorkflowModule implements Module {
 					/* immutable= */true), toolFactories));
 
 			srep = new LinkedList<SemanticsToolFactory>(srep);
-			srep.add(new RunTool(gen));
+			srep.add(new RunTool());
 
 			toolFactories = new LinkedList<ToolFactory>();
 			toolFactories.add(new ErrorHighlighterFactory());

@@ -169,7 +169,7 @@ public class InspectorTool implements SemanticsToolFactory {
 
 	@Override
 	// public Object instantiate(WorkflowEditor wfe, Model model, View view) {
-	public Object instantiate(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA, View view) {
-		return new Inspector(wfe, synA, semA, view);
+	public Object instantiate(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA) {
+		return new Inspector(wfe, synA, semA, wfe.getView());
 	}
 }

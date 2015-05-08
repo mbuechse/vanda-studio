@@ -8,7 +8,6 @@ import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 
-import org.vanda.fragment.model.Generator;
 import org.vanda.run.RunConfig;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
@@ -16,10 +15,8 @@ import org.vanda.studio.modules.workflows.run.RunConfigEditor;
 import org.vanda.studio.modules.workflows.run.RunConfigEditor.Runner;
 import org.vanda.types.CompositeType;
 import org.vanda.types.Type;
-import org.vanda.types.Types;
 import org.vanda.util.Action;
 import org.vanda.util.ExceptionMessage;
-import org.vanda.view.View;
 import org.vanda.workflows.data.ExecutableWorkflowBuilder;
 import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
@@ -46,8 +43,8 @@ public class RunTool implements SemanticsToolFactory {
 			@Override
 			public void invoke() {
 				boolean validWorkflow = synA.getCyclicConnections() == null && synA.getTypeErrors() == null;
-				validWorkflow &= semA.getDFA().isConnected()
-						&& Types.canUnify(synA.getFragmentType(), prof.getRootType());
+				validWorkflow &= semA.getDFA().isConnected();
+						// && Types.canUnify(synA.getFragmentType(), prof.getRootType());
 				f = new JDialog(wfe.getApplication().getWindowSystem().getMainWindow(), "Execute Workflow");
 				RunConfigEditor rce = new RunConfigEditor(wfe.getView().getWorkflow(), wfe.getDatabase(),
 						app.getRootDataSource(), app.getProperty("outputPath"), RunAction.this, validWorkflow);
@@ -94,14 +91,11 @@ public class RunTool implements SemanticsToolFactory {
 		}
 	}
 
-	private final Generator prof;
-
-	public RunTool(Generator prof) {
-		this.prof = prof;
+	public RunTool() {
 	}
 
 	@Override
-	public Object instantiate(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA, View view) {
+	public Object instantiate(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA) {
 		return new Tool(wfe, synA, semA);
 	}
 

@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
-import org.vanda.view.View;
 import org.vanda.workflows.data.Database;
 import org.vanda.workflows.data.Databases;
 import org.vanda.workflows.data.SemanticAnalysis;
@@ -20,12 +19,10 @@ public class SemanticsTool implements ToolFactory {
 		private final Database database;
 		private final SemanticAnalysis semA;
 		private final SyntaxAnalysis synA;
-		private final View view;
 		private final Collection<Object> tools;
 
 		public Tool(WorkflowEditor wfe, Collection<SemanticsToolFactory> stfs) {
 
-			view = wfe.getView();
 			database = wfe.getDatabase();
 			synA = wfe.getSyntaxAnalysis();
 			semA = new SemanticAnalysis();
@@ -35,7 +32,7 @@ public class SemanticsTool implements ToolFactory {
 			semA.notify(new Databases.CursorChange<Database>(database));
 			tools = new ArrayList<Object>();
 			for (SemanticsToolFactory stf : stfs)
-				tools.add(stf.instantiate(wfe, synA, semA, view));
+				tools.add(stf.instantiate(wfe, synA, semA));
 
 		}
 
