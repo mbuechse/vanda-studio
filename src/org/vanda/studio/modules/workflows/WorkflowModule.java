@@ -110,7 +110,7 @@ public class WorkflowModule implements Module {
 			eefs.literalFactories.add(new LiteralEditor(app, fr));
 
 			ToolFactory pdftool = new WorkflowToPDFToolFactory(app.getToolMetaRepository().getRepository());
-			Generator gen = new GeneratorImpl(app, profile);
+			Generator gen = new GeneratorImpl(profile);
 			LinkedList<SemanticsToolFactory> srep = new LinkedList<SemanticsToolFactory>();
 			srep = new LinkedList<SemanticsToolFactory>();
 			srep.add(new InspectorTool(eefs));

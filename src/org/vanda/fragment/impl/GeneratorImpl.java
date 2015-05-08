@@ -13,7 +13,6 @@ import org.vanda.fragment.model.FragmentCompiler;
 import org.vanda.fragment.model.FragmentIO;
 import org.vanda.fragment.model.Generator;
 import org.vanda.fragment.model.Profile;
-import org.vanda.studio.app.Application;
 import org.vanda.types.Type;
 import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.elements.Literal;
@@ -25,7 +24,6 @@ import org.vanda.workflows.hyper.SyntaxAnalysis;
 
 public class GeneratorImpl implements Generator, FragmentIO {
 
-	private final Application app;
 	private Profile prof;
 
 	// The Generator class encapsulates stuff that should not be kept around
@@ -117,21 +115,22 @@ public class GeneratorImpl implements Generator, FragmentIO {
 		return new GenerationProcess().generate(ewf, synA, semA);
 	}
 
-	public GeneratorImpl(Application app, Profile prof) {
-		this.app = app;
+	public GeneratorImpl(Profile prof) {
 		this.prof = prof;
 	}
 
 	@Override
 	public File createFile(String name) throws IOException {
-		File result = new File(app.getProperty("outputPath") + name);
+		// TODO use path from runconfig (and use pathSeparator)
+		// File result = new File(app.getProperty("outputPath") + name);
+		File result = new File(System.getProperty("user.home") + "/.vanda/output/" + name);
 		result.createNewFile();
 		return result;
 	}
 
 	@Override
 	public String findFile(String value) {
-		return app.findFile(value);
+		return value;  // TODO use path from runconfig
 	}
 
 	@Override
