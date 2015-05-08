@@ -1,8 +1,8 @@
-package org.vanda.run.serialization;
+package org.vanda.runner.serialization;
 
 import java.util.Map;
 
-import org.vanda.run.RunConfig;
+import org.vanda.runner.RunConfig;
 import org.vanda.xml.CompositeFieldProcessor;
 import org.vanda.xml.Factory;
 import org.vanda.xml.FieldProcessor;

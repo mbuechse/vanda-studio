@@ -1,12 +1,12 @@
 package org.vanda.view;
 
-import org.vanda.run.RunStates.RunEvent;
-import org.vanda.run.RunStates.RunStateReady;
 import org.vanda.util.MultiplexObserver;
 import org.vanda.util.Observable;
 import org.vanda.util.Observer;
 import org.vanda.view.Views.*;
 import org.vanda.workflows.hyper.Job;
+import org.vanda.workflows.run.RunStates.RunEvent;
+import org.vanda.workflows.run.RunStates.RunStateReady;
 
 public class JobView extends AbstractView<Job> implements Observer<RunEvent> {
 

@@ -24,8 +24,6 @@ import org.vanda.render.jgraph.NaiveLayoutManager;
 import org.vanda.render.jgraph.InPortCell;
 import org.vanda.render.jgraph.OutPortCell;
 import org.vanda.render.jgraph.WorkflowCell;
-import org.vanda.run.RunStates.RunEvent;
-import org.vanda.run.RunStates.RunEventListener;
 import org.vanda.util.Action;
 import org.vanda.util.HasActions;
 import org.vanda.util.Observer;
@@ -38,6 +36,8 @@ import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.Jobs;
 import org.vanda.workflows.hyper.Jobs.JobEvent;
 import org.vanda.workflows.hyper.Location;
+import org.vanda.workflows.run.RunStates.RunEvent;
+import org.vanda.workflows.run.RunStates.RunEventListener;
 
 public class JobAdapter {
 	private class JobCellListener implements CellListener<Cell> {

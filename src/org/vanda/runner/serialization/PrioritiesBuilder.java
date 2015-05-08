@@ -1,4 +1,4 @@
-package org.vanda.run.serialization;
+package org.vanda.runner.serialization;
 
 import java.util.HashMap;
 

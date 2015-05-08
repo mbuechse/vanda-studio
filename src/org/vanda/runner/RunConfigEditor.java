@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.workflows.run;
+package org.vanda.runner;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

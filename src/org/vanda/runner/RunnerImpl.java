@@ -1,11 +1,11 @@
-package org.vanda.studio.modules.workflows.run;
+package org.vanda.runner;
 
 import java.util.Date;
 
-import org.vanda.run.Runner;
-import org.vanda.run.RunStates.*;
-import org.vanda.studio.modules.workflows.run.RunStatesImpl.*;
+import org.vanda.runner.RunStatesImpl.*;
 import org.vanda.util.MultiplexObserver;
+import org.vanda.workflows.run.Runner;
+import org.vanda.workflows.run.RunStates.*;
 
 public class RunnerImpl implements Runner {
 	private final Date date;

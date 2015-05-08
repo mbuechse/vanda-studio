@@ -1,4 +1,4 @@
-package org.vanda.run;
+package org.vanda.runner;
 
 import java.util.Comparator;
 import java.util.Date;

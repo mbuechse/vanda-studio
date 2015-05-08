@@ -1,8 +1,8 @@
-package org.vanda.studio.modules.workflows.run;
+package org.vanda.runner;
 
 import java.util.Date;
 
-import org.vanda.run.RunStates.*;
+import org.vanda.workflows.run.RunStates.*;
 
 public class RunStatesImpl {
 	

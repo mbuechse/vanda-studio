@@ -12,12 +12,10 @@ import org.vanda.fragment.model.FragmentCompiler;
 import org.vanda.fragment.model.FragmentLinker;
 import org.vanda.fragment.model.Generator;
 import org.vanda.fragment.model.Profile;
-import org.vanda.run.Runner;
-import org.vanda.run.RunnerFactory;
+import org.vanda.runner.RunnerImpl;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
 import org.vanda.studio.modules.run.ProfileManager.ProfileOpener;
-import org.vanda.studio.modules.workflows.run.RunnerImpl;
 import org.vanda.util.Action;
 import org.vanda.util.ExternalRepository;
 import org.vanda.util.ListRepository;
@@ -27,6 +25,8 @@ import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
 import org.vanda.workflows.hyper.Workflows.UpdatedEvent;
+import org.vanda.workflows.run.Runner;
+import org.vanda.workflows.run.RunnerFactory;
 
 public class RunModule implements Module {
 

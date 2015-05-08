@@ -1,4 +1,4 @@
-package org.vanda.run;
+package org.vanda.workflows.run;
 
 import org.vanda.util.RepositoryItem;
 import org.vanda.workflows.data.Database;

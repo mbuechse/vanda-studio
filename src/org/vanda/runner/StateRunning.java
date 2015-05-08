@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.workflows.run;
+package org.vanda.runner;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,11 +9,11 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
-import org.vanda.run.RunStates.*;
-import org.vanda.studio.modules.workflows.run.RunStatesImpl.RunTransitions;
+import org.vanda.runner.RunStatesImpl.RunTransitions;
 import org.vanda.util.Observer;
 import org.vanda.util.RCChecker;
 import org.vanda.util.Util;
+import org.vanda.workflows.run.RunStates.*;
 
 public class StateRunning implements RunState {
 

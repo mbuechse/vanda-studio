@@ -8,12 +8,6 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
-import org.vanda.run.RunStates;
-import org.vanda.run.RunStates.RunEvent;
-import org.vanda.run.RunStates.RunEventId;
-import org.vanda.run.RunStates.RunEventListener;
-import org.vanda.run.Runner;
-import org.vanda.run.RunnerFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.util.Action;
 import org.vanda.util.Observer;
@@ -28,6 +22,12 @@ import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
+import org.vanda.workflows.run.RunStates;
+import org.vanda.workflows.run.Runner;
+import org.vanda.workflows.run.RunnerFactory;
+import org.vanda.workflows.run.RunStates.RunEvent;
+import org.vanda.workflows.run.RunStates.RunEventId;
+import org.vanda.workflows.run.RunStates.RunEventListener;
 
 public class RunNowTool implements SemanticsToolFactory {
 

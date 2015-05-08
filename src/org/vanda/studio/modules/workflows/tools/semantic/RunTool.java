@@ -8,11 +8,11 @@ import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 
-import org.vanda.run.RunConfig;
+import org.vanda.runner.RunConfig;
+import org.vanda.runner.RunConfigEditor;
+import org.vanda.runner.RunConfigEditor.RemoveMeAsSoonAsPossible;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
-import org.vanda.studio.modules.workflows.run.RunConfigEditor;
-import org.vanda.studio.modules.workflows.run.RunConfigEditor.RemoveMeAsSoonAsPossible;
 import org.vanda.types.CompositeType;
 import org.vanda.types.Type;
 import org.vanda.util.Action;
@@ -68,7 +68,7 @@ public class RunTool implements SemanticsToolFactory {
 				RunConfig rc = new RunConfig(filePath, new HashMap<String, Integer>());
 				try {
 					new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");
-					new org.vanda.run.serialization.Storer().store(rc, filePath + ".run");
+					new org.vanda.runner.serialization.Storer().store(rc, filePath + ".run");
 					// XXX ServiceLocator antipattern
 					app.getPreviewFactory(EXECUTION).openEditor(filePath + ".xwf");
 				} catch (Exception e) {

@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import org.vanda.datasources.DataSourceMount;
 import org.vanda.datasources.RootDataSource;
-import org.vanda.run.RunnerFactory;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.PreviewFactory;
 import org.vanda.studio.app.UIMode;
@@ -34,6 +33,7 @@ import org.vanda.util.Observable;
 import org.vanda.util.Observer;
 import org.vanda.workflows.elements.Port;
 import org.vanda.workflows.elements.Tool;
+import org.vanda.workflows.run.RunnerFactory;
 
 /**
  * @author buechse
