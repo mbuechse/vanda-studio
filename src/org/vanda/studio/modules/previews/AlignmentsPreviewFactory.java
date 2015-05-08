@@ -29,8 +29,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.vanda.studio.app.Application;
-import org.vanda.studio.app.PreviewFactory;
 import org.vanda.util.ExceptionMessage;
+import org.vanda.util.PreviewFactory;
 
 public class AlignmentsPreviewFactory implements PreviewFactory {
 
@@ -242,8 +242,8 @@ public class AlignmentsPreviewFactory implements PreviewFactory {
 			aps.load();
 			return aps;
 		} catch (FileNotFoundException e) {
-			app.sendMessage(new ExceptionMessage(e));
-			return app.getPreviewFactory(null).createPreview(value);
+			// app.sendMessage(new ExceptionMessage(e));
+			return null;
 		}
 	}
 

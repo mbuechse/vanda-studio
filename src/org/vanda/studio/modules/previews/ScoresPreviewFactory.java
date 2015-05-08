@@ -13,8 +13,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import org.vanda.studio.app.Application;
-import org.vanda.studio.app.PreviewFactory;
 import org.vanda.util.ExceptionMessage;
+import org.vanda.util.PreviewFactory;
 
 public class ScoresPreviewFactory implements PreviewFactory {
 
@@ -33,7 +33,7 @@ public class ScoresPreviewFactory implements PreviewFactory {
 		try {
 			// read stuff from file
 			if (!scores.exists())
-				return app.getPreviewFactory(null).createPreview(absolutePath);
+				return null;
 			sScores = new Scanner(scores);
 			sMeta = new Scanner(meta);
 			File sentences = new File(app.findFile(sMeta.nextLine()));
@@ -63,8 +63,8 @@ public class ScoresPreviewFactory implements PreviewFactory {
 			JComponent result = new JScrollPane(jTable);
 			return result;
 		} catch (FileNotFoundException e) {
-			app.sendMessage(new ExceptionMessage(e));
-			return app.getPreviewFactory(null).createPreview(absolutePath);
+			// app.sendMessage(new ExceptionMessage(e));
+			return null;
 		} finally {
 			if (sScores != null)
 				sScores.close();

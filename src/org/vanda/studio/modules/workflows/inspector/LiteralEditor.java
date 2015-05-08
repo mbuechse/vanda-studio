@@ -31,8 +31,8 @@ public class LiteralEditor implements ElementEditorFactory<Literal> {
 	private final RootDataSource rds;
 	private final Factory<DataSource, ElementSelector> fr;
 
-	public LiteralEditor(Application app, Factory<DataSource, ElementSelector> fr) {
-		rds = app.getRootDataSource();
+	public LiteralEditor(Application app, RootDataSource rds, Factory<DataSource, ElementSelector> fr) {
+		this.rds = rds;
 		this.fr = fr;
 	}
 

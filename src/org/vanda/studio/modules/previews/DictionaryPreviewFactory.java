@@ -14,10 +14,10 @@ import org.vanda.dictionaries.DictionaryView;
 import org.vanda.dictionaries.DictionaryViews;
 import org.vanda.dictionaries.DictionaryViews.MutableDictionaryViewState;
 import org.vanda.studio.app.Application;
-import org.vanda.studio.app.PreviewFactory;
 import org.vanda.studio.modules.previews.Previews.Preview;
 import org.vanda.util.ExceptionMessage;
 import org.vanda.util.Observer;
+import org.vanda.util.PreviewFactory;
 
 final class DictionaryPreviewFactory implements PreviewFactory {
 	private static class DictionaryPreview extends DictionaryView implements Previews.Preview {

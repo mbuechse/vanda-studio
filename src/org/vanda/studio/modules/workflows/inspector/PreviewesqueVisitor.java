@@ -10,9 +10,10 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.vanda.studio.app.Application;
 import org.vanda.types.CompositeType;
 import org.vanda.types.Type;
+import org.vanda.util.PreviewFactory;
+import org.vanda.util.Repository;
 import org.vanda.view.View;
 import org.vanda.view.Views.*;
 import org.vanda.workflows.data.SemanticAnalysis;
@@ -27,6 +28,8 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 	private final SemanticAnalysis semA;
 	private final SyntaxAnalysis synA;
 	private AbstractPreviewFactory apf;
+	
+	private static final Type LOGTYPE = new CompositeType("log");
 
 	public PreviewesqueVisitor(SemanticAnalysis semA, SyntaxAnalysis synA) {
 		this.semA = semA;
@@ -66,14 +69,14 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 		apf = new AbstractPreviewFactory() {
 			
 			@Override
-			public JComponent createPreview(Application app) {
-				String log = app.findFile(semA.getDFA().getJobId(j) + ".log");
-				return app.getPreviewFactory(new CompositeType("log")).createPreview(log);
+			public JComponent createPreview(Repository<Type, PreviewFactory> previewFactories) {
+				String log = semA.getDFA().getJobId(j) + ".log";
+				return previewFactories.getItem(LOGTYPE).createPreview(log);
 			}
 			
-			@Override
-			public JComponent createButtons(final Application app) {
-				final String log = app.findFile(semA.getDFA().getJobId(j) + ".log");
+			// @Override
+			public JComponent createButtons(final Repository<Type, PreviewFactory> previewFactories) {
+				final String log = semA.getDFA().getJobId(j) + ".log";
 				JPanel pan = new JPanel(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
 				JButton bOpen = new JButton(new AbstractAction("raw log") {
@@ -81,7 +84,7 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						app.getPreviewFactory(new CompositeType("log")).openEditor(app.findFile(log));
+						previewFactories.getItem(LOGTYPE).openEditor(log);
 					}
 				});
 				pan.add(bOpen, gbc);
@@ -97,12 +100,12 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 		final String value = semA.getDFA().getValue(variable);
 		apf = new AbstractPreviewFactory() {
 			@Override
-			public JComponent createPreview(Application app) {
-				return app.getPreviewFactory(type).createPreview(app.findFile(value));
+			public JComponent createPreview(Repository<Type, PreviewFactory> previewFactories) {
+				return previewFactories.getItem(type).createPreview(value);
 			}
 
-			@Override
-			public JComponent createButtons(final Application app) {
+			// @Override
+			public JComponent createButtons(final Repository<Type, PreviewFactory> previewFactories) {
 				JPanel pan = new JPanel(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
 				JButton bOpen = new JButton(new AbstractAction("edit") {
@@ -110,7 +113,7 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						app.getPreviewFactory(type).openEditor(app.findFile(value));
+						previewFactories.getItem(type).openEditor(value);
 					}
 				});
 				pan.add(bOpen, gbc);

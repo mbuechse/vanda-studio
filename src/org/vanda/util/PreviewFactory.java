@@ -1,4 +1,4 @@
-package org.vanda.studio.app;
+package org.vanda.util;
 
 import javax.swing.JComponent;
 

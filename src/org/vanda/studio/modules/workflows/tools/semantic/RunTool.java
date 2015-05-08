@@ -7,19 +7,20 @@ import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 
+import org.vanda.datasources.RootDataSource;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.studio.modules.workflows.tools.semantic.AssignmentSelectionDialog.RemoveMeAsSoonAsPossible;
-import org.vanda.types.CompositeType;
-import org.vanda.types.Type;
 import org.vanda.util.Action;
+import org.vanda.util.PreviewFactory;
 import org.vanda.workflows.data.ExecutableWorkflowBuilder;
 import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
 import org.vanda.workflows.serialization.Storer;
 
 public class RunTool implements SemanticsToolFactory {
-	public static final Type EXECUTION = new CompositeType("Execution");
+	private final RootDataSource rds;
+	private final PreviewFactory executionPreviewFactory;
 
 	private class Tool {
 		/**
@@ -46,7 +47,7 @@ public class RunTool implements SemanticsToolFactory {
 				// prof.getRootType());
 				f = new JDialog(wfe.getApplication().getWindowSystem().getMainWindow(), "Execute Workflow");
 				AssignmentSelectionDialog rce = new AssignmentSelectionDialog(wfe.getView().getWorkflow(),
-						wfe.getDatabase(), app.getRootDataSource(), RunAction.this, validWorkflow);
+						wfe.getDatabase(), rds, RunAction.this, validWorkflow);
 				f.setContentPane(rce.getComponent());
 				f.setAlwaysOnTop(true);
 				f.setAutoRequestFocus(true);
@@ -68,7 +69,7 @@ public class RunTool implements SemanticsToolFactory {
 				try {
 					new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");
 					// XXX ServiceLocator antipattern
-					app.getPreviewFactory(EXECUTION).openEditor(filePath + ".xwf");
+					executionPreviewFactory.openEditor(filePath + ".xwf");
 				} catch (Exception e) {
 					// wfe.getApplication().sendMessage(new ExceptionMessage(e));
 				}
@@ -89,7 +90,9 @@ public class RunTool implements SemanticsToolFactory {
 		}
 	}
 
-	public RunTool() {
+	public RunTool(RootDataSource rds, PreviewFactory executionPreviewFactory) {
+		this.rds = rds;
+		this.executionPreviewFactory = executionPreviewFactory;
 	}
 
 	@Override

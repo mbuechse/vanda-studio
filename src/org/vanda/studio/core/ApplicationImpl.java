@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -20,7 +19,6 @@ import java.util.UUID;
 import org.vanda.datasources.DataSourceMount;
 import org.vanda.datasources.RootDataSource;
 import org.vanda.studio.app.Application;
-import org.vanda.studio.app.PreviewFactory;
 import org.vanda.studio.app.UIMode;
 import org.vanda.studio.app.WindowSystem;
 import org.vanda.types.Type;
@@ -31,6 +29,7 @@ import org.vanda.util.MetaRepository;
 import org.vanda.util.MultiplexObserver;
 import org.vanda.util.Observable;
 import org.vanda.util.Observer;
+import org.vanda.util.PreviewFactory;
 import org.vanda.workflows.elements.Port;
 import org.vanda.workflows.elements.Tool;
 import org.vanda.workflows.run.BuildSystem;
@@ -47,10 +46,10 @@ public final class ApplicationImpl implements Application {
 	protected ModuleManager moduleManager;
 	protected final MultiplexObserver<Message> messageObservable;
 	protected final MultiplexObserver<Application> modeObservable;
-	protected final HashMap<Type, PreviewFactory> previewFactories;
-	protected final CompositeRepository<String, DataSourceMount> dataSourceRepository;
-	protected final CompositeRepository<String, BuildSystem> runnerFactoryRepository;
-	protected final CompositeRepository<String, Tool> toolRepository;
+	protected final MetaRepository<Type, PreviewFactory> previewFactoryRepository;
+	protected final MetaRepository<String, DataSourceMount> dataSourceRepository;
+	protected final MetaRepository<String, BuildSystem> runnerFactoryRepository;
+	protected final MetaRepository<String, Tool> toolRepository;
 	protected final RootDataSource rootDataSource;
 	protected final MultiplexObserver<Application> shutdownObservable;
 	protected final WindowSystemImpl windowSystem;
@@ -68,10 +67,10 @@ public final class ApplicationImpl implements Application {
 		// converterToolRepository = new CompositeRepository<Tool>();
 		modeObservable = new MultiplexObserver<Application>();
 		runnerFactoryRepository = new CompositeRepository<String, BuildSystem>();
-		previewFactories = new HashMap<Type, PreviewFactory>();
+		previewFactoryRepository = new CompositeRepository<Type, PreviewFactory>();
 		dataSourceRepository = new CompositeRepository<String, DataSourceMount>();
 		toolRepository = new CompositeRepository<String, Tool>();
-		rootDataSource = new RootDataSource(dataSourceRepository);
+		rootDataSource = new RootDataSource(dataSourceRepository.getRepository());
 		shutdownObservable = new MultiplexObserver<Application>();
 		windowSystem = new WindowSystemImpl(this);
 		types = new HashSet<Type>();
@@ -220,12 +219,12 @@ public final class ApplicationImpl implements Application {
 		});
 	}
 
-	@Override
+	// @Override
 	public MetaRepository<String, Tool> getToolMetaRepository() {
 		return toolRepository;
 	}
 
-	@Override
+	// @Override
 	public RootDataSource getRootDataSource() {
 		return rootDataSource;
 	}
@@ -273,25 +272,15 @@ public final class ApplicationImpl implements Application {
 	public void setModuleManager(ModuleManager moduleManager) {
 		this.moduleManager = moduleManager;
 	}
-	
-	public PreviewFactory getPreviewFactory(Type type) {
-		PreviewFactory result = previewFactories.get(type);
-		if (result == null)
-			result = previewFactories.get(null);
-		return result;
+
+	public MetaRepository<Type, PreviewFactory> getPreviewFactoryMetaRepository() {
+		return previewFactoryRepository;
 	}
 
-	@Override
-	public void registerPreviewFactory(Type type, PreviewFactory pf) {
-		previewFactories.put(type, pf);
-	}
-
-	@Override
 	public MetaRepository<String, DataSourceMount> getDataSourceMetaRepository() {
 		return dataSourceRepository;
 	}
 
-	@Override
 	public MetaRepository<String, BuildSystem> getRunnerFactoryMetaRepository() {
 		return runnerFactoryRepository;
 	}

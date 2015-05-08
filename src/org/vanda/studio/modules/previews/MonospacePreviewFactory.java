@@ -18,9 +18,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 import org.vanda.studio.app.Application;
-import org.vanda.studio.app.PreviewFactory;
 import org.vanda.studio.modules.previews.Previews.Preview;
 import org.vanda.util.Observer;
+import org.vanda.util.PreviewFactory;
 
 public class MonospacePreviewFactory implements PreviewFactory {
 	private final List<WeakReference<Preview>> previews;

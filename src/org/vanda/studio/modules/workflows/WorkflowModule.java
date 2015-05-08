@@ -12,6 +12,7 @@ import org.vanda.datasources.DataSource;
 import org.vanda.datasources.DirectoryDataSource;
 import org.vanda.datasources.DoubleDataSource;
 import org.vanda.datasources.IntegerDataSource;
+import org.vanda.datasources.RootDataSource;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
 import org.vanda.studio.modules.workflows.data.DirectorySelector;
@@ -35,12 +36,33 @@ import org.vanda.studio.modules.workflows.tools.semantic.SemanticsTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsToolFactory;
 import org.vanda.types.CompositeType;
 import org.vanda.types.Type;
+import org.vanda.util.AbstractRepository;
 import org.vanda.util.Action;
 import org.vanda.util.CompositeFactory;
+import org.vanda.util.MetaRepository;
+import org.vanda.util.PreviewFactory;
+import org.vanda.util.Repository;
+import org.vanda.workflows.elements.Tool;
+import org.vanda.workflows.run.BuildSystem;
 
 public class WorkflowModule implements Module {
 
 	public static final Type WORKFLOW = new CompositeType("Workflow");
+	public static final Type EXECUTION = new CompositeType("Execution");
+
+	private final RootDataSource rootDataSource;
+	private final MetaRepository<Type, PreviewFactory> previewFactoryMeta;
+	private final Repository<String, BuildSystem> buildSystemRepository;
+	private final Repository<String, Tool> toolRepository;
+
+	public WorkflowModule(Repository<String, Tool> toolRepository,
+			Repository<String, BuildSystem> buildSystemRepository, RootDataSource rootDataSource,
+			MetaRepository<Type, PreviewFactory> previewFactoryMeta) {
+		this.toolRepository = toolRepository;
+		this.rootDataSource = rootDataSource;
+		this.buildSystemRepository = buildSystemRepository;
+		this.previewFactoryMeta = previewFactoryMeta;
+	}
 
 	@Override
 	public Object createInstance(Application a) {
@@ -52,13 +74,21 @@ public class WorkflowModule implements Module {
 		return "Workflows"; // Module for Vanda Studio";
 	}
 
-	protected static final class WorkflowModuleInstance {
+	private static final class StaticRepository extends AbstractRepository<Type, PreviewFactory> {
+		public void put(Type key, PreviewFactory value) {
+			items.put(key, value);
+		};
+	}
+
+	protected final class WorkflowModuleInstance {
 
 		private final Application app;
 		private final ElementEditorFactories eefs;
+		private final StaticRepository sr;
 
 		public WorkflowModuleInstance(Application a) {
 			app = a;
+			sr = new StaticRepository();
 
 			CompositeFactory<DataSource, ElementSelector> fr = new CompositeFactory<DataSource, ElementSelector>();
 			fr.put(DoubleDataSource.class, new DoubleSelector.Fäctory());
@@ -67,35 +97,36 @@ public class WorkflowModule implements Module {
 
 			eefs = new ElementEditorFactories();
 			eefs.workflowFactories.add(new org.vanda.studio.modules.workflows.inspector.WorkflowEditor());
-			eefs.literalFactories.add(new LiteralEditor(app, fr));
+			eefs.literalFactories.add(new LiteralEditor(app, rootDataSource, fr));
 
-			ToolFactory pdftool = new WorkflowToPDFToolFactory(app.getToolMetaRepository().getRepository());
+			ToolFactory pdftool = new WorkflowToPDFToolFactory(toolRepository);
 			LinkedList<SemanticsToolFactory> srep = new LinkedList<SemanticsToolFactory>();
 			srep = new LinkedList<SemanticsToolFactory>();
-			srep.add(new InspectorTool(eefs));
-			srep.add(new RunNowTool(app.getRunnerFactoryMetaRepository().getRepository()));
+			srep.add(new InspectorTool(eefs, previewFactoryMeta.getRepository()));
+			srep.add(new RunNowTool(buildSystemRepository));
 
 			LinkedList<ToolFactory> toolFactories;
 			toolFactories = new LinkedList<ToolFactory>();
 			toolFactories.add(pdftool);
 			toolFactories.add(new SemanticsTool(srep));
-			app.registerPreviewFactory(RunTool.EXECUTION, new WorkflowExecutionPreview(app,
-					new MainComponentToolFactory(app.getToolMetaRepository().getRepository(),
-					/* immutable= */true), toolFactories));
+			PreviewFactory executionPreviewFactory = new WorkflowExecutionPreview(app, new MainComponentToolFactory(
+					toolRepository, /* immutable= */true), toolFactories, toolRepository);
+			sr.put(EXECUTION, executionPreviewFactory);
 
 			srep = new LinkedList<SemanticsToolFactory>(srep);
-			srep.add(new RunTool());
+			srep.add(new RunTool(rootDataSource, executionPreviewFactory));
 
 			toolFactories = new LinkedList<ToolFactory>();
 			toolFactories.add(new ErrorHighlighterFactory());
-			toolFactories.add(new PaletteTool(app.getToolMetaRepository().getRepository()));
+			toolFactories.add(new PaletteTool(toolRepository));
 			toolFactories.add(new SaveTool());
 			toolFactories.add(pdftool);
 			toolFactories.add(new SemanticsTool(srep));
-			toolFactories.add(new AssignmentTableToolFactory(eefs, app.getRootDataSource()));
+			toolFactories.add(new AssignmentTableToolFactory(eefs, rootDataSource));
 			toolFactories.add(new AssignmentSwitchToolFactory());
-			app.registerPreviewFactory(WORKFLOW, new WorkflowPreview(app, new MainComponentToolFactory(app
-					.getToolMetaRepository().getRepository(), false), toolFactories));
+			sr.put(WORKFLOW, new WorkflowPreview(app, new MainComponentToolFactory(toolRepository, false),
+					toolFactories, toolRepository));
+			previewFactoryMeta.addRepository(sr);
 
 			// app.getWindowSystem().addAction(null, new OpenManagerAction(),
 			// null, 100);
@@ -113,7 +144,7 @@ public class WorkflowModule implements Module {
 
 			@Override
 			public void invoke() {
-				app.getPreviewFactory(WORKFLOW).openEditor("");
+				previewFactoryMeta.getRepository().getItem(WORKFLOW).openEditor("");
 			}
 		}
 
@@ -142,7 +173,7 @@ public class WorkflowModule implements Module {
 					File chosenFile = chooser.getSelectedFile();
 					app.setProperty("lastDir", chosenFile.getParentFile().getAbsolutePath());
 					String filePath = chosenFile.getPath();
-					app.getPreviewFactory(WORKFLOW).openEditor(filePath);
+					previewFactoryMeta.getRepository().getItem(WORKFLOW).openEditor(filePath);
 				}
 			}
 		}

@@ -34,7 +34,9 @@ import org.vanda.workflows.hyper.JobVisitor;
 import org.vanda.workflows.hyper.Location;
 import org.vanda.workflows.hyper.MutableWorkflow;
 
-// MB: TODO make dialog modal, implement MVC pattern, get rid of RemoveMeAsSoonAsPossible
+// TODO make dialog modal, implement MVC pattern, get rid of RemoveMeAsSoonAsPossible
+// TODO move correctness checks someplace else
+// this is the effing GUI for crying out loud
 
 /**
  * Dialogue to select assignments

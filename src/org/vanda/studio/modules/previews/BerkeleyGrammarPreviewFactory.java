@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.vanda.studio.app.Application;
-import org.vanda.studio.app.PreviewFactory;
+import org.vanda.util.PreviewFactory;
 
 public class BerkeleyGrammarPreviewFactory implements PreviewFactory {
 

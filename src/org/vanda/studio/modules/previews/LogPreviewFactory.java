@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.vanda.studio.app.PreviewFactory;
+import org.vanda.util.PreviewFactory;
 
 public class LogPreviewFactory implements PreviewFactory {
 

@@ -13,7 +13,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 import org.vanda.studio.app.Application;
-import org.vanda.studio.app.PreviewFactory;
+import org.vanda.util.PreviewFactory;
 
 public final class DefaultPreviewFactory implements PreviewFactory {
 

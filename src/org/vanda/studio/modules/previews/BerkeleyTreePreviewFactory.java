@@ -50,10 +50,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.vanda.studio.app.Application;
-import org.vanda.studio.app.PreviewFactory;
 import org.vanda.util.ExceptionMessage;
 import org.vanda.util.Lexer;
 import org.vanda.util.Pair;
+import org.vanda.util.PreviewFactory;
 
 @SuppressWarnings({ "unchecked", "serial" })
 public class BerkeleyTreePreviewFactory implements PreviewFactory {
@@ -545,7 +545,8 @@ public class BerkeleyTreePreviewFactory implements PreviewFactory {
 	public JComponent createPreview(String value) {
 		if ((new File(value)).exists())
 			return new BerkeleyTreePreview(value);
-		return app.getPreviewFactory(null).createPreview(value);
+		else
+			return null;
 	}
 
 	public void openEditor(final String value) {

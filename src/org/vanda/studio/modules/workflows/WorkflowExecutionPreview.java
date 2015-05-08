@@ -5,11 +5,13 @@ import java.util.List;
 import javax.swing.JComponent;
 
 import org.vanda.studio.app.Application;
-import org.vanda.studio.app.PreviewFactory;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.util.ExceptionMessage;
 import org.vanda.util.Pair;
+import org.vanda.util.PreviewFactory;
+import org.vanda.util.Repository;
 import org.vanda.workflows.data.Database;
+import org.vanda.workflows.elements.Tool;
 import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.serialization.Loader;
 
@@ -19,12 +21,14 @@ public class WorkflowExecutionPreview implements PreviewFactory {
 	private final Application app;
 	private final ToolFactory mainComponentToolFactory;
 	private final List<ToolFactory> toolFactories;
+	private final Repository<String, Tool> toolRepository;
 
 	public WorkflowExecutionPreview(Application app, ToolFactory mainComponentToolFactory,
-			List<ToolFactory> toolFactories) {
+			List<ToolFactory> toolFactories, Repository<String, Tool> toolRepository) {
 		this.app = app;
 		this.mainComponentToolFactory = mainComponentToolFactory;
 		this.toolFactories = toolFactories;
+		this.toolRepository = toolRepository;
 	}
 
 	@Override
@@ -39,7 +43,7 @@ public class WorkflowExecutionPreview implements PreviewFactory {
 		// added to the xwf file
 		// RunConfig rc;
 		try {
-			phd = new Loader(app.getToolMetaRepository().getRepository()).load(filePath);
+			phd = new Loader(toolRepository).load(filePath);
 			// rc = new org.vanda.run.serialization.Loader().load(filePath +
 			// ".run");
 			new WorkflowEditorImpl(app, mainComponentToolFactory, toolFactories, phd);

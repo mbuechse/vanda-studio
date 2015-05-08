@@ -16,6 +16,7 @@ import org.vanda.util.Action;
 import org.vanda.util.CompositeFactory;
 import org.vanda.util.Factory;
 import org.vanda.util.ListRepository;
+import org.vanda.util.MetaRepository;
 import org.vanda.util.Observer;
 
 public class DataSourceModule implements Module {
@@ -26,14 +27,19 @@ public class DataSourceModule implements Module {
 	}
 
 	protected static String PROPERTIES_FILE = System.getProperty("user.home") + "/.vanda/datasources.xml";
+	private final MetaRepository<String, DataSourceMount> mountMeta;
+	
+	public DataSourceModule(MetaRepository<String, DataSourceMount> mountMeta) {
+		this.mountMeta = mountMeta;
+	}
 
 	@Override
 	public Object createInstance(Application app) {
 		DataSourceRepository dsr = new DataSourceRepository(PROPERTIES_FILE);
 		dsr.addDataSourceType(new DirectoryDataSourceType());
 		ListRepository<DataSourceMount> dsr2 = new ListRepository<DataSourceMount>();
-		app.getDataSourceMetaRepository().addRepository(dsr);
-		app.getDataSourceMetaRepository().addRepository(dsr2);
+		mountMeta.addRepository(dsr);
+		mountMeta.addRepository(dsr2);
 
 		CompositeFactory<DataSource, DataSourceEditor> fr = new CompositeFactory<DataSource, DataSourceEditor>();
 		fr.put(IntegerDataSource.class, new IntegerDataSourceEditor.Fäctory());

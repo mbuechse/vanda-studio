@@ -14,6 +14,9 @@ import javax.swing.text.html.HTMLDocument;
 
 //import org.vanda.fragment.model.Model;
 
+
+
+
 import org.vanda.studio.app.WindowSystem;
 import org.vanda.studio.modules.workflows.inspector.AbstractEditorFactory;
 import org.vanda.studio.modules.workflows.inspector.AbstractPreviewFactory;
@@ -22,7 +25,10 @@ import org.vanda.studio.modules.workflows.inspector.ElementEditorFactories;
 import org.vanda.studio.modules.workflows.inspector.InspectorialVisitor;
 import org.vanda.studio.modules.workflows.inspector.PreviewesqueVisitor;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
+import org.vanda.types.Type;
 import org.vanda.util.Observer;
+import org.vanda.util.PreviewFactory;
+import org.vanda.util.Repository;
 import org.vanda.view.View;
 import org.vanda.view.Views.*;
 import org.vanda.workflows.data.SemanticAnalysis;
@@ -31,6 +37,7 @@ import org.vanda.workflows.hyper.SyntaxAnalysis;
 public class InspectorTool implements SemanticsToolFactory {
 
 	private final ElementEditorFactories eefs;
+	private final Repository<Type, PreviewFactory> previewFactories;
 
 	public final class Inspector {
 		private final WorkflowEditor wfe;
@@ -142,11 +149,12 @@ public class InspectorTool implements SemanticsToolFactory {
 				preview = null;
 			}
 			if (previewFactory != null) {
-				preview = previewFactory.createPreview(wfe.getApplication());
-				JComponent buttons = previewFactory.createButtons(wfe.getApplication());
+				preview = previewFactory.createPreview(previewFactories);
+				// TODO use actions
+				// JComponent buttons = previewFactory.createButtons(previewFactories);
 				panNorth.removeAll();
 				panNorth.add(therealinspector, BorderLayout.CENTER);
-				panNorth.add(buttons, BorderLayout.EAST);
+				// panNorth.add(buttons, BorderLayout.EAST);
 				contentPane.add(panNorth, BorderLayout.NORTH);
 				contentPane.add(preview, BorderLayout.CENTER);
 			} else
@@ -163,8 +171,9 @@ public class InspectorTool implements SemanticsToolFactory {
 
 	}
 
-	public InspectorTool(ElementEditorFactories eefs) {
+	public InspectorTool(ElementEditorFactories eefs, Repository<Type, PreviewFactory> previewFactories) {
 		this.eefs = eefs;
+		this.previewFactories = previewFactories;
 	}
 
 	@Override
