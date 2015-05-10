@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.run;
+package org.vanda.studio.modules;
 
 import org.vanda.fragment.bash.RootLinker;
 import org.vanda.fragment.bash.ShellCompiler;
@@ -11,6 +11,8 @@ import org.vanda.fragment.model.Profile;
 import org.vanda.runner.BuildSystemImpl;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
+import org.vanda.studio.modules.run.BuildSystemGuiImpl;
+import org.vanda.studio.modules.run.ProfileManager;
 import org.vanda.studio.modules.run.ProfileManager.ProfileOpener;
 import org.vanda.util.Action;
 import org.vanda.util.ExternalRepository;

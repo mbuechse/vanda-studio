@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 import org.vanda.types.CompositeType;
 import org.vanda.types.Type;
-import org.vanda.util.PreviewFactory;
+import org.vanda.util.Factory;
 import org.vanda.util.Repository;
 import org.vanda.view.View;
 import org.vanda.view.Views.*;
@@ -29,8 +29,8 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 	private final SemanticAnalysis semA;
 	private final SyntaxAnalysis synA;
 	private final BuildContext bc;
-	private AbstractPreviewFactory apf;
-	
+	private Factory<Repository<Type, Factory<String, JComponent>>, JComponent> apf;
+
 	private static final Type LOGTYPE = new CompositeType("log");
 
 	public PreviewesqueVisitor(SemanticAnalysis semA, SyntaxAnalysis synA, BuildContext bc) {
@@ -40,7 +40,8 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 		apf = null;
 	}
 
-	public static AbstractPreviewFactory createPreviewFactory(SemanticAnalysis semA, SyntaxAnalysis synA, View view, BuildContext bc) {
+	public static Factory<Repository<Type, Factory<String, JComponent>>, JComponent> createPreviewFactory(
+			SemanticAnalysis semA, SyntaxAnalysis synA, View view, BuildContext bc) {
 		PreviewesqueVisitor visitor = new PreviewesqueVisitor(semA, synA, bc);
 		// Show Workflow-Preview in case of multi-selection
 		List<SelectionObject> sos = view.getCurrentSelection();
@@ -52,7 +53,7 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 		return visitor.getPreviewFactory();
 	}
 
-	public AbstractPreviewFactory getPreviewFactory() {
+	public Factory<Repository<Type, Factory<String, JComponent>>, JComponent> getPreviewFactory() {
 		return apf;
 	}
 
@@ -69,16 +70,17 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 	public void visitJob(MutableWorkflow wf, final Job j) {
 		if (j.getId() == null)
 			return;
-		apf = new AbstractPreviewFactory() {
-			
+		apf = new Factory<Repository<Type, Factory<String, JComponent>>, JComponent>() {
+
 			@Override
-			public JComponent createPreview(Repository<Type, PreviewFactory> previewFactories) {
+			public JComponent instantiate(Repository<Type, Factory<String, JComponent>> previewFactories) {
 				String log = bc.findFile("output:" + semA.getDFA().getJobId(j) + ".log");
-				return previewFactories.getItem(LOGTYPE).createPreview(log);
+				return previewFactories.getItem(LOGTYPE).instantiate(log);
 			}
-			
-			// @Override
-			public JComponent createButtons(final Repository<Type, PreviewFactory> previewFactories) {
+
+			// @Override TODO replace by HasActions something
+			@SuppressWarnings("unused")
+			public JComponent createButtons(final Repository<Type, Factory<String, Object>> editorFactories) {
 				final String log = bc.findFile("output:" + semA.getDFA().getJobId(j) + ".log");
 				JPanel pan = new JPanel(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
@@ -87,7 +89,7 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						previewFactories.getItem(LOGTYPE).openEditor(log);
+						editorFactories.getItem(LOGTYPE).instantiate(log);
 					}
 				});
 				pan.add(bOpen, gbc);
@@ -101,17 +103,18 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 		// XXX no support for nested workflows because wf is ignored
 		final Type type = synA.getType(variable);
 		final String value = semA.getDFA().getValue(variable);
-		apf = new AbstractPreviewFactory() {
+		apf = new Factory<Repository<Type, Factory<String, JComponent>>, JComponent>() {
 			@Override
-			public JComponent createPreview(Repository<Type, PreviewFactory> previewFactories) {
-				PreviewFactory pvf = previewFactories.getItem(type);
+			public JComponent instantiate(Repository<Type, Factory<String, JComponent>> previewFactories) {
+				Factory<String, JComponent> pvf = previewFactories.getItem(type);
 				if (pvf == null)
 					pvf = previewFactories.getItem(null);
-				return pvf.createPreview(bc.findFile(value));
+				return pvf.instantiate(bc.findFile(value));
 			}
 
-			// @Override
-			public JComponent createButtons(final Repository<Type, PreviewFactory> previewFactories) {
+			// @Override TODO replace by HasActions something
+			@SuppressWarnings("unused")
+			public JComponent createButtons(final Repository<Type, Factory<String, Object>> editorFactories) {
 				JPanel pan = new JPanel(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
 				JButton bOpen = new JButton(new AbstractAction("edit") {
@@ -119,7 +122,7 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						previewFactories.getItem(type).openEditor(bc.findFile(value));
+						editorFactories.getItem(type).instantiate(bc.findFile(value));
 					}
 				});
 				pan.add(bOpen, gbc);

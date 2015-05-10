@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.datasources;
+package org.vanda.studio.modules;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -6,12 +6,21 @@ import java.util.List;
 
 import org.vanda.datasources.DataSource;
 import org.vanda.datasources.DataSourceMount;
+import org.vanda.datasources.DataSourceRepository;
 import org.vanda.datasources.DirectoryDataSource;
 import org.vanda.datasources.DoubleDataSource;
 import org.vanda.datasources.IntegerDataSource;
 import org.vanda.datasources.serialization.DirectoryDataSourceType;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
+import org.vanda.swing.datasources.DataSourceEditor;
+import org.vanda.swing.datasources.DataSourceFactory;
+import org.vanda.swing.datasources.DataSourceRepositoryEditor;
+import org.vanda.swing.datasources.DirectoryDataSourceEditor;
+import org.vanda.swing.datasources.DirectoryDataSourceFactory;
+import org.vanda.swing.datasources.DoubleDataSourceEditor;
+import org.vanda.swing.datasources.IntegerDataSourceEditor;
+import org.vanda.swing.datasources.DoubleDataSourceEditor.Fäctory;
 import org.vanda.util.Action;
 import org.vanda.util.CompositeFactory;
 import org.vanda.util.Factory;

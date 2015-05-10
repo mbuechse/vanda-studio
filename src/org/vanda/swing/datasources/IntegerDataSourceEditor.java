@@ -1,28 +1,28 @@
-package org.vanda.studio.modules.datasources;
+package org.vanda.swing.datasources;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import org.vanda.datasources.DataSource;
-import org.vanda.datasources.DoubleDataSource;
+import org.vanda.datasources.IntegerDataSource;
 import org.vanda.util.Factory;
 
-public class DoubleDataSourceEditor implements DataSourceEditor {
+public class IntegerDataSourceEditor implements DataSourceEditor {
 
-	private final DoubleDataSource doubleDataSource;
+	private final IntegerDataSource integerDataSource;
 
-	DoubleDataSourceEditor(DoubleDataSource doubleDataSource) {
-		this.doubleDataSource = doubleDataSource;
+	IntegerDataSourceEditor(IntegerDataSource integerDataSource) {
+		this.integerDataSource = integerDataSource;
 	}
 
 	@Override
 	public JComponent getComponent() {
-		return new JLabel("DoubleDataSource");
+		return new JLabel("IntegerDataSource");
 	}
 
 	@Override
 	public DataSource getDataSource() {
-		return this.doubleDataSource;
+		return this.integerDataSource;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class DoubleDataSourceEditor implements DataSourceEditor {
 	public static class Fäctory implements Factory<DataSource, DataSourceEditor> {
 		@Override
 		public DataSourceEditor instantiate(DataSource d) {
-			return new DoubleDataSourceEditor((DoubleDataSource) d);
+			return new IntegerDataSourceEditor((IntegerDataSource) d);
 		}
 	}
 

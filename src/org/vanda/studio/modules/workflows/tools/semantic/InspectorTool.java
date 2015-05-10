@@ -13,19 +13,18 @@ import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
 
 import org.vanda.studio.app.WindowSystem;
-import org.vanda.studio.modules.workflows.inspector.AbstractEditorFactory;
-import org.vanda.studio.modules.workflows.inspector.AbstractPreviewFactory;
 import org.vanda.studio.modules.workflows.inspector.EditorialVisitor;
 import org.vanda.studio.modules.workflows.inspector.ElementEditorFactories;
 import org.vanda.studio.modules.workflows.inspector.InspectorialVisitor;
 import org.vanda.studio.modules.workflows.inspector.PreviewesqueVisitor;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.types.Type;
+import org.vanda.util.Factory;
 import org.vanda.util.Observer;
-import org.vanda.util.PreviewFactory;
 import org.vanda.util.Repository;
 import org.vanda.view.View;
 import org.vanda.view.Views.*;
+import org.vanda.workflows.data.Database;
 import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
 import org.vanda.workflows.run.BuildContext;
@@ -33,7 +32,7 @@ import org.vanda.workflows.run.BuildContext;
 public class InspectorTool implements SemanticsToolFactory {
 
 	private final ElementEditorFactories eefs;
-	private final Repository<Type, PreviewFactory> previewFactories;
+	private final Repository<Type, Factory<String, JComponent>> previewFactories;
 
 	public final class Inspector {
 		private final WorkflowEditor wfe;
@@ -121,13 +120,13 @@ public class InspectorTool implements SemanticsToolFactory {
 			update();
 		}
 
-		public void setEditor(AbstractEditorFactory editorFactory) {
+		public void setEditor(Factory<Database, JComponent> editorFactory) {
 			if (editor != null) {
 				contentPane.remove(editor);
 				editor = null;
 			}
 			if (editorFactory != null) {
-				editor = editorFactory.createEditor(wfe.getDatabase());
+				editor = editorFactory.instantiate(wfe.getDatabase());
 				if (editor != null)
 					contentPane.add(editor, BorderLayout.EAST);
 			}
@@ -138,7 +137,7 @@ public class InspectorTool implements SemanticsToolFactory {
 			inspector.setText(inspection);
 		}
 
-		public void setPreview(AbstractPreviewFactory previewFactory) {
+		public void setPreview(Factory<Repository<Type, Factory<String, JComponent>>, JComponent> previewFactory) {
 			contentPane.remove(panNorth);
 			if (preview != null) {
 				contentPane.remove(preview);
@@ -146,7 +145,7 @@ public class InspectorTool implements SemanticsToolFactory {
 			}
 			if (previewFactory != null) {
 				try {
-					preview = previewFactory.createPreview(previewFactories);
+					preview = previewFactory.instantiate(previewFactories);
 				} catch (Exception e) {
 					preview = new JLabel(e.getMessage());
 				}
@@ -173,7 +172,7 @@ public class InspectorTool implements SemanticsToolFactory {
 
 	}
 
-	public InspectorTool(ElementEditorFactories eefs, Repository<Type, PreviewFactory> previewFactories) {
+	public InspectorTool(ElementEditorFactories eefs, Repository<Type, Factory<String, JComponent>> previewFactories) {
 		this.eefs = eefs;
 		this.previewFactories = previewFactories;
 	}

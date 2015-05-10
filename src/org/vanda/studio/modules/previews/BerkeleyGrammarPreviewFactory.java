@@ -1,14 +1,11 @@
 package org.vanda.studio.modules.previews;
 
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -21,9 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.vanda.studio.app.Application;
-import org.vanda.util.PreviewFactory;
+import org.vanda.util.Factory;
 
-public class BerkeleyGrammarPreviewFactory implements PreviewFactory {
+public class BerkeleyGrammarPreviewFactory implements Factory<String, JComponent> {
 
 	public class BerkeleyGrammarPreview extends JPanel {
 		/**
@@ -122,40 +119,14 @@ public class BerkeleyGrammarPreviewFactory implements PreviewFactory {
 	}
 
 	private String postfix;
-	private Application app;
 	
 	public BerkeleyGrammarPreviewFactory(Application app, String postfix) {
-		super();
-		this.app = app;
 		this.postfix = postfix;
 	}
 
 	@Override
-	public JComponent createPreview(String value) {
+	public JComponent instantiate(String value) {
 		return new JScrollPane(new BerkeleyGrammarPreview(value, postfix, 5));
 	}
-
-	@Override
-	public void openEditor(final String value) {
-		Thread t = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					Desktop.getDesktop().open(new File(value + ".prev"));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
-
-		t.start();
-	}
-
-//	@Override
-//	public JComponent createSmallPreview(String value) {
-//		return new JScrollPane(new BerkeleyGrammarPreview(value, postfix, 1));
-//	}
 
 }

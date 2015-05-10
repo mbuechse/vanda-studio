@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.messages;
+package org.vanda.studio.modules;
 
 import java.text.DateFormat;
 import java.util.Date;

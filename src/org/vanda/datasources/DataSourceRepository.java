@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.datasources;
+package org.vanda.datasources;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -7,7 +7,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.vanda.datasources.DataSourceMount;
 import org.vanda.datasources.serialization.DataSourceType;
 import org.vanda.datasources.serialization.Loader;
 import org.vanda.datasources.serialization.Storer;

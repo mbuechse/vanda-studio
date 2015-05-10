@@ -1,21 +1,17 @@
 package org.vanda.studio.modules.workflows;
 
-import javax.swing.JComponent;
-
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.util.ExceptionMessage;
+import org.vanda.util.Factory;
 import org.vanda.util.Pair;
-import org.vanda.util.PreviewFactory;
 import org.vanda.util.Repository;
 import org.vanda.workflows.data.Database;
 import org.vanda.workflows.elements.Tool;
 import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.serialization.Loader;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-public class WorkflowPreview implements PreviewFactory {
+public class WorkflowPreview implements Factory<String, Object> {
 	private final Application app;
 	private final ToolFactory mainComponentToolFactory;
 	private final Repository<String, ToolFactory> toolFactories;
@@ -30,12 +26,7 @@ public class WorkflowPreview implements PreviewFactory {
 	}
 
 	@Override
-	public JComponent createPreview(String filePath) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public void openEditor(String filePath) {
+	public Object instantiate(String filePath) {
 		Pair<MutableWorkflow, Database> phd = null;
 		if ("".equals(filePath)) {
 			phd = new Pair<MutableWorkflow, Database>(new MutableWorkflow("Workflow"), new Database());
@@ -49,7 +40,9 @@ public class WorkflowPreview implements PreviewFactory {
 			}
 		}
 		if (phd != null)
-			new WorkflowEditorImpl(app, mainComponentToolFactory, toolFactories.getItems(), phd);
+			return new WorkflowEditorImpl(app, mainComponentToolFactory, toolFactories.getItems(), phd);
+		else
+			return null;
 		// let's hope the GUI will hold a reference
 	}
 }

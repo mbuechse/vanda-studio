@@ -5,6 +5,7 @@ package org.vanda.studio.core;
 
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import org.vanda.datasources.DataSourceMount;
@@ -15,8 +16,8 @@ import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.types.Type;
 import org.vanda.util.CompositeRepository;
 import org.vanda.util.ExceptionMessage;
+import org.vanda.util.Factory;
 import org.vanda.util.MetaRepository;
-import org.vanda.util.PreviewFactory;
 import org.vanda.util.RCChecker;
 import org.vanda.workflows.elements.Tool;
 import org.vanda.workflows.run.BuildSystem;
@@ -24,7 +25,8 @@ import org.vanda.workflows.run.BuildSystem;
 // dependency injection class (application builder, so to speak)
 public final class Launcher implements Runnable {
 
-	private final MetaRepository<Type, PreviewFactory> previewFactoryMeta;
+	private final MetaRepository<Type, Factory<String, JComponent>> previewFactoryMeta;
+	private final MetaRepository<Type, Factory<String, Object>> editorFactoryMeta;
 	private final MetaRepository<String, DataSourceMount> dataSourceMeta;
 	private final MetaRepository<String, BuildSystem> buildSystemMeta;
 	private final MetaRepository<String, Tool> toolMeta;
@@ -36,7 +38,8 @@ public final class Launcher implements Runnable {
 	private Launcher() {
 		// I'm a private launcher, a launcher for money ...
 		buildSystemMeta = new CompositeRepository<String, BuildSystem>();
-		previewFactoryMeta = new CompositeRepository<Type, PreviewFactory>();
+		previewFactoryMeta = new CompositeRepository<Type, Factory<String, JComponent>>();
+		editorFactoryMeta = new CompositeRepository<Type, Factory<String, Object>>();
 		dataSourceMeta = new CompositeRepository<String, DataSourceMount>();
 		toolMeta = new CompositeRepository<String, Tool>();
 		toolFactoryMeta = new CompositeRepository<String, ToolFactory>();
@@ -47,13 +50,13 @@ public final class Launcher implements Runnable {
 	public void run() {
 		Module[] ms = {
 				// new org.vanda.studio.modules.messages.MessageModule(),
-				new org.vanda.studio.modules.tools.ToolsModule(toolMeta),
-				new org.vanda.studio.modules.run.RunModule(buildSystemMeta),
-				new org.vanda.studio.modules.previews.PreviewsModule(previewFactoryMeta),
-				new org.vanda.studio.modules.workflows.WorkflowModule(toolMeta.getRepository(),
+				new org.vanda.studio.modules.ToolsModule(toolMeta),
+				new org.vanda.studio.modules.RunModule(buildSystemMeta),
+				new org.vanda.studio.modules.PreviewsModule(previewFactoryMeta),
+				new org.vanda.studio.modules.WorkflowModule(toolMeta.getRepository(),
 						dataSourceMeta.getRepository(), buildSystemMeta.getRepository(), rootDataSource,
-						previewFactoryMeta, toolFactoryMeta),
-				new org.vanda.studio.modules.datasources.DataSourceModule(dataSourceMeta) };
+						previewFactoryMeta, editorFactoryMeta, toolFactoryMeta),
+				new org.vanda.studio.modules.DataSourceModule(dataSourceMeta) };
 
 		ModuleManager moduleManager = new ModuleManager(app);
 		for (Module m : ms)

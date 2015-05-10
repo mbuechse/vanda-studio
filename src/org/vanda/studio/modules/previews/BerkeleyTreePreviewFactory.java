@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -25,7 +24,6 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,14 +47,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.vanda.studio.app.Application;
-import org.vanda.util.ExceptionMessage;
+import org.vanda.util.Factory;
 import org.vanda.util.Lexer;
 import org.vanda.util.Pair;
-import org.vanda.util.PreviewFactory;
 
 @SuppressWarnings({ "unchecked", "serial" })
-public class BerkeleyTreePreviewFactory implements PreviewFactory {
+public class BerkeleyTreePreviewFactory implements Factory<String, JComponent> {
 
 	public class Tree {
 		private String label;
@@ -536,53 +532,11 @@ public class BerkeleyTreePreviewFactory implements PreviewFactory {
 		}
 	}
 
-	protected final Application app;
-
-	public BerkeleyTreePreviewFactory(Application app) {
-		this.app = app;
-	}
-
-	public JComponent createPreview(String value) {
+	@Override
+	public JComponent instantiate(String value) {
 		if ((new File(value)).exists())
 			return new BerkeleyTreePreview(value);
 		else
 			return null;
 	}
-
-	public void openEditor(final String value) {
-		Thread t = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					Desktop.getDesktop().open(new File(value));
-				} catch (IOException e) {
-					app.sendMessage(new ExceptionMessage(e));
-				}
-			}
-		});
-
-		t.start();
-	}
-
-//	@Override
-//	public JComponent createSmallPreview(String value) {
-//		Scanner scan;
-//		try {
-//			scan = new Scanner(new FileInputStream(value));
-//			String line = scan.nextLine();
-//			scan.close();
-//			TreeView jTree = new TreeView(parseTree(line));
-//			JScrollPane sTree = new JScrollPane(jTree);
-//			DragScrollListener dsl = new DragScrollListener(jTree, sTree);
-//			jTree.addMouseMotionListener(dsl);
-//			jTree.addMouseListener(dsl);
-//			jTree.addMouseWheelListener(dsl);
-//			sTree.setPreferredSize(new Dimension(200, 150));
-//			jTree.zoomOut().zoomOut();
-//			return sTree;
-//		} catch (Exception e) {
-//			return new JLabel("wrong format");
-//		}
-//	}
 }

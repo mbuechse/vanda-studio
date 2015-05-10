@@ -10,7 +10,7 @@ import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.run.BuildContext;
 import org.vanda.workflows.run.Runner;
 
-public class BuildContextGuiImpl implements BuildContext, HasActions {
+public final class BuildContextGuiImpl implements BuildContext, HasActions {
 	
 	private final BuildContextImpl delegate;
 	private final Action editAction = new Action() {

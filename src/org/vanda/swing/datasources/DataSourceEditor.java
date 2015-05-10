@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.datasources;
+package org.vanda.swing.datasources;
 
 import javax.swing.JComponent;
 

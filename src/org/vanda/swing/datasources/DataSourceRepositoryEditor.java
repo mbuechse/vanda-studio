@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.datasources;
+package org.vanda.swing.datasources;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -31,6 +31,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.vanda.datasources.DataSource;
 import org.vanda.datasources.DataSourceMount;
+import org.vanda.datasources.DataSourceRepository;
 import org.vanda.studio.app.Application;
 import org.vanda.util.Factory;
 import org.vanda.util.Observer;

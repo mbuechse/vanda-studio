@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.workflows.data;
+package org.vanda.swing.data;
 
 import java.io.File;
 import java.io.FilenameFilter;

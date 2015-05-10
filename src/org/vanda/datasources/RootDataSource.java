@@ -1,7 +1,7 @@
 package org.vanda.datasources;
 
 import org.vanda.studio.app.Application;
-import org.vanda.studio.modules.datasources.DataSourceEditor;
+import org.vanda.swing.datasources.DataSourceEditor;
 import org.vanda.types.Type;
 import org.vanda.types.Types;
 import org.vanda.util.Repository;

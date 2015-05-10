@@ -2,7 +2,6 @@ package org.vanda.studio.modules.previews;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -13,7 +12,6 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -28,11 +26,9 @@ import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.vanda.studio.app.Application;
-import org.vanda.util.ExceptionMessage;
-import org.vanda.util.PreviewFactory;
+import org.vanda.util.Factory;
 
-public class AlignmentsPreviewFactory implements PreviewFactory {
+public class AlignmentsPreviewFactory implements Factory<String, JComponent> {
 
 	public class Alignment {
 		public String[] as1, as2, al;
@@ -227,15 +223,8 @@ public class AlignmentsPreviewFactory implements PreviewFactory {
 
 	}
 
-	private Application app;
-
-	public AlignmentsPreviewFactory(Application app) {
-		super();
-		this.app = app;
-	}
-
 	@Override
-	public JComponent createPreview(String value) {
+	public JComponent instantiate(String value) {
 		try {
 			AlignmentsPreview aps = new AlignmentsPreview(value);
 			aps.initialize();
@@ -245,23 +234,6 @@ public class AlignmentsPreviewFactory implements PreviewFactory {
 			// app.sendMessage(new ExceptionMessage(e));
 			return null;
 		}
-	}
-
-	@Override
-	public void openEditor(final String value) {
-		Thread t = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					Desktop.getDesktop().open(new File(value));
-				} catch (IOException e) {
-					app.sendMessage(new ExceptionMessage(e));
-				}
-			}
-		});
-
-		t.start();
 	}
 
 }

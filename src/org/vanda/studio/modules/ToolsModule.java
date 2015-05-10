@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.tools;
+package org.vanda.studio.modules;
 
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;

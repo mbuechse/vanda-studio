@@ -1,7 +1,6 @@
 package org.vanda.studio.modules.previews;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -20,12 +19,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.vanda.util.PreviewFactory;
+import org.vanda.util.Factory;
 
-public class LogPreviewFactory implements PreviewFactory {
+public final class LogPreviewFactory implements Factory<String, JComponent> {
 
 	@Override
-	public JComponent createPreview(String value) {
+	public JComponent instantiate(String value) {
 		List<LogEntry> entries = new ArrayList<LogEntry>();
 		try {
 			File file = new File(value);
@@ -69,24 +68,6 @@ public class LogPreviewFactory implements PreviewFactory {
 		pan.add(le, BorderLayout.NORTH);
 		pan.add(new JScrollPane(ta), BorderLayout.CENTER);
 		return pan;
-	}
-
-	@Override
-	public void openEditor(final String value) {
-		Thread t = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					Desktop.getDesktop().open(new File(value));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
-
-		t.start();
 	}
 	
 	private class LogEntry {

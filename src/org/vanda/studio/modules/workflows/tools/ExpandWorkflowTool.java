@@ -12,14 +12,14 @@ import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.util.Action;
-import org.vanda.util.PreviewFactory;
+import org.vanda.util.Factory;
 import org.vanda.workflows.data.ExecutableWorkflowBuilder;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
 import org.vanda.workflows.serialization.Storer;
 
 public class ExpandWorkflowTool implements ToolFactory {
 	private final Application app;
-	private final PreviewFactory executionPreviewFactory;
+	private final Factory<String, Object> executionPreviewFactory;
 
 	private class Tool {
 		/**
@@ -54,7 +54,7 @@ public class ExpandWorkflowTool implements ToolFactory {
 					filePath += "/" + ewf.getWorkflow().getName() + new Date().toString();
 					try {
 						new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");
-						executionPreviewFactory.openEditor(filePath + ".xwf");
+						executionPreviewFactory.instantiate(filePath + ".xwf");
 					} catch (Exception e) {
 						// wfe.getApplication().sendMessage(new ExceptionMessage(e));
 					}
@@ -72,7 +72,7 @@ public class ExpandWorkflowTool implements ToolFactory {
 		}
 	}
 
-	public ExpandWorkflowTool(Application app, RootDataSource rds, PreviewFactory executionPreviewFactory) {
+	public ExpandWorkflowTool(Application app, RootDataSource rds, Factory<String, Object> executionPreviewFactory) {
 		this.app = app;
 		this.executionPreviewFactory = executionPreviewFactory;
 	}

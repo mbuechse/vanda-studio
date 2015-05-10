@@ -6,7 +6,7 @@ import org.vanda.util.Repository;
 import org.vanda.workflows.run.BuildContext;
 import org.vanda.workflows.run.BuildSystem;
 
-class BuildSystemGuiImpl implements BuildSystem {
+public final class BuildSystemGuiImpl implements BuildSystem {
 	
 	private final BuildSystemImpl delegate;
 

@@ -16,10 +16,10 @@ import org.vanda.dictionaries.DictionaryViews.MutableDictionaryViewState;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.previews.Previews.Preview;
 import org.vanda.util.ExceptionMessage;
+import org.vanda.util.Factory;
 import org.vanda.util.Observer;
-import org.vanda.util.PreviewFactory;
 
-final class DictionaryPreviewFactory implements PreviewFactory {
+public final class DictionaryPreviewFactory implements Factory<String, JComponent> {
 	private static class DictionaryPreview extends DictionaryView implements Previews.Preview {
 		private static final long serialVersionUID = -3571292329987894738L;
 
@@ -66,7 +66,7 @@ final class DictionaryPreviewFactory implements PreviewFactory {
 	}
 
 	@Override
-	public JComponent createPreview(String value) {
+	public JComponent instantiate(String value) {
 		try {
 			Dictionary dict = new Dictionary(new File(value).getAbsolutePath(), '\t');
 			DictionaryPreview dv = new DictionaryPreview(dict, viewState);
@@ -79,7 +79,7 @@ final class DictionaryPreviewFactory implements PreviewFactory {
 		}
 	}
 
-	@Override
+	//TODO make into editor thingy @Override
 	public void openEditor(String value) {
 		try {
 			Dictionary dict = null;

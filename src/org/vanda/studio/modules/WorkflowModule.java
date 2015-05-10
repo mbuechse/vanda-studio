@@ -1,8 +1,9 @@
-package org.vanda.studio.modules.workflows;
+package org.vanda.studio.modules;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
 
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -15,10 +16,7 @@ import org.vanda.datasources.IntegerDataSource;
 import org.vanda.datasources.RootDataSource;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
-import org.vanda.studio.modules.workflows.data.DirectorySelector;
-import org.vanda.studio.modules.workflows.data.DoubleSelector;
-import org.vanda.studio.modules.workflows.data.ElementSelector;
-import org.vanda.studio.modules.workflows.data.IntegerSelector;
+import org.vanda.studio.modules.workflows.WorkflowPreview;
 import org.vanda.studio.modules.workflows.inspector.ElementEditorFactories;
 import org.vanda.studio.modules.workflows.inspector.LiteralEditor;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
@@ -34,14 +32,18 @@ import org.vanda.studio.modules.workflows.tools.semantic.InspectorTool;
 import org.vanda.studio.modules.workflows.tools.semantic.RunNowTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsToolFactory;
+import org.vanda.swing.data.DirectorySelector;
+import org.vanda.swing.data.DoubleSelector;
+import org.vanda.swing.data.ElementSelector;
+import org.vanda.swing.data.IntegerSelector;
 import org.vanda.types.CompositeType;
 import org.vanda.types.Type;
 import org.vanda.util.AbstractRepository;
 import org.vanda.util.Action;
 import org.vanda.util.CompositeFactory;
+import org.vanda.util.Factory;
 import org.vanda.util.ListRepository;
 import org.vanda.util.MetaRepository;
-import org.vanda.util.PreviewFactory;
 import org.vanda.util.Repository;
 import org.vanda.workflows.elements.Tool;
 import org.vanda.workflows.run.BuildSystem;
@@ -52,7 +54,8 @@ public class WorkflowModule implements Module {
 	public static final Type EXECUTION = new CompositeType("Execution");
 
 	private final RootDataSource rootDataSource;
-	private final MetaRepository<Type, PreviewFactory> previewFactoryMeta;
+	private final MetaRepository<Type, Factory<String, JComponent>> previewFactoryMeta;
+	private final MetaRepository<Type, Factory<String, Object>> editorFactoryMeta;
 	private final Repository<String, BuildSystem> buildSystemRepository;
 	private final Repository<String, DataSourceMount> dataSourceRepository;
 	private final Repository<String, Tool> toolRepository;
@@ -61,12 +64,15 @@ public class WorkflowModule implements Module {
 	public WorkflowModule(Repository<String, Tool> toolRepository,
 			Repository<String, DataSourceMount> dataSourceRepository,
 			Repository<String, BuildSystem> buildSystemRepository, RootDataSource rootDataSource,
-			MetaRepository<Type, PreviewFactory> previewFactoryMeta, MetaRepository<String, ToolFactory> toolFactoryMeta) {
+			MetaRepository<Type, Factory<String, JComponent>> previewFactoryMeta,
+			MetaRepository<Type, Factory<String, Object>> editorFactoryMeta,
+			MetaRepository<String, ToolFactory> toolFactoryMeta) {
 		this.toolRepository = toolRepository;
 		this.rootDataSource = rootDataSource;
 		this.dataSourceRepository = dataSourceRepository;
 		this.buildSystemRepository = buildSystemRepository;
 		this.previewFactoryMeta = previewFactoryMeta;
+		this.editorFactoryMeta = editorFactoryMeta;
 		this.toolFactoryMeta = toolFactoryMeta;
 	}
 
@@ -80,8 +86,8 @@ public class WorkflowModule implements Module {
 		return "Workflows"; // Module for Vanda Studio";
 	}
 
-	private static final class StaticRepository extends AbstractRepository<Type, PreviewFactory> {
-		public void put(Type key, PreviewFactory value) {
+	private static final class StaticRepository extends AbstractRepository<Type, Factory<String, Object>> {
+		public void put(Type key, Factory<String, Object> value) {
 			items.put(key, value);
 		};
 	}
@@ -123,7 +129,7 @@ public class WorkflowModule implements Module {
 			toolFactoryMeta.addRepository(lr);
 			sr.put(EXECUTION, executionPreviewFactory);
 			sr.put(WORKFLOW, executionPreviewFactory);
-			previewFactoryMeta.addRepository(sr);
+			editorFactoryMeta.addRepository(sr);
 
 			// app.getWindowSystem().addAction(null, new OpenManagerAction(),
 			// null, 100);
@@ -141,7 +147,7 @@ public class WorkflowModule implements Module {
 
 			@Override
 			public void invoke() {
-				previewFactoryMeta.getRepository().getItem(WORKFLOW).openEditor("");
+				editorFactoryMeta.getRepository().getItem(WORKFLOW).instantiate("");
 			}
 		}
 
@@ -170,7 +176,7 @@ public class WorkflowModule implements Module {
 					File chosenFile = chooser.getSelectedFile();
 					app.setProperty("lastDir", chosenFile.getParentFile().getAbsolutePath());
 					String filePath = chosenFile.getPath();
-					previewFactoryMeta.getRepository().getItem(WORKFLOW).openEditor(filePath);
+					editorFactoryMeta.getRepository().getItem(WORKFLOW).instantiate(filePath);
 				}
 			}
 		}

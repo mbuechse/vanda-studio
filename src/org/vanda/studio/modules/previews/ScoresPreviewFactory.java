@@ -1,9 +1,7 @@
 package org.vanda.studio.modules.previews;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -12,21 +10,12 @@ import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import org.vanda.studio.app.Application;
-import org.vanda.util.ExceptionMessage;
-import org.vanda.util.PreviewFactory;
+import org.vanda.util.Factory;
 
-public class ScoresPreviewFactory implements PreviewFactory {
-
-	private Application app;
-	
-	public ScoresPreviewFactory(Application app) {
-		super();
-		this.app = app;
-	}
+public class ScoresPreviewFactory implements Factory<String, JComponent> {
 	
 	@Override
-	public JComponent createPreview(String absolutePath) {
+	public JComponent instantiate(String absolutePath) {
 		File scores = new File(absolutePath);
 		File meta = new File(absolutePath + ".meta");
 		Scanner sScores = null, sMeta = null, sSentences = null;
@@ -73,23 +62,6 @@ public class ScoresPreviewFactory implements PreviewFactory {
 			if (sSentences != null)
 				sSentences.close();
 		}
-	}
-
-	@Override
-	public void openEditor(final String value) {
-		Thread t = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					Desktop.getDesktop().open(new File(value));
-				} catch (IOException e) {
-					app.sendMessage(new ExceptionMessage(e));
-				}
-			}
-		});
-
-		t.start();
 	}
 
 }

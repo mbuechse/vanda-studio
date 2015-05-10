@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.workflows.data;
+package org.vanda.swing.data;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

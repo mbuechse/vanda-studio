@@ -1,9 +1,7 @@
 package org.vanda.studio.modules.previews;
 
-import java.awt.Desktop;
 import java.awt.Font;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -19,10 +17,10 @@ import javax.swing.text.Document;
 
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.previews.Previews.Preview;
+import org.vanda.util.Factory;
 import org.vanda.util.Observer;
-import org.vanda.util.PreviewFactory;
 
-public class MonospacePreviewFactory implements PreviewFactory {
+public class MonospacePreviewFactory implements Factory<String, JComponent> {
 	private final List<WeakReference<Preview>> previews;
 	private final Application app;
 	private Observer<Application> uiModeObserver;
@@ -135,28 +133,10 @@ public class MonospacePreviewFactory implements PreviewFactory {
 	}
 
 	@Override
-	public JComponent createPreview(String value) {
+	public JComponent instantiate(String value) {
 		MonospacePreview mp = new MonospacePreview(value);
 		previews.add(new WeakReference<Preview>(mp));
 		return new JScrollPane(mp);
-	}
-
-	@Override
-	public void openEditor(final String value) {
-		Thread t = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					Desktop.getDesktop().open(new File(value));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		});
-
-		t.start();
 	}
 
 }
