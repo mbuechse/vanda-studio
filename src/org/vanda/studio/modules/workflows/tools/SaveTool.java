@@ -8,8 +8,8 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.vanda.studio.modules.workflows.model.ToolFactory;
-import org.vanda.studio.modules.workflows.model.WorkflowEditor;
+import org.vanda.studio.editor.ToolFactory;
+import org.vanda.studio.editor.WorkflowEditor;
 import org.vanda.util.Action;
 import org.vanda.workflows.serialization.Storer;
 

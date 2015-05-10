@@ -10,7 +10,7 @@ import org.vanda.workflows.toolinterfaces.ToolLoader;
 public class ToolsModule implements Module {
 
 	@Override
-	public String getName() {
+	public String getId() {
 		return "Tool interfaces module for Vanda Studio";
 	}
 	
@@ -21,7 +21,7 @@ public class ToolsModule implements Module {
 	}
 
 	@Override
-	public Object createInstance(Application a) {
+	public Object instantiate(Application a) {
 		ExternalRepository<Tool> er = new ExternalRepository<Tool>(
 				new ToolLoader(a.getProperty("toolsPath")));
 		er.refresh();

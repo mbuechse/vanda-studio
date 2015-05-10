@@ -1,7 +1,8 @@
 package org.vanda.studio.modules.workflows;
 
 import org.vanda.studio.app.Application;
-import org.vanda.studio.modules.workflows.model.ToolFactory;
+import org.vanda.studio.editor.ToolFactory;
+import org.vanda.studio.editor.WorkflowEditor;
 import org.vanda.util.ExceptionMessage;
 import org.vanda.util.Factory;
 import org.vanda.util.Pair;
@@ -16,10 +17,14 @@ public class WorkflowPreview implements Factory<String, Object> {
 	private final ToolFactory mainComponentToolFactory;
 	private final Repository<String, ToolFactory> toolFactories;
 	private final Repository<String, Tool> toolRepository;
+	private final Repository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> contextFactoryRepository;
 
-	public WorkflowPreview(Application app, ToolFactory mainComponentToolFactory,
-			Repository<String, Tool> toolRepository, Repository<String, ToolFactory> toolFactories) {
+	public WorkflowPreview(Application app,
+			Repository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> contextFactoryRepository,
+			ToolFactory mainComponentToolFactory, Repository<String, Tool> toolRepository,
+			Repository<String, ToolFactory> toolFactories) {
 		this.app = app;
+		this.contextFactoryRepository = contextFactoryRepository;
 		this.mainComponentToolFactory = mainComponentToolFactory;
 		this.toolFactories = toolFactories;
 		this.toolRepository = toolRepository;
@@ -40,7 +45,8 @@ public class WorkflowPreview implements Factory<String, Object> {
 			}
 		}
 		if (phd != null)
-			return new WorkflowEditorImpl(app, mainComponentToolFactory, toolFactories.getItems(), phd);
+			return new WorkflowEditorImpl(app, contextFactoryRepository, mainComponentToolFactory,
+					toolFactories.getItems(), phd);
 		else
 			return null;
 		// let's hope the GUI will hold a reference

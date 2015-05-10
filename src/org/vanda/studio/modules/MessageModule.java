@@ -20,12 +20,12 @@ import org.vanda.util.Observer;
 public class MessageModule implements Module {
 
 	@Override
-	public String getName() {
+	public String getId() {
 		return "Messages Module for Vanda Studio";
 	}
 
 	@Override
-	public Object createInstance(Application a) {
+	public Object instantiate(Application a) {
 		return new Messages(a);
 	}
 

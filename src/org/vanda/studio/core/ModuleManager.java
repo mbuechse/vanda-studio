@@ -41,7 +41,7 @@ public class ModuleManager {
 		instances.ensureCapacity(modules.size());
 		
 		for (Module m : modules)
-			instances.add(m.createInstance(application));
+			instances.add(m.instantiate(application));
 	}
 
 	public void finalizeModules() {

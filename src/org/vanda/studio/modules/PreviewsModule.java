@@ -26,7 +26,7 @@ public class PreviewsModule implements Module {
 	}
 
 	@Override
-	public String getName() {
+	public String getId() {
 		return "Preview Module";
 	}
 
@@ -37,7 +37,7 @@ public class PreviewsModule implements Module {
 	}
 
 	@Override
-	public Object createInstance(Application app) {
+	public Object instantiate(Application app) {
 		StaticRepository ar = new StaticRepository();
 		ar.put(new CompositeType("PennTreeCorpus"), new BerkeleyTreePreviewFactory());
 		ar.put(new CompositeType("BerkeleyGrammar.sm6"), new BerkeleyGrammarPreviewFactory(app, ".prev"));
