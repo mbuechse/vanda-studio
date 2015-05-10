@@ -27,7 +27,7 @@ import org.vanda.studio.modules.workflows.tools.AssignmentTableToolFactory;
 import org.vanda.studio.modules.workflows.tools.ErrorHighlighterFactory;
 import org.vanda.studio.modules.workflows.tools.MainComponentToolFactory;
 import org.vanda.studio.modules.workflows.tools.PaletteTool;
-import org.vanda.studio.modules.workflows.tools.RunTool;
+import org.vanda.studio.modules.workflows.tools.ExpandWorkflowTool;
 import org.vanda.studio.modules.workflows.tools.SaveTool;
 import org.vanda.studio.modules.workflows.tools.WorkflowToPDFToolFactory;
 import org.vanda.studio.modules.workflows.tools.semantic.InspectorTool;
@@ -119,7 +119,7 @@ public class WorkflowModule implements Module {
 			lr.addItem(new SemanticsTool(srep, buildSystemRepository, dataSourceRepository));
 			lr.addItem(new AssignmentTableToolFactory(app, fr, rootDataSource));
 			lr.addItem(new AssignmentSwitchToolFactory());
-			lr.addItem(new RunTool(app, rootDataSource, executionPreviewFactory));
+			lr.addItem(new ExpandWorkflowTool(app, rootDataSource, executionPreviewFactory));
 			toolFactoryMeta.addRepository(lr);
 			sr.put(EXECUTION, executionPreviewFactory);
 			sr.put(WORKFLOW, executionPreviewFactory);

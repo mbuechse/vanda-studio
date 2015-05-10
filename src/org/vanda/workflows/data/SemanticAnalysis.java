@@ -25,10 +25,11 @@ public class SemanticAnalysis implements Observer<Object>, DatabaseListener<Data
 		this.observable = new MultiplexObserver<SemanticAnalysis>();
 	}
 
-	public void updateDFA() {
+	private void update() {
 		dfa = new DataflowAnalysis();
 		dfa.init(assignment, sorted);
 		observable.notify(this);
+		// TODO check whether the database conforms to the types prescibed by the literals
 	}
 
 	/**
@@ -51,20 +52,20 @@ public class SemanticAnalysis implements Observer<Object>, DatabaseListener<Data
 			((DatabaseEvent<Database>) event).doNotify(this);
 		} else if (event instanceof SyntaxAnalysis) {
 			sorted = ((SyntaxAnalysis) event).getSorted();
-			updateDFA();
+			update();
 		}
 	}
 
 	@Override
 	public void cursorChange(Database d) {
 		assignment = d.getRow(d.getCursor());
-		updateDFA();
+		update();
 	}
 
 	@Override
 	public void dataChange(Database d, Integer key) {
 		assignment = d.getRow(d.getCursor());  // probably unnecessary
-		updateDFA();
+		update();
 	}
 
 	@Override

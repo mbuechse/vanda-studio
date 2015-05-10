@@ -18,7 +18,7 @@ import org.vanda.workflows.data.ExecutableWorkflowBuilder;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
 import org.vanda.workflows.serialization.Storer;
 
-public class RunTool implements ToolFactory {
+public class ExpandWorkflowTool implements ToolFactory {
 	private final Application app;
 	private final RootDataSource rds;
 	private final PreviewFactory executionPreviewFactory;
@@ -37,7 +37,7 @@ public class RunTool implements ToolFactory {
 
 			@Override
 			public String getName() {
-				return "Open Execution Preview...";
+				return "Expand Workflow...";
 			}
 
 			@Override
@@ -46,7 +46,7 @@ public class RunTool implements ToolFactory {
 				// validWorkflow &= semA.getDFA().isConnected();
 				// && Types.canUnify(synA.getFragmentType(),
 				// prof.getRootType());
-				f = new JDialog(app.getWindowSystem().getMainWindow(), "Execute Workflow");
+				f = new JDialog(app.getWindowSystem().getMainWindow(), "Expand Workflow");
 				AssignmentSelectionDialog rce = new AssignmentSelectionDialog(wfe.getView().getWorkflow(),
 						wfe.getDatabase(), rds, RunAction.this, validWorkflow);
 				f.setContentPane(rce.getComponent());
@@ -69,7 +69,6 @@ public class RunTool implements ToolFactory {
 				filePath += "/" + ewf.getWorkflow().getName() + new Date().toString();
 				try {
 					new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");
-					// XXX ServiceLocator antipattern
 					executionPreviewFactory.openEditor(filePath + ".xwf");
 				} catch (Exception e) {
 					// wfe.getApplication().sendMessage(new ExceptionMessage(e));
@@ -87,7 +86,7 @@ public class RunTool implements ToolFactory {
 		}
 	}
 
-	public RunTool(Application app, RootDataSource rds, PreviewFactory executionPreviewFactory) {
+	public ExpandWorkflowTool(Application app, RootDataSource rds, PreviewFactory executionPreviewFactory) {
 		this.app = app;
 		this.rds = rds;
 		this.executionPreviewFactory = executionPreviewFactory;
