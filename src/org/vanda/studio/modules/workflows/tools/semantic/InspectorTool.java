@@ -6,6 +6,7 @@ import java.awt.Font;
 
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
@@ -27,6 +28,7 @@ import org.vanda.view.View;
 import org.vanda.view.Views.*;
 import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
+import org.vanda.workflows.run.BuildContext;
 
 public class InspectorTool implements SemanticsToolFactory {
 
@@ -36,9 +38,9 @@ public class InspectorTool implements SemanticsToolFactory {
 	public final class Inspector {
 		private final WorkflowEditor wfe;
 		private final Observer<Object> workflowObserver;
-		// private final Model mm;
 		private final SyntaxAnalysis synA;
 		private final SemanticAnalysis semA;
+		private final BuildContext bc;
 		private final Observer<SemanticAnalysis> semanticObserver;
 		private final JPanel contentPane;
 		private final JPanel panNorth;
@@ -50,12 +52,13 @@ public class InspectorTool implements SemanticsToolFactory {
 		private final Observer<ViewEvent<View>> viewObserver;
 
 		// public Inspector(WorkflowEditor wfe, Model mm, View view) {
-		public Inspector(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA, View view) {
+		public Inspector(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA, BuildContext bc) {
 			this.wfe = wfe;
 			// this.mm = mm;
 			this.synA = synA;
 			this.semA = semA;
-			this.view = view;
+			this.bc = bc;
+			this.view = wfe.getView();
 
 			// ws = null;
 			inspector = new JEditorPane("text/html", "");
@@ -142,7 +145,13 @@ public class InspectorTool implements SemanticsToolFactory {
 				preview = null;
 			}
 			if (previewFactory != null) {
-				preview = previewFactory.createPreview(previewFactories);
+				try {
+					preview = previewFactory.createPreview(previewFactories);
+				} catch (Exception e) {
+					preview = new JLabel(e.getMessage());
+				}
+				if (preview == null)
+					preview = new JLabel("Could not create preview.");
 				// TODO use actions
 				// JComponent buttons = previewFactory.createButtons(previewFactories);
 				panNorth.removeAll();
@@ -159,7 +168,7 @@ public class InspectorTool implements SemanticsToolFactory {
 			setInspection(InspectorialVisitor.inspect(synA, semA, view));
 			// editor and preview keep track of changes on their own
 			setEditor(EditorialVisitor.createAbstractFactory(eefs, view));
-			setPreview(PreviewesqueVisitor.createPreviewFactory(semA, synA, view));
+			setPreview(PreviewesqueVisitor.createPreviewFactory(semA, synA, view, bc));
 		}
 
 	}
@@ -171,8 +180,8 @@ public class InspectorTool implements SemanticsToolFactory {
 
 	@Override
 	// public Object instantiate(WorkflowEditor wfe, Model model, View view) {
-	public Object instantiate(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA) {
-		return new Inspector(wfe, synA, semA, wfe.getView());
+	public Object instantiate(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA, BuildContext bc) {
+		return new Inspector(wfe, synA, semA, bc);
 	}
 
 	@Override

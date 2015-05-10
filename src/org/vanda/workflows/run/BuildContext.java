@@ -16,8 +16,5 @@ public interface BuildContext {
 	
 	void saveSettings(String pathToWorkflow);
 	
-	// TODO offer settings dialog
-	// buildContext has the necessary knowledge
-	// but it should be gui-agnostic!
-
+	String findFile(String value);
 }

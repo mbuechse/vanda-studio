@@ -2,13 +2,13 @@ package org.vanda.studio.modules.workflows;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.LinkedList;
 
 import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.vanda.datasources.DataSource;
+import org.vanda.datasources.DataSourceMount;
 import org.vanda.datasources.DirectoryDataSource;
 import org.vanda.datasources.DoubleDataSource;
 import org.vanda.datasources.IntegerDataSource;
@@ -27,11 +27,11 @@ import org.vanda.studio.modules.workflows.tools.AssignmentTableToolFactory;
 import org.vanda.studio.modules.workflows.tools.ErrorHighlighterFactory;
 import org.vanda.studio.modules.workflows.tools.MainComponentToolFactory;
 import org.vanda.studio.modules.workflows.tools.PaletteTool;
+import org.vanda.studio.modules.workflows.tools.RunTool;
 import org.vanda.studio.modules.workflows.tools.SaveTool;
 import org.vanda.studio.modules.workflows.tools.WorkflowToPDFToolFactory;
 import org.vanda.studio.modules.workflows.tools.semantic.InspectorTool;
 import org.vanda.studio.modules.workflows.tools.semantic.RunNowTool;
-import org.vanda.studio.modules.workflows.tools.semantic.RunTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsTool;
 import org.vanda.studio.modules.workflows.tools.semantic.SemanticsToolFactory;
 import org.vanda.types.CompositeType;
@@ -54,15 +54,17 @@ public class WorkflowModule implements Module {
 	private final RootDataSource rootDataSource;
 	private final MetaRepository<Type, PreviewFactory> previewFactoryMeta;
 	private final Repository<String, BuildSystem> buildSystemRepository;
+	private final Repository<String, DataSourceMount> dataSourceRepository;
 	private final Repository<String, Tool> toolRepository;
 	private final MetaRepository<String, ToolFactory> toolFactoryMeta;
 
 	public WorkflowModule(Repository<String, Tool> toolRepository,
+			Repository<String, DataSourceMount> dataSourceRepository,
 			Repository<String, BuildSystem> buildSystemRepository, RootDataSource rootDataSource,
-			MetaRepository<Type, PreviewFactory> previewFactoryMeta,
-			MetaRepository<String, ToolFactory> toolFactoryMeta) {
+			MetaRepository<Type, PreviewFactory> previewFactoryMeta, MetaRepository<String, ToolFactory> toolFactoryMeta) {
 		this.toolRepository = toolRepository;
 		this.rootDataSource = rootDataSource;
+		this.dataSourceRepository = dataSourceRepository;
 		this.buildSystemRepository = buildSystemRepository;
 		this.previewFactoryMeta = previewFactoryMeta;
 		this.toolFactoryMeta = toolFactoryMeta;
@@ -105,20 +107,19 @@ public class WorkflowModule implements Module {
 			eefs.workflowFactories.add(new org.vanda.studio.modules.workflows.inspector.WorkflowEditor());
 			eefs.literalFactories.add(new LiteralEditor(app, rootDataSource, fr));
 
-			LinkedList<SemanticsToolFactory> srep = new LinkedList<SemanticsToolFactory>();
-			srep = new LinkedList<SemanticsToolFactory>();
-			srep.add(new InspectorTool(eefs, previewFactoryMeta.getRepository()));
-			srep.add(new RunNowTool(buildSystemRepository));
-			srep.add(new RunTool(app, rootDataSource, executionPreviewFactory));
+			ListRepository<SemanticsToolFactory> srep = new ListRepository<SemanticsToolFactory>();
+			srep.addItem(new InspectorTool(eefs, previewFactoryMeta.getRepository()));
+			srep.addItem(new RunNowTool());
 
 			ListRepository<ToolFactory> lr = new ListRepository<ToolFactory>();
 			lr.addItem(new ErrorHighlighterFactory());
 			lr.addItem(new PaletteTool(toolRepository));
 			lr.addItem(new SaveTool());
 			lr.addItem(new WorkflowToPDFToolFactory(toolRepository));
-			lr.addItem(new SemanticsTool(srep));
+			lr.addItem(new SemanticsTool(srep, buildSystemRepository, dataSourceRepository));
 			lr.addItem(new AssignmentTableToolFactory(app, fr, rootDataSource));
 			lr.addItem(new AssignmentSwitchToolFactory());
+			lr.addItem(new RunTool(app, rootDataSource, executionPreviewFactory));
 			toolFactoryMeta.addRepository(lr);
 			sr.put(EXECUTION, executionPreviewFactory);
 			sr.put(WORKFLOW, executionPreviewFactory);

@@ -9,7 +9,6 @@ import javax.swing.KeyStroke;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
 import org.vanda.util.Action;
 import org.vanda.util.Observer;
-import org.vanda.util.Repository;
 import org.vanda.view.JobView;
 import org.vanda.view.View;
 import org.vanda.workflows.data.Database;
@@ -23,7 +22,6 @@ import org.vanda.workflows.hyper.SyntaxAnalysis;
 import org.vanda.workflows.run.BuildContext;
 import org.vanda.workflows.run.RunStates;
 import org.vanda.workflows.run.Runner;
-import org.vanda.workflows.run.BuildSystem;
 import org.vanda.workflows.run.RunStates.RunEvent;
 import org.vanda.workflows.run.RunStates.RunEventId;
 import org.vanda.workflows.run.RunStates.RunEventListener;
@@ -158,7 +156,6 @@ public class RunNowTool implements SemanticsToolFactory {
 		private final View view;
 		private final SemanticAnalysis semA;
 		private final SyntaxAnalysis synA;
-		private final BuildSystem bs;
 		private final BuildContext bc;
 		private Runner run;
 		private RunEventObserver reo;
@@ -166,15 +163,14 @@ public class RunNowTool implements SemanticsToolFactory {
 		private final CancelAction cancelAction;
 		private final DbListener dbListener;
 
-		public Tool(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA) {
-			bs = runnerFactoryRepository.getItems().iterator().next();
-			bc = bs.createBuildContext();
+		public Tool(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA, BuildContext bc) {
 			// TODO load and save settings -- WorkflowEditor must be ...
 			// "filename-aware" first (including Observer pattern)
 			this.wfe = wfe;
 			view = wfe.getView();
 			this.synA = synA;
 			this.semA = semA;
+			this.bc = bc;
 			cancelAction = new CancelAction();
 			runAction = new RunAction();
 			dbListener = new DbListener();
@@ -222,15 +218,9 @@ public class RunNowTool implements SemanticsToolFactory {
 		}
 	}
 
-	private final Repository<String, BuildSystem> runnerFactoryRepository;
-
-	public RunNowTool(Repository<String, BuildSystem> runnerFactoryRepository) {
-		this.runnerFactoryRepository = runnerFactoryRepository;
-	}
-
 	@Override
-	public Object instantiate(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA) {
-		return new Tool(wfe, synA, semA);
+	public Object instantiate(WorkflowEditor wfe, SyntaxAnalysis synA, SemanticAnalysis semA, BuildContext bc) {
+		return new Tool(wfe, synA, semA, bc);
 	}
 
 	@Override

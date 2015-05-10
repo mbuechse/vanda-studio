@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.vanda.datasources.RootDataSource;
 import org.vanda.fragment.model.Fragment;
 import org.vanda.fragment.model.FragmentBase;
 import org.vanda.fragment.model.FragmentCompiler;
@@ -26,6 +27,7 @@ public class GeneratorImpl implements Generator, FragmentIO {
 
 	private final Profile prof;
 	private final String path;
+	private final RootDataSource rootDataSource;
 
 	// The Generator class encapsulates stuff that should not be kept around
 	// all the time, and resource acquisition is initialization, blah blah
@@ -116,9 +118,10 @@ public class GeneratorImpl implements Generator, FragmentIO {
 		return new GenerationProcess().generate(ewf, synA, semA);
 	}
 
-	public GeneratorImpl(Profile prof, String path) {
+	public GeneratorImpl(Profile prof, String path, RootDataSource rootDataSource) {
 		this.prof = prof;
 		this.path = path;
+		this.rootDataSource = rootDataSource;
 	}
 
 	@Override
@@ -130,7 +133,7 @@ public class GeneratorImpl implements Generator, FragmentIO {
 
 	@Override
 	public String findFile(String value) {
-		return value;  // TODO use path from runconfig
+		return rootDataSource.getValue(value);
 	}
 
 	@Override

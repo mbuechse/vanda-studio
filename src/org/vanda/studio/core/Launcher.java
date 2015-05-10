@@ -29,7 +29,7 @@ public final class Launcher implements Runnable {
 	private final MetaRepository<String, BuildSystem> buildSystemMeta;
 	private final MetaRepository<String, Tool> toolMeta;
 	private final MetaRepository<String, ToolFactory> toolFactoryMeta;
-	
+
 	private final RootDataSource rootDataSource;
 	private final ApplicationImpl app = new ApplicationImpl();
 
@@ -51,8 +51,8 @@ public final class Launcher implements Runnable {
 				new org.vanda.studio.modules.run.RunModule(buildSystemMeta),
 				new org.vanda.studio.modules.previews.PreviewsModule(previewFactoryMeta),
 				new org.vanda.studio.modules.workflows.WorkflowModule(toolMeta.getRepository(),
-						buildSystemMeta.getRepository(), rootDataSource, previewFactoryMeta,
-						toolFactoryMeta),
+						dataSourceMeta.getRepository(), buildSystemMeta.getRepository(), rootDataSource,
+						previewFactoryMeta, toolFactoryMeta),
 				new org.vanda.studio.modules.datasources.DataSourceModule(dataSourceMeta) };
 
 		ModuleManager moduleManager = new ModuleManager(app);

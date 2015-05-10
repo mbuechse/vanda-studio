@@ -1,4 +1,4 @@
-package org.vanda.studio.modules.workflows.tools.semantic;
+package org.vanda.studio.modules.workflows.tools;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -36,6 +36,7 @@ import org.vanda.workflows.hyper.MutableWorkflow;
 
 // TODO make dialog modal, implement MVC pattern, get rid of RemoveMeAsSoonAsPossible
 // TODO move correctness checks someplace else
+// TODO more synergy with AssignmentTablePanel!!
 // this is the effing GUI for crying out loud
 
 /**

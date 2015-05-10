@@ -56,6 +56,11 @@ public class BuildContextGuiImpl implements BuildContext, HasActions {
 	public void appendActions(List<Action> as) {
 		as.add(editAction);
 	}
+
+	@Override
+	public String findFile(String value) {
+		return delegate.findFile(value);
+	}
 	
 	public BuildContextGuiImpl(BuildContextImpl delegate) {
 		this.delegate = delegate;

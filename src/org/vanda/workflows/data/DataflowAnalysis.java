@@ -119,7 +119,7 @@ public class DataflowAnalysis implements JobVisitor {
 			jobIds.put(j, computeJobId(j, t));
 			for (Port op : t.getOutputPorts()) {
 				String value = jobSpec + "." + op.getIdentifier();
-				values.put(j.bindings.get(op), value);
+				values.put(j.bindings.get(op), "output:" + value);
 			}
 		} else {
 			for (Port op : j.getOutputPorts()) {

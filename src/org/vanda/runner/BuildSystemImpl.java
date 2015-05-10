@@ -1,6 +1,8 @@
 package org.vanda.runner;
 
+import org.vanda.datasources.DataSourceMount;
 import org.vanda.fragment.model.Profile;
+import org.vanda.util.Repository;
 import org.vanda.workflows.run.BuildSystem;
 
 public class BuildSystemImpl implements BuildSystem {
@@ -45,8 +47,8 @@ public class BuildSystemImpl implements BuildSystem {
 	}
 	
 	@Override
-	public BuildContextImpl createBuildContext() {
-		return new BuildContextImpl(prof, defaultPath);
+	public BuildContextImpl createBuildContext(Repository<String, DataSourceMount> dataSourceRepository) {
+		return new BuildContextImpl(prof, defaultPath, dataSourceRepository);
 	}
 	
 	public BuildSystemImpl(Profile prof, String defaultPath) {

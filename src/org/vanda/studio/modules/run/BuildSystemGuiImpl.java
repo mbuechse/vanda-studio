@@ -1,6 +1,8 @@
 package org.vanda.studio.modules.run;
 
+import org.vanda.datasources.DataSourceMount;
 import org.vanda.runner.BuildSystemImpl;
+import org.vanda.util.Repository;
 import org.vanda.workflows.run.BuildContext;
 import org.vanda.workflows.run.BuildSystem;
 
@@ -39,12 +41,12 @@ class BuildSystemGuiImpl implements BuildSystem {
 	}
 
 	@Override
-	public BuildContext createBuildContext() {
-		return new BuildContextGuiImpl(delegate.createBuildContext());
+	public BuildContext createBuildContext(Repository<String, DataSourceMount> dataSourceRepository) {
+		return new BuildContextGuiImpl(delegate.createBuildContext(dataSourceRepository));
 	}
 	
 	public BuildSystemGuiImpl(BuildSystemImpl delegate) {
 		this.delegate = delegate;
 	}
-	
+
 }

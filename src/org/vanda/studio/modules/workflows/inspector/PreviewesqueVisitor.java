@@ -22,23 +22,26 @@ import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.Location;
 import org.vanda.workflows.hyper.MutableWorkflow;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
+import org.vanda.workflows.run.BuildContext;
 
 public class PreviewesqueVisitor implements SelectionVisitor {
 
 	private final SemanticAnalysis semA;
 	private final SyntaxAnalysis synA;
+	private final BuildContext bc;
 	private AbstractPreviewFactory apf;
 	
 	private static final Type LOGTYPE = new CompositeType("log");
 
-	public PreviewesqueVisitor(SemanticAnalysis semA, SyntaxAnalysis synA) {
+	public PreviewesqueVisitor(SemanticAnalysis semA, SyntaxAnalysis synA, BuildContext bc) {
 		this.semA = semA;
 		this.synA = synA;
+		this.bc = bc;
 		apf = null;
 	}
 
-	public static AbstractPreviewFactory createPreviewFactory(SemanticAnalysis semA, SyntaxAnalysis synA, View view) {
-		PreviewesqueVisitor visitor = new PreviewesqueVisitor(semA, synA);
+	public static AbstractPreviewFactory createPreviewFactory(SemanticAnalysis semA, SyntaxAnalysis synA, View view, BuildContext bc) {
+		PreviewesqueVisitor visitor = new PreviewesqueVisitor(semA, synA, bc);
 		// Show Workflow-Preview in case of multi-selection
 		List<SelectionObject> sos = view.getCurrentSelection();
 		if (sos.size() > 1)
@@ -70,13 +73,13 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 			
 			@Override
 			public JComponent createPreview(Repository<Type, PreviewFactory> previewFactories) {
-				String log = semA.getDFA().getJobId(j) + ".log";
+				String log = bc.findFile("output:" + semA.getDFA().getJobId(j) + ".log");
 				return previewFactories.getItem(LOGTYPE).createPreview(log);
 			}
 			
 			// @Override
 			public JComponent createButtons(final Repository<Type, PreviewFactory> previewFactories) {
-				final String log = semA.getDFA().getJobId(j) + ".log";
+				final String log = bc.findFile("output:" + semA.getDFA().getJobId(j) + ".log");
 				JPanel pan = new JPanel(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
 				JButton bOpen = new JButton(new AbstractAction("raw log") {
@@ -101,7 +104,10 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 		apf = new AbstractPreviewFactory() {
 			@Override
 			public JComponent createPreview(Repository<Type, PreviewFactory> previewFactories) {
-				return previewFactories.getItem(type).createPreview(value);
+				PreviewFactory pvf = previewFactories.getItem(type);
+				if (pvf == null)
+					pvf = previewFactories.getItem(null);
+				return pvf.createPreview(bc.findFile(value));
 			}
 
 			// @Override
@@ -113,7 +119,7 @@ public class PreviewesqueVisitor implements SelectionVisitor {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						previewFactories.getItem(type).openEditor(value);
+						previewFactories.getItem(type).openEditor(bc.findFile(value));
 					}
 				});
 				pan.add(bOpen, gbc);

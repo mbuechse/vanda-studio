@@ -2,59 +2,62 @@ package org.vanda.studio.modules.workflows.tools.semantic;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
+import org.vanda.datasources.DataSourceMount;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
+import org.vanda.util.Repository;
 import org.vanda.workflows.data.Database;
 import org.vanda.workflows.data.Databases;
 import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
+import org.vanda.workflows.run.BuildContext;
+import org.vanda.workflows.run.BuildSystem;
 
 public class SemanticsTool implements ToolFactory {
 
-	private final static class Tool {
+	private final class Tool {
 
 		private final Database database;
 		private final SemanticAnalysis semA;
 		private final SyntaxAnalysis synA;
 		private final Collection<Object> tools;
+		private final BuildContext bc;
 
-		public Tool(WorkflowEditor wfe, Collection<SemanticsToolFactory> stfs) {
+		public Tool(WorkflowEditor wfe) {
 
 			database = wfe.getDatabase();
 			synA = wfe.getSyntaxAnalysis();
 			semA = new SemanticAnalysis();
 			synA.getSyntaxChangedObservable().addObserver(semA);
 			database.getObservable().addObserver(semA);
+			BuildSystem bs = buildSystemRepository.getItems().iterator().next();
+			bc = bs.createBuildContext(dataSourceRepository);
 			
 			semA.notify(new Databases.CursorChange<Database>(database));
 			tools = new ArrayList<Object>();
-			for (SemanticsToolFactory stf : stfs)
-				tools.add(stf.instantiate(wfe, synA, semA));
+			for (SemanticsToolFactory stf : toolRepository.getItems())
+				tools.add(stf.instantiate(wfe, synA, semA, bc));
 
 		}
 
 	}
 
-	private final LinkedList<SemanticsToolFactory> repository;
+	private final Repository<String, DataSourceMount> dataSourceRepository;
+	private final Repository<String, SemanticsToolFactory> toolRepository;
+	private final Repository<String, BuildSystem> buildSystemRepository;
 
-	public SemanticsTool() {
-		repository = new LinkedList<SemanticsToolFactory>();
-	}
-
-	public SemanticsTool(List<SemanticsToolFactory> srep) {
-		repository = new LinkedList<SemanticsToolFactory>(srep);
-	}
-
-	public LinkedList<SemanticsToolFactory> getSemanticsToolFactoryMetaRepository() {
-		return repository;
+	public SemanticsTool(Repository<String, SemanticsToolFactory> repository,
+			Repository<String, BuildSystem> buildSystemRepository,
+			Repository<String, DataSourceMount> dataSourceRepository) {
+		this.toolRepository = repository;
+		this.buildSystemRepository = buildSystemRepository;
+		this.dataSourceRepository = dataSourceRepository;
 	}
 
 	@Override
 	public Object instantiate(WorkflowEditor wfe) {
-		return new Tool(wfe, repository);
+		return new Tool(wfe);
 	}
 
 	@Override
