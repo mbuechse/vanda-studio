@@ -1,12 +1,14 @@
 package org.vanda.studio.modules.workflows.tools;
 
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.GroupLayout;
@@ -15,7 +17,7 @@ import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,39 +25,38 @@ import javax.swing.JSpinner;
 import javax.swing.LayoutStyle;
 import javax.swing.SpinnerNumberModel;
 
-import org.vanda.datasources.RootDataSource;
 import org.vanda.workflows.data.Database;
-import org.vanda.workflows.data.DatabaseValueChecker;
 import org.vanda.workflows.elements.Literal;
+import org.vanda.workflows.elements.Tool;
+import org.vanda.workflows.hyper.ElementVisitor;
+import org.vanda.workflows.hyper.Job;
 import org.vanda.workflows.hyper.MutableWorkflow;
 
-// TODO make dialog modal, implement MVC pattern, get rid of RemoveMeAsSoonAsPossible
-// TODO move correctness checks someplace else
+// TODO implement MVC pattern
 // TODO more synergy with AssignmentTablePanel!!
 // this is the effing GUI for crying out loud
 
 /**
- * Dialogue to select assignments
+ * Dialog to select assignments
  * 
  * @author kgebhardt
  * 
  */
-public class AssignmentSelectionDialog {
+public class AssignmentSelectionDialog extends JDialog {
+	private static final long serialVersionUID = 26881773449612849L;
+
 	public interface RemoveMeAsSoonAsPossible {
 		public void evokeExecution(List<Integer> assignmentSelection);
 	}
 
 	private JPanel pan;
-	private List<Integer> assignmentSelection;
+	private Set<Integer> assignmentSelection;
 	private List<JCheckBox> assignmentCheckboxes;
 	private Map<Integer, JSpinner> priorityMap;
+	public boolean doApply = false;
 
-	public JComponent getComponent() {
-		return pan;
-	}
-
-	public AssignmentSelectionDialog(final MutableWorkflow mwf, Database db, RootDataSource rds,
-			final RemoveMeAsSoonAsPossible r, boolean validWorkflow) {
+	public AssignmentSelectionDialog(Window owner, final MutableWorkflow mwf, Database db, Set<Integer> assignmentSelection) {
+		super(owner, "Expand Workflow");
 		// Panel and basic Layout
 		pan = new JPanel();
 		GroupLayout layout = new GroupLayout(pan);
@@ -67,7 +68,7 @@ public class AssignmentSelectionDialog {
 		JPanel tablePane = new JPanel();
 		GroupLayout tableLayout = new GroupLayout(tablePane);
 		tablePane.setLayout(tableLayout);
-		assignmentSelection = new ArrayList<Integer>();
+		this.assignmentSelection = assignmentSelection;
 		priorityMap = new HashMap<Integer, JSpinner>();
 		assignmentCheckboxes = new ArrayList<JCheckBox>();
 
@@ -83,40 +84,39 @@ public class AssignmentSelectionDialog {
 		tableRows.addGroup(tableLayout.createParallelGroup().addComponent(headerLeft).addComponent(headerRight));
 
 		// Table Content
-		List<Literal> connectedLiterals = null;
-		boolean inputsComplete = validWorkflow;
-		try {
-			connectedLiterals = DatabaseValueChecker.detectConnectedLiterals(mwf);
-		} catch (DatabaseValueChecker.MissingInputsException e) {
-			inputsComplete = false;
-		}
+		final List<Literal> connectedLiterals = new LinkedList<Literal>();
+		for (Job j : mwf.getChildren())
+			j.visit(new ElementVisitor() {
+				@Override
+				public void visitLiteral(Literal l) {
+					connectedLiterals.add(l);
+				}
+
+				@Override
+				public void visitTool(Tool t) {
+				}
+				
+			});
 
 		// TODO remember previous selections and priorities
 		for (int i = 0; i < db.getSize(); ++i) {
 			final Integer a_i = new Integer(i);
 			String name = db.getName(i);
-			JCheckBox assignment = new JCheckBox(new AbstractAction(name != null ? name : "") {
+			final JCheckBox assignment = new JCheckBox(new AbstractAction(name != null ? name : "") {
 				private static final long serialVersionUID = 1827258959703699422L;
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					if (assignmentSelection.contains(a_i))
-						assignmentSelection.remove(a_i);
+					if (!((JCheckBox) arg0.getSource()).isSelected())
+						AssignmentSelectionDialog.this.assignmentSelection.remove(a_i);
 					else
-						assignmentSelection.add(a_i);
+						AssignmentSelectionDialog.this.assignmentSelection.add(a_i);
 				}
 			});
 			assignmentSelection.add(a_i);
 			assignment.setSelected(assignmentSelection.contains(a_i));
 			assignmentCheckboxes.add(assignment);
-			boolean selectable = inputsComplete
-					&& DatabaseValueChecker.checkDatabaseRow(mwf, rds, db.getRow(i), connectedLiterals);
 			JSpinner priority = new JSpinner(new SpinnerNumberModel(i, 0, 1000, 1));
-
-			if (!selectable) {
-				assignment.setEnabled(false);
-				priority.setEnabled(false);
-			}
 
 			priority.setMaximumSize(new Dimension(20, JSpinner.HEIGHT));
 			priorityMap.put((Integer) i, priority);
@@ -181,13 +181,13 @@ public class AssignmentSelectionDialog {
 		exSystem.setMaximumSize(new Dimension(Short.MAX_VALUE, JComboBox.HEIGHT));
 		exSystem.addItem("Shell Compiler");
 		exSystem.setEnabled(false);
-		JButton exButton = new JButton(new AbstractAction("Open Execution Preview") {
+		JButton exButton = new JButton(new AbstractAction("Expand Workflow") {
 			private static final long serialVersionUID = 3626621817499179974L;
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				Collections.sort(assignmentSelection); // TODO sort by prio
-				r.evokeExecution(assignmentSelection);
+				doApply = true;
+				AssignmentSelectionDialog.this.dispose();
 			}
 		});
 
@@ -202,5 +202,8 @@ public class AssignmentSelectionDialog {
 		layout.setVerticalGroup(layout.createSequentialGroup().addComponent(tableScrollPane).addGroup(buttonsVert)
 				.addGroup(executionSystemVertical));
 
+		setContentPane(pan);
+		setAutoRequestFocus(true);
+		pack();
 	}
 }

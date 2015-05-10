@@ -2,16 +2,15 @@ package org.vanda.studio.modules.workflows.tools;
 
 import java.awt.event.KeyEvent;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.swing.JDialog;
 import javax.swing.KeyStroke;
 
 import org.vanda.datasources.RootDataSource;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.modules.workflows.model.ToolFactory;
 import org.vanda.studio.modules.workflows.model.WorkflowEditor;
-import org.vanda.studio.modules.workflows.tools.AssignmentSelectionDialog.RemoveMeAsSoonAsPossible;
 import org.vanda.util.Action;
 import org.vanda.util.PreviewFactory;
 import org.vanda.workflows.data.ExecutableWorkflowBuilder;
@@ -20,7 +19,6 @@ import org.vanda.workflows.serialization.Storer;
 
 public class ExpandWorkflowTool implements ToolFactory {
 	private final Application app;
-	private final RootDataSource rds;
 	private final PreviewFactory executionPreviewFactory;
 
 	private class Tool {
@@ -32,8 +30,7 @@ public class ExpandWorkflowTool implements ToolFactory {
 		 * @author kgebhardt
 		 *
 		 */
-		public final class RunAction implements Action, RemoveMeAsSoonAsPossible {
-			private JDialog f;
+		public final class RunAction implements Action {
 
 			@Override
 			public String getName() {
@@ -42,36 +39,25 @@ public class ExpandWorkflowTool implements ToolFactory {
 
 			@Override
 			public void invoke() {
-				boolean validWorkflow = synA.getCyclicConnections() == null && synA.getTypeErrors() == null;
-				// validWorkflow &= semA.getDFA().isConnected();
-				// && Types.canUnify(synA.getFragmentType(),
-				// prof.getRootType());
-				f = new JDialog(app.getWindowSystem().getMainWindow(), "Expand Workflow");
-				AssignmentSelectionDialog rce = new AssignmentSelectionDialog(wfe.getView().getWorkflow(),
-						wfe.getDatabase(), rds, RunAction.this, validWorkflow);
-				f.setContentPane(rce.getComponent());
-				f.setAlwaysOnTop(true);
-				f.setAutoRequestFocus(true);
-				f.setModal(true);
-				f.pack();
-				f.setLocationRelativeTo(app.getWindowSystem().getMainWindow());
-				f.setVisible(true);
-
-			}
-
-			public void evokeExecution(List<Integer> assignmentSelection) {
-				f.dispose();
-
-				ExecutableWorkflowBuilder ewf = new ExecutableWorkflowBuilder(wfe.getView().getWorkflow(), synA);
-				for (Integer i : assignmentSelection)
-					ewf.addAssigment(wfe.getDatabase().getRow(i));
-				String filePath = app.getProperty("outputPath");  // TODO revise
-				filePath += "/" + ewf.getWorkflow().getName() + new Date().toString();
-				try {
-					new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");
-					executionPreviewFactory.openEditor(filePath + ".xwf");
-				} catch (Exception e) {
-					// wfe.getApplication().sendMessage(new ExceptionMessage(e));
+				Set<Integer> assignmentSelection = new HashSet<Integer>();
+				AssignmentSelectionDialog rce = new AssignmentSelectionDialog(app.getWindowSystem().getMainWindow(), 
+						wfe.getView().getWorkflow(), wfe.getDatabase(), assignmentSelection);
+				rce.setLocationRelativeTo(app.getWindowSystem().getMainWindow());
+				rce.setAlwaysOnTop(true);
+				rce.setModal(true);
+				rce.setVisible(true);
+				if (rce.doApply) {
+					ExecutableWorkflowBuilder ewf = new ExecutableWorkflowBuilder(wfe.getView().getWorkflow(), synA);
+					for (Integer i : assignmentSelection)
+						ewf.addAssigment(wfe.getDatabase().getRow(i));
+					String filePath = app.getProperty("outputPath");  // TODO revise
+					filePath += "/" + ewf.getWorkflow().getName() + new Date().toString();
+					try {
+						new Storer().store(ewf.getWorkflow(), ewf.getDatabase(), filePath + ".xwf");
+						executionPreviewFactory.openEditor(filePath + ".xwf");
+					} catch (Exception e) {
+						// wfe.getApplication().sendMessage(new ExceptionMessage(e));
+					}
 				}
 			}
 		}
@@ -88,7 +74,6 @@ public class ExpandWorkflowTool implements ToolFactory {
 
 	public ExpandWorkflowTool(Application app, RootDataSource rds, PreviewFactory executionPreviewFactory) {
 		this.app = app;
-		this.rds = rds;
 		this.executionPreviewFactory = executionPreviewFactory;
 	}
 
