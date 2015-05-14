@@ -104,7 +104,7 @@ public class AssignmentTableToolFactory implements ToolFactory {
 	@Override
 	public Object instantiate(final WorkflowEditor wfe) {
 		final OpenAssignmentTableAction a = new OpenAssignmentTableAction(wfe);
-		wfe.addAction(a, "application-vnd.sun.xml.calc", KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_MASK), 7);
+		wfe.addAction(a, "application-vnd.sun.xml.calc", KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_MASK), 8);
 
 		// disables assignment table if database is empty
 		final DatabaseListener<Database> listener = new DatabaseListener<Database>() {

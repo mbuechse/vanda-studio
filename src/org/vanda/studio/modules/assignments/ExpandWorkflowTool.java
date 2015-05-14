@@ -73,7 +73,7 @@ public class ExpandWorkflowTool implements ToolFactory {
 		public Tool(WorkflowEditor wfe, SyntaxAnalysis synA) {
 			this.wfe = wfe;
 			this.synA = synA;
-			wfe.addAction(new RunAction(), "system-run", KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_MASK), 6);
+			wfe.addAction(new RunAction(), "system-run", KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_MASK), 9);
 		}
 	}
 

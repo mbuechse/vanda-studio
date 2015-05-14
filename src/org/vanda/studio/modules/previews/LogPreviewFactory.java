@@ -55,7 +55,7 @@ public final class LogPreviewFactory implements Factory<String, JComponent> {
 		if (entries.isEmpty())
 			return new JLabel("Log is empty.");
 		Collections.reverse(entries);
-		final JComboBox le = new JComboBox(entries.toArray());
+		final JComboBox<LogEntry> le = new JComboBox<LogEntry>(entries.toArray(new LogEntry[0]));
 		final JTextArea ta = new JTextArea(entries.get(0).getText());
 		le.addActionListener(new ActionListener() {
 			
@@ -72,11 +72,21 @@ public final class LogPreviewFactory implements Factory<String, JComponent> {
 	
 	private class LogEntry {
 		private String date = "<incomplete>";
+		@SuppressWarnings("unused")
 		private int exitCode = -1;
 		private String text = "";
+		private boolean expectDate;
+		
+		public LogEntry(boolean expectDate) {
+			this.expectDate = expectDate;
+		}
 		
 		public void appendLine(String line) {
 			text += line;
+			if (expectDate) {
+				date = line;				
+				expectDate = false;
+			}
 			text += System.getProperty("line.separator");
 			String pattern = "[A-Z][a-z] \\d+\\. [A-Z][a-z][a-z] \\d\\d:\\d\\d:\\d\\d [A-Z]* \\d\\d\\d\\d";
 			if (date.equals("<incomplete>") && line.matches(pattern)) {
@@ -97,10 +107,6 @@ public final class LogPreviewFactory implements Factory<String, JComponent> {
 		@Override
 		public String toString() {
 			return date;
-		}
-		
-		public int getExitCode() {
-			return exitCode;
 		}
 		
 	}

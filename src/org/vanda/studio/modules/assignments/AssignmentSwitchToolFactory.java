@@ -153,11 +153,11 @@ public class AssignmentSwitchToolFactory implements ToolFactory {
 
 			// Buttons & Textfield
 			PreviousAssignmentAction prev = new PreviousAssignmentAction(db);
-			wfe.addAction(prev, KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_MASK), 5);
+			wfe.addAction(prev, KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_MASK), 6);
 			prevButton = createNavigationButton(prev, "arrow-left");
 
 			NextAssignmentAction next = new NextAssignmentAction(db);
-			wfe.addAction(next, KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_MASK), 6);
+			wfe.addAction(next, KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_MASK), 7);
 			nextButton = createNavigationButton(next, "arrow-right");
 
 			aName = new JTextField() {

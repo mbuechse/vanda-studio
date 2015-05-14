@@ -32,14 +32,15 @@ public class DirectorySelector implements ElementSelector, Observer<Element> {
 				return name.matches(DirectorySelector.this.directoryDataSource.filter);
 			}
 		});
-		Arrays.sort(l, new Comparator<String>() {
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.compareTo(o2);
-			}
-		});
-		if (l != null)
+		if (l != null) {
+			Arrays.sort(l, new Comparator<String>() {
+				@Override
+				public int compare(String o1, String o2) {
+					return o1.compareTo(o2);
+				}
+			});
 			selector.setListData(l);
+		}
 		selector.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
