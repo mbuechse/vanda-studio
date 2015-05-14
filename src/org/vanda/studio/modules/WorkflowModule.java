@@ -17,7 +17,6 @@ import org.vanda.studio.modules.workflows.WorkflowPreview;
 import org.vanda.studio.modules.workflows.tools.MainComponentToolFactory;
 import org.vanda.studio.modules.workflows.tools.PaletteTool;
 import org.vanda.studio.modules.workflows.tools.SaveTool;
-import org.vanda.studio.modules.workflows.tools.WorkflowToPDFToolFactory;
 import org.vanda.types.CompositeType;
 import org.vanda.types.Type;
 import org.vanda.util.Action;
@@ -74,7 +73,6 @@ public class WorkflowModule implements Module {
 			ListRepository<ToolFactory> lr = new ListRepository<ToolFactory>();
 			lr.addItem(new PaletteTool(toolRepository));
 			lr.addItem(new SaveTool());
-			lr.addItem(new WorkflowToPDFToolFactory(toolRepository));
 			toolFactoryMeta.addRepository(lr);
 			sr.put(EXECUTION, executionPreviewFactory);
 			sr.put(WORKFLOW, executionPreviewFactory);

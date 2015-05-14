@@ -73,6 +73,7 @@ public final class Launcher implements Runnable {
 						dataSourceMeta.getRepository(), toolFactoryMeta),
 				new org.vanda.studio.modules.WorkflowModule(toolMeta.getRepository(), rootDataSource,
 						contextFactoryMeta.getRepository(), previewFactoryMeta, editorFactoryMeta, toolFactoryMeta),
+				new org.vanda.studio.modules.WorkflowPDFModule(toolFactoryMeta, toolMeta.getRepository()),
 				new org.vanda.studio.modules.DataSourceModule(dataSourceMeta, elementSelectorFactoryMeta) };
 
 		ModuleManager moduleManager = new ModuleManager(app);
