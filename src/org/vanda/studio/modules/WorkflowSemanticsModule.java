@@ -12,6 +12,8 @@ import org.vanda.workflows.data.SemanticAnalysis;
 import org.vanda.workflows.hyper.SyntaxAnalysis;
 
 public class WorkflowSemanticsModule implements Module {
+	
+	private final MetaRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> contextFactoryMeta;
 
 	@Override
 	public String getId() {
@@ -20,13 +22,7 @@ public class WorkflowSemanticsModule implements Module {
 
 	@Override
 	public Object instantiate(Application a) {
-		return null;
-	}
-
-	private final StaticRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> sr;
-
-	public WorkflowSemanticsModule(
-			MetaRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> contextFactoryMeta) {
+		StaticRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> sr;
 		sr = new StaticRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>>();
 		sr.put(SemanticAnalysis.class, new Factory<WorkflowEditor, SemanticAnalysis>() {
 			@Override
@@ -42,6 +38,12 @@ public class WorkflowSemanticsModule implements Module {
 
 		});
 		contextFactoryMeta.addRepository(sr);
+		return sr;
+	}
+
+	public WorkflowSemanticsModule(
+			MetaRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> contextFactoryMeta) {
+		this.contextFactoryMeta = contextFactoryMeta;
 	}
 
 }

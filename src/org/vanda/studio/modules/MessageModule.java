@@ -1,12 +1,15 @@
 package org.vanda.studio.modules;
 
+import java.awt.Component;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -31,24 +34,27 @@ public class MessageModule implements Module {
 
 	private static final class Messages implements Observer<Message> {
 		private final Application app;
-		private final JList messageList;
+		private final JList<Message> messageList;
 		private final JScrollPane scrollPane;
-		private final DefaultListModel listModel;
+		private final DefaultListModel<Message> listModel;
 
-		@SuppressWarnings("serial")
 		public Messages(Application a) {
 			app = a;
-			listModel = new DefaultListModel() {
+			listModel = new DefaultListModel<Message>();
+			messageList = new JList<Message>(listModel);
+			messageList.setCellRenderer(new ListCellRenderer<Message>() {
+				ListCellRenderer<Object> delegate = new DefaultListCellRenderer();
+				
 				@Override
-				public Object getElementAt(int index) {
-					Message m = (Message) super.getElementAt(index);
-					return "["
-							+ DateFormat.getTimeInstance().format(m.getDate())
-							+ "] " + m.getHeadline();
-				}
+				public Component getListCellRendererComponent(JList<? extends Message> list, Message value, int index,
+						boolean isSelected, boolean cellHasFocus) {
+					String s = "["
+							+ DateFormat.getTimeInstance().format(value.getDate())
+							+ "] " + value.getHeadline();
 
-			};
-			messageList = new JList(listModel);
+					return delegate.getListCellRendererComponent(list, s, index, isSelected, cellHasFocus);
+				}
+			});
 			messageList.addListSelectionListener(new ListSelectionListener() {
 
 				@Override

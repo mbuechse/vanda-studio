@@ -57,7 +57,7 @@ public final class Launcher implements Runnable {
 	@Override
 	public void run() {
 		Module[] ms = {
-				// new org.vanda.studio.modules.messages.MessageModule(),
+				// new org.vanda.studio.modules.MessageModule(),
 				new org.vanda.studio.modules.ToolsModule(toolMeta),
 				new org.vanda.studio.modules.BuildModule(buildSystemMeta),
 				new org.vanda.studio.modules.PreviewsModule(previewFactoryMeta),

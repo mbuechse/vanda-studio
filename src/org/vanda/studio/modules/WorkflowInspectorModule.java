@@ -21,8 +21,12 @@ import org.vanda.util.StaticRepository;
 import org.vanda.workflows.run.BuildSystem;
 
 public class WorkflowInspectorModule implements Module {
-
-	private final ElementEditorFactories eefs;
+	private final RootDataSource rootDataSource;
+	private final Repository<Class<? extends DataSource>, Factory<DataSource, ElementSelector>> elementSelectorFactoryRepository;
+	private final MetaRepository<String, ToolFactory> toolFactoryMeta;
+	private final Repository<Type, Factory<String, JComponent>> previewFactories;
+	private final Repository<String, BuildSystem> buildSystemRepository;
+	private final Repository<String, DataSourceMount> dataSourceRepository;
 
 	public WorkflowInspectorModule(
 			RootDataSource rootDataSource,
@@ -30,7 +34,23 @@ public class WorkflowInspectorModule implements Module {
 			MetaRepository<String, ToolFactory> toolFactoryMeta, Repository<Type, Factory<String, JComponent>> previewFactories,
 			Repository<String, BuildSystem> buildSystemRepository,
 			Repository<String, DataSourceMount> dataSourceRepository) {
+		this.rootDataSource = rootDataSource;
+		this.elementSelectorFactoryRepository = elementSelectorFactoryRepository;
+		this.toolFactoryMeta = toolFactoryMeta;
+		this.previewFactories = previewFactories;
+		this.buildSystemRepository = buildSystemRepository;
+		this.dataSourceRepository = dataSourceRepository;
+	}
 
+	@Override
+	public String getId() {
+		return "Inspector for Workflows";
+	}
+
+	@Override
+	public Object instantiate(Application app) {
+
+		ElementEditorFactories eefs;
 		eefs = new ElementEditorFactories();
 		eefs.workflowFactories.add(new org.vanda.studio.modules.inspector.WorkflowElementEditor());
 		eefs.literalFactories.add(new LiteralEditor(rootDataSource, new CompositeFactory<DataSource, ElementSelector>(
@@ -40,17 +60,8 @@ public class WorkflowInspectorModule implements Module {
 		ToolFactory tf = new InspectorToolFactory(eefs, previewFactories, buildSystemRepository, dataSourceRepository);
 		sr.put(tf.getId(), tf);
 		toolFactoryMeta.addRepository(sr);
-	}
-
-	@Override
-	public String getId() {
-		return "Inspector for Workflows";
-	}
-
-	@Override
-	public Object instantiate(Application d) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return sr;
 	}
 
 }

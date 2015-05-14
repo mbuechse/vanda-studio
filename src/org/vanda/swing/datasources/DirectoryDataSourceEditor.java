@@ -27,7 +27,7 @@ public class DirectoryDataSourceEditor implements DataSourceEditor {
 	private JPanel pan;
 	private JTextField tFolder;
 	private JTextField tFilter;
-	private JComboBox cType;
+	private JComboBox<Type> cType;
 
 	public DirectoryDataSourceEditor(DirectoryDataSource directoryDataSource, Application app) {
 		this.directoryDataSource = directoryDataSource;
@@ -35,6 +35,8 @@ public class DirectoryDataSourceEditor implements DataSourceEditor {
 		JLabel lFolder = new JLabel("Folder", JLabel.TRAILING);
 		tFolder = new JTextField(this.directoryDataSource.path);
 		JButton bFolder = new JButton(new AbstractAction("..."){
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser fc = new JFileChooser(new File(tFolder.getText()));
@@ -48,7 +50,7 @@ public class DirectoryDataSourceEditor implements DataSourceEditor {
 		JLabel lFilter = new JLabel("Filter", JLabel.TRAILING);
 		tFilter = new JTextField(this.directoryDataSource.filter);
 		JLabel lType = new JLabel("Type", JLabel.TRAILING);
-		cType = new JComboBox(app.getTypes().toArray());
+		cType = new JComboBox<Type>(app.getTypes().toArray(new Type[0]));
 		// handle creation of new datasources (type == null)
 		if (this.directoryDataSource.type != null) 
 			cType.setSelectedItem(this.directoryDataSource.type);

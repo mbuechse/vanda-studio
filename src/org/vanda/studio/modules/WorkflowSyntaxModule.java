@@ -12,6 +12,9 @@ import org.vanda.workflows.hyper.SyntaxAnalysis;
 
 public class WorkflowSyntaxModule implements Module {
 
+	private final MetaRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> contextFactoryMeta;
+	private final MetaRepository<String, ToolFactory> toolFactoryMeta;
+
 	@Override
 	public String getId() {
 		return "Syntax Analysis for Workflow Editors";
@@ -19,15 +22,8 @@ public class WorkflowSyntaxModule implements Module {
 
 	@Override
 	public Object instantiate(Application a) {
-		return null;
-	}
-
-	private final StaticRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> sr;
-	private final StaticRepository<String, ToolFactory> sr2;
-
-	public WorkflowSyntaxModule(
-			MetaRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> contextFactoryMeta,
-			MetaRepository<String, ToolFactory> toolFactoryMeta) {
+		StaticRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> sr;
+		StaticRepository<String, ToolFactory> sr2;
 		sr = new StaticRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>>();
 		sr.put(SyntaxAnalysis.class, new Factory<WorkflowEditor, SyntaxAnalysis>() {
 			@Override
@@ -44,6 +40,14 @@ public class WorkflowSyntaxModule implements Module {
 		ToolFactory tf = new ErrorHighlighterFactory();
 		sr2.put(tf.getId(), tf);
 		toolFactoryMeta.addRepository(sr2);
+		return sr;
+	}
+
+	public WorkflowSyntaxModule(
+			MetaRepository<Class<? extends Object>, Factory<WorkflowEditor, ? extends Object>> contextFactoryMeta,
+			MetaRepository<String, ToolFactory> toolFactoryMeta) {
+		this.contextFactoryMeta = contextFactoryMeta;
+		this.toolFactoryMeta = toolFactoryMeta;
 	}
 
 }

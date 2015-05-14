@@ -30,6 +30,7 @@ public class RunConfigEditor {
 		return pan;
 	}
 
+	@SuppressWarnings("unused")
 	public RunConfigEditor(final RunConfig rc) {		
 		// Panel and basic Layout
 		pan = new JPanel();
