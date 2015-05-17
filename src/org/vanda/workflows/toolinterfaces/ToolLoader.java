@@ -96,7 +96,7 @@ public class ToolLoader implements ExternalRepository.Loader<Tool> {
 	}
 
 	public void loadFile(Observer<Tool> o, File f) {
-		System.out.println("Processing: " + f.getAbsolutePath());
+		// System.out.println("Processing: " + f.getAbsolutePath());
 		ParserImpl<Tool> p = createParser(o);
 		try {
 			p.init(f);
