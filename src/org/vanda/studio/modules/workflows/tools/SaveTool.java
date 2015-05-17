@@ -8,12 +8,19 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.vanda.studio.app.Application;
 import org.vanda.studio.editor.ToolFactory;
 import org.vanda.studio.editor.WorkflowEditor;
 import org.vanda.util.Action;
 import org.vanda.workflows.serialization.Storer;
 
 public final class SaveTool implements ToolFactory {
+	private final Application app;
+	
+	public SaveTool(Application app) {
+		this.app = app;
+	}
+	
 	@Override
 	public Object instantiate(WorkflowEditor wfe) {
 		Action a = new SaveWorkflowAction(wfe);
@@ -66,7 +73,7 @@ public final class SaveTool implements ToolFactory {
 			chooser.setAcceptAllFileFilterUsed(false);
 			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			chooser.setFileFilter(new FileNameExtensionFilter("Workflow XML (*.xwf)", "xwf"));
-			String lastDir = wfe.getProperty("lastDir");
+			String lastDir = app.getProperty("lastDir");
 			if (lastDir != null)
 				chooser.setCurrentDirectory(new File(lastDir));
 			chooser.setVisible(true);
@@ -76,7 +83,7 @@ public final class SaveTool implements ToolFactory {
 			// once file choice is approved, save the chosen file
 			if (result == JFileChooser.APPROVE_OPTION) {
 				File chosenFile = chooser.getSelectedFile();
-				wfe.setProperty("lastDir", chosenFile.getParentFile().getAbsolutePath());
+				app.setProperty("lastDir", chosenFile.getParentFile().getAbsolutePath());
 				String filePath = chosenFile.getPath();
 				if (!filePath.endsWith(".xwf"))
 					filePath = filePath + ".xwf";

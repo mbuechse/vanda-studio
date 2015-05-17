@@ -72,7 +72,7 @@ public class WorkflowModule implements Module {
 
 			ListRepository<ToolFactory> lr = new ListRepository<ToolFactory>();
 			lr.addItem(new PaletteTool(toolRepository));
-			lr.addItem(new SaveTool());
+			lr.addItem(new SaveTool(app));
 			toolFactoryMeta.addRepository(lr);
 			sr.put(EXECUTION, executionPreviewFactory);
 			sr.put(WORKFLOW, executionPreviewFactory);

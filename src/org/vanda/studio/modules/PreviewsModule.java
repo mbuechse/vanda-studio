@@ -5,9 +5,7 @@ import javax.swing.JComponent;
 import org.vanda.studio.app.Application;
 import org.vanda.studio.app.Module;
 import org.vanda.studio.modules.previews.AlignmentsPreviewFactory;
-import org.vanda.studio.modules.previews.BerkeleyGrammarPreviewFactory;
 import org.vanda.studio.modules.previews.BerkeleyTreePreviewFactory;
-import org.vanda.studio.modules.previews.DictionaryPreviewFactory;
 import org.vanda.studio.modules.previews.LogPreviewFactory;
 import org.vanda.studio.modules.previews.MonospacePreviewFactory;
 import org.vanda.studio.modules.previews.ScoresPreviewFactory;
@@ -40,9 +38,6 @@ public class PreviewsModule implements Module {
 	public Object instantiate(Application app) {
 		StaticRepository ar = new StaticRepository();
 		ar.put(new CompositeType("PennTreeCorpus"), new BerkeleyTreePreviewFactory());
-		ar.put(new CompositeType("BerkeleyGrammar.sm6"), new BerkeleyGrammarPreviewFactory(app, ".prev"));
-		ar.put(new CompositeType("LAPCFG-Grammar"), new BerkeleyGrammarPreviewFactory(app, "/level1.grammar"));
-		ar.put(new CompositeType("EMSteps"), new DictionaryPreviewFactory(app));
 		ar.put(new CompositeType("Scores"), new ScoresPreviewFactory());
 		ar.put(new CompositeType("Alignments"), new AlignmentsPreviewFactory());
 		ar.put(new CompositeType("log"), new LogPreviewFactory());

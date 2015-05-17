@@ -19,9 +19,6 @@ public interface WorkflowEditor {
 	Database getDatabase();
 	<T> T getContext(Class<T> clazz);
 	
-	String getProperty(String key);
-	void setProperty(String key, String value);
-
 	void removeToolWindow(JComponent c);
 	void addAction(Action a, String imageName, KeyStroke keyStroke, int pos);
 	void enableAction(Action a);

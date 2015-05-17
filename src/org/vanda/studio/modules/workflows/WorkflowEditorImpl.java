@@ -199,16 +199,6 @@ public class WorkflowEditorImpl implements WorkflowEditor, WorkflowListener<Muta
 	}
 
 	@Override
-	public String getProperty(String key) {
-		return app.getProperty(getClass().getName() + "." + key);
-	}
-
-	@Override
-	public void setProperty(String key, String value) {
-		app.setProperty(getClass().getName() + "." + key, value);
-	}
-
-	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getContext(Class<T> clazz) {
 		T result = (T) contexts.get(clazz);

@@ -1,5 +1,6 @@
 package org.vanda.runner;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.vanda.datasources.DataSource;
@@ -44,7 +45,7 @@ public class BuildContextImpl implements BuildContext {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-			return new RunnerImpl(id);
+			return new RunnerImpl(rc.getPath() + File.separator + id);
 		}
 
 		public void cleanTempFiles() {

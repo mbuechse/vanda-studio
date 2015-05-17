@@ -11,7 +11,6 @@ import javax.swing.SwingWorker;
 
 import org.vanda.runner.RunStatesImpl.RunTransitions;
 import org.vanda.util.Observer;
-import org.vanda.util.RCChecker;
 import org.vanda.util.Util;
 import org.vanda.workflows.run.RunStates.*;
 
@@ -63,7 +62,7 @@ public class StateRunning implements RunState {
 		protected String doInBackground() {
 			try {
 				// TODO use path from runconfig
-				process = Runtime.getRuntime().exec(RCChecker.getOutPath() + "/" + id, null, null);
+				process = Runtime.getRuntime().exec(id, null, null);
 			} catch (Exception e) {
 				// TODO maybe trigger cancel event or something, but get rid of this coupling
 				// app.sendMessage(new ExceptionMessage(e));
